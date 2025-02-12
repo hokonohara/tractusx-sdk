@@ -93,7 +93,7 @@ You can use it to build you use case application how you want, based on the indu
 
 ## Dataspace Architecture Patterns
 
-This SDK will be developer based on the Dataspace & Industry Usage Patterns provided in Eclipse Tractus-X [sig-architecture](https://github.com/eclipse-tractusx/sig-architecture)
+This SDK will be developed based and will follow the Dataspace & Industry Usage Patterns recommended in Eclipse Tractus-X [sig-architecture](https://github.com/eclipse-tractusx/sig-architecture)
 
 ## How to Get Involved
 
