@@ -1,11 +1,11 @@
 # Tractus-X Software Development KIT
 
-Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Middleware
+Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
 
 A modular facade with generic microservices that allows you to "provide" and "consume" data from Catena-X with simplified APIs and methods.
 
 It aims to provide a reference implementation for the various interactions between applications and services like the EDC, Digital Twin Registry and Submodel Service.
-Is the literal tool box you need to provide data and consume data, how you orchestrate it is then up to you and your use case.
+Is the literal "tool box" you need to provide data and consume data, how you orchestrate it is then up to you and your use case.
 
 This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, providing a "smart REST API middleware" that will be maintained by the community.
 
@@ -48,11 +48,11 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
 
 - Open for more collaboration!
 
-## Why is this Tractus-X SDK Created?
+## Why was this Tractus-X SDK Created?
 
 Here you will find a design decision which was taken at the beginning of the industry core hub development:
 
-[IC-Hub Decision Record 0002] https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md
+[IC-Hub Decision Record 0002](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
 
 When developing the Industry Core Hub we are creating a reusable and modular middleware for other use cases and applications to interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
@@ -77,10 +77,10 @@ Providing two reusable libraries:
 
 - [Dataspace Foundation Library](./dataspace)
   - Enables your "bytes" data exchange using the EDC and the core services from Catena-X.
-  - It provides tools for your exchange agnostic from your use case.   
+  - It provides tools for your exchange agnostic from your use case.
 - [Industry Foundation Library](./industry)
   - Enables your data exchange using the dataspace foundation library but for the usage of Digital Twins in the Digital Twin Registry.
-    
+
 ![Architecture](./docs/media/catena-x-speedway-sdk.svg)
 
 ## Industry Core Hub Example
