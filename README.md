@@ -54,7 +54,11 @@ Here you will find a design decision which was taken at the beginning of the ind
 
 [Industry Core Hub Decision Record 0002](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
 
-When developing the Industry Core Hub we are creating a reusable and modular middleware for other use cases and applications to interact with the Tractus-X Datapaces Components required for data provision and data consumption:
+While developing the Industry Core Hub, in parallel we decided to create a SDK for Tractus-X.
+
+[Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md) 
+
+Having a individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want tk easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
 - [Tractus-X Eclipse Dataspace Connector (EDC)](https://github.com/eclipse-tractusx/tractusx-edc)
 - [Tractus-X Digital Twin Registry](https://github.com/eclipse-tractusx/sldt-digital-twin-registry)
@@ -70,6 +74,8 @@ And other core services like:
   - [EDC Discovery](https://github.com/eclipse-tractusx/portal-backend)
   
 - [Portal IAM/IDP](https://github.com/eclipse-tractusx/portal-iam)
+
+Our aim is to automate the target releases and compatibility with this systems using DevOps mechanisms.
 
 ## High Level Architecture
 
