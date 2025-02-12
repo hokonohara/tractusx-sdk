@@ -91,6 +91,10 @@ You can use it to build you use case application how you want, based on the indu
 
 ![modular sdk](docs/media/modular-microservices-architecture.svg)
 
+## Dataspace Architecture Patterns
+
+This SDK will be developer based on the Dataspace & Industry Usage Patterns provided in Eclipse Tractus-X [sig-architecture](https://github.com/eclipse-tractusx/sig-architecture)
+
 ## How to Get Involved
 
 - **Get onboarded**: [Getting started](https://eclipse-tractusx.github.io/docs/oss/getting-started/). Join the Eclipse Tractus-X open source community as a contributor!
