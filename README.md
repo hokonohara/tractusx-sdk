@@ -17,6 +17,19 @@ No specific use case logic will be configured here, only the bare minimum for in
 
 An example of SDK that is already used in Tractus-X is the [Portal Shared Components](https://github.com/eclipse-tractusx/portal-shared-components), however this SDK shall aim to be generic for every application.
 
+## Roadmap
+
+The development roadmap is the same as the industry core hub.
+
+```
+February 3 2025     R25.06             R25.09          R25.12
+Kickoff              MVP                Stable          NEXT            2026 -> Beyond
+| ------------------> | ----------------> | -----------> |  ----------------> | 
+                Data Provision     Data Consumption    IC-HUB             + KIT Use Cases
+                     SDK                 SDK             + Integrate First
+                                                           Use Case (e.g. DPP) (Another usage for the SDK)
+```
+
 ## What can you do with this SDK?
 
 - You can create a frontend for your use case (with any technology) and consume the APIs.
