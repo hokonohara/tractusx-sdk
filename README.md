@@ -58,6 +58,17 @@ And other core services like:
   
 - [Portal IAM/IDP](https://github.com/eclipse-tractusx/portal-iam)
 
+
+![]
+
+## Industry Core Hub Example
+
+![context sdk](docs/media/sdk-context.png)
+
+You can use it to build you use case application how you want, based on the industry core foundation or not:
+
+![modular sdk](docs/media/modular-microservices-architecture.svg)
+
 ## How to Get Involved
 
 - **Get onboarded**: [Getting started](https://eclipse-tractusx.github.io/docs/oss/getting-started/). Join the Eclipse Tractus-X open source community as a contributor!
@@ -82,3 +93,11 @@ otherwise [create a new discussion](https://github.com/eclipse-tractusx/industry
 ## Reporting a Security Issue
 
 Please follow the [Security Issue Reporting Guidelines](https://eclipse-tractusx.github.io/docs/release/trg-7/trg-7-01#security-file) if you come across any security vulnerabilities or concerns.
+
+## Licenses
+
+- [Apache-2.0](https://raw.githubusercontent.com/eclipse-tractusx/tractusx-sdk/main/LICENSE) for code
+- [CC-BY-4.0](https://spdx.org/licenses/CC-BY-4.0.html) for non-code
+---
+
+Thank you for using Software Development KIT! If you have any questions or need further assistance, please feel free to reach out.
