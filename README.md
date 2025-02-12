@@ -58,8 +58,17 @@ And other core services like:
   
 - [Portal IAM/IDP](https://github.com/eclipse-tractusx/portal-iam)
 
+## High Level Architecture
 
-![]
+Providing two reusable libraries:
+
+- [Dataspace Foundation Library](./dataspace)
+  - Enables your "bytes" data exchange using the EDC and the core services from Catena-X.
+  - It provides tools for your exchange agnostic from your use case.   
+- [Industry Foundation Library](./industry)
+  - Enables your data exchange using the dataspace foundation library but for the usage of Digital Twins in the Digital Twin Registry.
+    
+![Architecture](./docs/media/catena-x-speedway-sdk.svg)
 
 ## Industry Core Hub Example
 
