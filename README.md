@@ -52,7 +52,7 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
 
 Here you will find a design decision which was taken at the beginning of the industry core hub development:
 
-[IC-Hub Decision Record 0002](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
+[Industry Core Hub Decision Record 0002](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
 
 When developing the Industry Core Hub we are creating a reusable and modular middleware for other use cases and applications to interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
