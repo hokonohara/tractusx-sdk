@@ -58,7 +58,7 @@ While developing the Industry Core Hub, in parallel we decided to create a SDK f
 
 [Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md) 
 
-Having a individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want tk easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
+Having a individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want to easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
 - [Tractus-X Eclipse Dataspace Connector (EDC)](https://github.com/eclipse-tractusx/tractusx-edc)
 - [Tractus-X Digital Twin Registry](https://github.com/eclipse-tractusx/sldt-digital-twin-registry)
