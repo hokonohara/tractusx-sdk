@@ -68,4 +68,4 @@ jobs:
 
       - name: Scan Results Status
         if: steps.trufflehog.outcome == 'failure'
-        run: exit 1  # Set workflow run to failure if TruffleHog finds secrets 
+        run: exit 1  # Set workflow run to failure if TruffleHog finds secrets
