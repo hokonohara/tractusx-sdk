@@ -23,6 +23,7 @@
 # -----------------IMPORTS---------------------------
 
 import math
+import os
 import pytest
 import json
 from tools import op
@@ -422,8 +423,6 @@ def test_to_json_with_float_inf_should_return_Infinity():
     #Assert
     assert "Infinity" in result
 
-#Test shows error as indent def value is 0 so output adds newline before each element
-#None as default is suggested to fix the indent issue if not intended
 def test_to_json_with_tuple_should_convert_to_list():
     #Arange
     source = (1, 2, 3)
@@ -453,8 +452,6 @@ def test_to_json_with_custom_object_should_raise_TypeError():
         op.to_json(source)
 
 #Function 3 - to_json_file
-
-#All fail due to mismatch of write_to_file parameter (filePath), should be file_path 
 
 def test_to_json_file_with_simple_dict_should_write_valid_json(tmp_path):
     #Arange
@@ -587,11 +584,164 @@ def test_to_json_file_with_non_serializable_object_should_raise_type_error(tmp_p
 
 #Function 4 - read_json_file
 
+def test_read_json_file_with_valid_dict_should_return_dict(tmp_path):
+    #Arange
+    source = {"name": "John", "age": 30}
+    file_path = tmp_path / "valid_dict.json"
+    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
+    #Act
+    result = op.read_json_file(str(file_path))
+    #Assert
+    assert result == source
 
+def test_read_json_file_with_mixed_list_should_return_valid_list(tmp_path):
+    #Arange
+    source = [1, 2, 3, "four", True, None]
+    file_path = tmp_path / "valid_list.json"
+    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
+    #Act
+    result = op.read_json_file(str(file_path))
+    #Assert
+    assert result == source
+
+def test_read_json_file_with_nested_data_should_return_nested_structure(tmp_path):
+    #Arange
+    source = {
+        "company": "TechCorp",
+        "employees": [
+            {"id": 1, "name": "John Doe", "skills": ["Python", "Java"]},
+            {"id": 2, "name": "Jane Smith", "skills": ["UI/UX", "Design"]}
+        ],
+        "active": True
+    }
+    file_path = tmp_path / "nested.json"
+    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
+    #Act
+    result = op.read_json_file(str(file_path))
+    #Assert
+    assert result == source
+
+def test_read_json_file_with_utf8_encoding_should_return_correct_characters(tmp_path):
+    #Arange
+    source = {"saludo": "¡Hola, mundo!", "emoji": "😊"}
+    file_path = tmp_path / "utf8.json"
+    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
+    #Act
+    result = op.read_json_file(str(file_path), encoding="utf-8")
+    #Assert
+    assert result == source
+
+def test_read_json_file_with_nonexistent_file_should_raise_FileNotFoundError(tmp_path):
+    #Arange
+    file_path = tmp_path / "nonexistent.json"
+    #Act
+    
+    #Assert
+    with pytest.raises(FileNotFoundError):
+        op.read_json_file(str(file_path))
+
+def test_read_json_file_with_invalid_json_should_raise_JsonDecodeError(tmp_path):
+    #Arange
+    file_path = tmp_path / "invalid.json"
+    file_path.write_text("This is not valid JSON", encoding="utf-8")
+    #Act
+    
+    #Assert
+    with pytest.raises(json.JSONDecodeError):
+        op.read_json_file(str(file_path))
+
+def test_read_json_file_with_empty_file_should_raise_JsonDecodeError(tmp_path):
+    #Arange
+    file_path = tmp_path / "empty.json"
+    file_path.write_text("", encoding="utf-8")
+    #Act
+    
+    #Assert
+    with pytest.raises(json.JSONDecodeError):
+        op.read_json_file(str(file_path))
+
+def test_read_json_file_with_different_encoding_should_return_correct_data(tmp_path):
+    #Arange
+    source = {"mensaje": "¡Olé! – ñandú"}
+    file_path = tmp_path / "latin1.json"
+    file_path.write_text(json.dumps(source, indent=2), encoding="iso-8859-1")
+    #Act
+    result = op.read_json_file(str(file_path), encoding="iso-8859-1")
+    #Assert
+    assert result == source
 
 #Function 5 - path_exists
 
+def test_path_exists_with_existing_file_should_return_true(tmp_path):
+    #Arange
+    file = tmp_path / "existing.txt"
+    file.write_text("Test content")
+    #Act
+    result = op.path_exists(str(file))
+    #Assert
+    assert result is True
 
+def test_path_exists_with_nonexistent_file_should_return_false(tmp_path):
+    #Arange
+    file = tmp_path / "nonexistent.txt"
+    #Act
+    result = op.path_exists(str(file))
+    #Assert
+    assert result is False
+
+def test_path_exists_with_existing_directory_should_return_true(tmp_path):
+    #Arange
+    directory = tmp_path / "subdir"
+    directory.mkdir()
+    #Act
+    result = op.path_exists(str(directory))
+    #Assert
+    assert result is True
+
+def test_path_exists_with_relative_path_should_return_true(tmp_path, monkeypatch):
+    #Arange
+    file = tmp_path / "relative.txt"
+    file.write_text("Relative file content")
+    monkeypatch.chdir(tmp_path)
+    relative_path = "relative.txt"
+    #Act
+    result = op.path_exists(relative_path)
+    #Assert
+    assert result is True
+
+def test_path_exists_with_directory_trailing_slash_should_return_true(tmp_path):
+    #Arange
+    directory = tmp_path / "dir_with_slash"
+    directory.mkdir()
+    path_with_slash = str(directory) + os.sep
+    #Act
+    result = op.path_exists(path_with_slash)
+    #Assert
+    assert result is True
+
+def test_path_exists_with_None_input_should_raise_TypeError():
+    #Arange
+    invalid_input = None
+    #Act
+     
+    #Assert
+    with pytest.raises(TypeError):
+        op.path_exists(invalid_input)
+        
+#Execute with privileges in some systems to ensure that the test passes, otherwise skipped
+def test_path_exists_with_symbolic_link_should_return_true(tmp_path):
+    #Arange
+    target_file = tmp_path / "target.txt"
+    target_file.write_text("Target content")
+    symlink_file = tmp_path / "symlink.txt"
+    try:
+        os.symlink(str(target_file), str(symlink_file))
+    except (AttributeError, NotImplementedError, OSError): #if platform doesn't support symbolic links
+        pytest.skip("Symlink not supported on this platform")
+    #Act
+    result = op.path_exists(str(symlink_file))
+    #Assert
+    assert result is True
 
 #Function 6 - make_dir
 
