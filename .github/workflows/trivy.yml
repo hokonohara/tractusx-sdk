@@ -47,7 +47,7 @@ jobs:
       - name: Build dataspace-sdk Docker image
         id: build-docker-dataspace-sdk
         run: |
-            cd tractusx_sdk/dataspace
+            cd dataspace
             docker build -t ${{ env.IMAGE_NAMESPACE }}/${{ env.DATASPACE_SDK_IMAGE_NAME }}:latest .
 
       - name: Run Trivy vulnerability scanner
