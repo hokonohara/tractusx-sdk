@@ -47,13 +47,13 @@ class op:
         return data
 
     @staticmethod
-    def to_json(source_object,indent:int=0,ensure_ascii:bool=True):
+    def to_json(source_object,indent:int=None,ensure_ascii:bool=True):
         return json.dumps(obj=source_object,indent=indent,ensure_ascii=ensure_ascii)
     
     @staticmethod
     def to_json_file(source_object,json_file_path:str,file_open_mode:str="w",indent:int=2):
         tmp_json_string=op.to_json(source_object=source_object,indent=indent)
-        op.write_to_file(data=tmp_json_string, filePath=json_file_path,open_mode=file_open_mode, end="")
+        op.write_to_file(data=tmp_json_string, file_path=json_file_path,open_mode=file_open_mode, end="")
         
     @staticmethod
     def read_json_file(file_path,encoding:str="utf-8"):
