@@ -82,7 +82,7 @@ jobs:
       - name: Build industry-sdk Docker image
         id: build-docker-industry-sdk
         run: |
-            industry
+            cd industry
             docker build -t ${{ env.IMAGE_NAMESPACE }}/${{ env.INDUSTRY_SDK_IMAGE_NAME }}:latest .
 
       - name: Run Trivy vulnerability scanner
