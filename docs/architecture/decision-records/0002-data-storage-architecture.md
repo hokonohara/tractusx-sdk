@@ -64,3 +64,11 @@ The Storage Architecture will not be specified in the SDK, need to be specified 
 
 - Applications need to implement their own persistence layer
 - If the application services (EDC, DTR, and data storage) are down then we can't know what was registered and when.
+
+## NOTICE
+
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2025 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/industry-core-hub
