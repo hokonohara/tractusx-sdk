@@ -26,108 +26,35 @@ import math
 import os
 import pytest
 import json
-from tools import op
+import datetime
+from dataspace.tools import op
 
 #------------TEST VARIABLES--------------------------
 
-# print(op.json_string_to_object(""))
-# -----------------TESTS-----------------------------
-
-#Function 1 - json_string_to_object
-def test_json_string_to_object_with_empty_input_should_return_JSONDecodeError():
-    #Arange
-    empty_string: str = "" 
-    empty_bytes: bytes = bytes() 
-    empty_bytearray:bytearray  = bytearray()
-    whitespace_string:str = " "
-    whitespace_bytes:bytes = bytes(" ",'utf-8')
-    whitespace_bytearray:bytearray= bytearray(" ",'utf-8')
-    #Act
+@pytest.fixture
+def simple_data_for_test(): #Simple data examples
+    return {
+        "string": "",
+        "bytes": bytes(),
+        "bytearray": bytearray(),
+        "string_whitespace": " ",
+        "bytes_whitespace": bytes(" ", 'utf-8'),
+        "bytearray_whitespace": bytearray(" ", 'utf-8'),   
+        "int": 0,
+        "boolean": False,
+        "None": None,
+        "array": [1, 2, 3],
+        "dict": {},
+        "float": 0.0,
+        "set": set(),
+        "tuple": tuple(),
+        "date": datetime.datetime.now(),
+        "non_string_key_dict": {1: "one", 2: "two"},
+    }
     
-    #Assert
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(empty_string)    
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(empty_bytes) 
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(empty_bytearray) 
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(whitespace_string) 
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(whitespace_bytes) 
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(whitespace_bytearray) 
-
-def test_json_string_to_object_with_invalid_type_syntax_should_return_TypeError():
-    #Arange
-    invalid_type_none = None
-    invalid_type_int:int = 42
-    invalid_type_float: float = 3.14
-    invalid_type_list: list = [1, 2, 3]
-    invalid_type_dict: dict = {"name": "John", "age": 30}
-    invalid_type_tuple: tuple = (1, 2, 3)
-    invalid_type_set: set = {1, 2, 3}
-    invalid_type_boolean: bool = True
-    #Act
-    
-    #Assert
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_none)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_int)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_float)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_list)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_dict)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_tuple)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_set)
-        
-    with pytest.raises(TypeError):
-        op.json_string_to_object(invalid_type_boolean)
-                             
-def test_json_string_to_object_with_invalid_JSON_format_should_return_JSONDecodeError():
-    #Arange
-    extra_comma:str = '{"name": "John", "age": 30,}'
-    unquoted_key:str = '{name: "John", age: 30}'
-    missing_bracket:str = '{"name": "John", "age": 30'
-    mismatching_bracket:str = '{"name": "John"} "age": 30}'
-    unescaped_special_characters:str = '{"name": "John \n Doe"}'
-    #Act
-    
-    #Assert
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(extra_comma)    
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(unquoted_key) 
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(missing_bracket) 
-    
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(mismatching_bracket)
-        
-    with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(unescaped_special_characters)
-        
-def test_json_string_to_object_with_string_should_return_valid_JSON():
-    #Arange
-    string: str = """{
+@pytest.fixture
+def complex_json_for_test(): #Complete JSON with variances for testing purposes
+    return """{
             "name": "John Doe",
             "age": 30,
             "email": "john.doe@example.com",
@@ -145,167 +72,62 @@ def test_json_string_to_object_with_string_should_return_valid_JSON():
                 {"year": 2020, "event": "Started a new project"}
             ]
             }
-            """ 
-            
-    #Act
-    result = op.json_string_to_object(string)
-    #Assert
-        # Basic fields
-    assert result["name"] == "John Doe"
-    assert result["age"] == 30
-    assert result["email"] == "john.doe@example.com"
-    assert result["is_active"] is True  
-    assert result["tags"] == ["developer", "python", "tester"]
-    
-        # Nested "address" fields
-    assert result["address"]["street"] == "123 Main St"
-    assert result["address"]["city"] == "Anytown"
-    assert result["address"]["state"] == None
-    assert result["address"]["postal_code"] == "12345"
-    
-        # History list assertions
-    assert len(result["history"]) == 3 
-    assert result["history"][0]["year"] == 2010
-    assert result["history"][0]["event"] == "Started first job"
-    assert result["history"][1]["year"] == 2015
-    assert result["history"][1]["event"] == "Moved to a new city"
-    assert result["history"][2]["year"] == 2020
-    assert result["history"][2]["event"] == "Started a new project"    
-        
-def test_json_string_to_object_with_bytes_should_return_valid_JSON():
-    #Arange
-    bytes_input: bytes = b"""{
-            "name": "John Doe",
-            "age": 30,
-            "email": "john.doe@example.com",
-            "is_active": true,
-            "tags": ["developer", "python", "tester"],
-            "address": {
-                "street": "123 Main St",
-                "city": "Anytown",
-                "state": "AN",
-                "postal_code": "12345"
-            },
-            "history": [
-                {"year": 2010, "event": "Started first job"},
-                {"year": 2015, "event": "Moved to a new city"},
-                {"year": 2020, "event": "Started a new project"}
-            ]
-            }
-            """ 
-            
-    #Act
-    result = op.json_string_to_object(bytes_input)
-    #Assert
-        # Basic fields
-    assert result["name"] == "John Doe"
-    assert result["age"] == 30
-    assert result["email"] == "john.doe@example.com"
-    assert result["is_active"] is True  
-    assert result["tags"] == ["developer", "python", "tester"]
-    
-        # Nested "address" fields
-    assert result["address"]["street"] == "123 Main St"
-    assert result["address"]["city"] == "Anytown"
-    assert result["address"]["state"] == "AN"
-    assert result["address"]["postal_code"] == "12345"
-    
-        # History list assertions
-    assert len(result["history"]) == 3 
-    assert result["history"][0]["year"] == 2010
-    assert result["history"][0]["event"] == "Started first job"
-    assert result["history"][1]["year"] == 2015
-    assert result["history"][1]["event"] == "Moved to a new city"
-    assert result["history"][2]["year"] == 2020
-    assert result["history"][2]["event"] == "Started a new project"
-    
-def test_json_string_to_object_with_bytearray_should_return_valid_JSON():
-    #Arange
-    bytearray_input: bytearray = bytearray("""{
-            "name": "John Doe",
-            "age": 30,
-            "email": "john.doe@example.com",
-            "is_active": true,
-            "tags": ["developer", "python", "tester"],
-            "address": {
-                "street": "123 Main St",
-                "city": "Anytown",
-                "state": "AN",
-                "postal_code": "12345"
-            },
-            "history": [
-                {"year": 2010, "event": "Started first job"},
-                {"year": 2015, "event": "Moved to a new city"},
-                {"year": 2020, "event": "Started a new project"}
-            ]
-            }
-            """, 'utf-8' )
-            
-    #Act
-    result = op.json_string_to_object(bytearray_input)
-    #Assert
-        # Basic fields
-    assert result["name"] == "John Doe"
-    assert result["age"] == 30
-    assert result["email"] == "john.doe@example.com"
-    assert result["is_active"] is True  
-    assert result["tags"] == ["developer", "python", "tester"]
-    
-        # Nested "address" fields
-    assert result["address"]["street"] == "123 Main St"
-    assert result["address"]["city"] == "Anytown"
-    assert result["address"]["state"] == "AN"
-    assert result["address"]["postal_code"] == "12345"
-    
-        # History list assertions
-    assert len(result["history"]) == 3 
-    assert result["history"][0]["year"] == 2010
-    assert result["history"][0]["event"] == "Started first job"
-    assert result["history"][1]["year"] == 2015
-    assert result["history"][1]["event"] == "Moved to a new city"
-    assert result["history"][2]["year"] == 2020
-    assert result["history"][2]["event"] == "Started a new project"
+            """
 
-def test_json_string_to_object_with_unicode_characters_should_return_valid_JSON():
-    #Arange
-    unicode_string:str = '{"name": "Jöhn", "age": 30}'
-    #Act
-    result = op.json_string_to_object(unicode_string)
-    #Assert
-    assert result["name"][1] == 'ö'
+@pytest.fixture
+def json_data_for_test(complex_json_for_test): #Json data for testing purposes
+    return{
+        "extra_comma" : '{"name": "John", "age": 30,}',
+        "unquoted_key" : '{name: "John", age: 30}',
+        "missing_bracket" : '{"name": "John", "age": 30',
+        "mismatching_bracket" : '{"name": "John"} "age": 30}',
+        "unescaped_special_characters" : '{"name": "John \n Doe"}',
+        "complex_valid_string":  complex_json_for_test,
+        "complex_valid_bytes": complex_json_for_test.encode('utf-8'), #converts string version to bytes
+        "complex_valid_bytearray": bytearray(complex_json_for_test, 'utf-8'), #converts string version to bytearray
+        "unicode_valid": '{"name": "Jöhn", "age": 30}'
+    }
+
+
+# -----------------TESTS-----------------------------
+
+#Function 1 - json_string_to_object
+
+@pytest.mark.parametrize("type", ["string", "bytes", "bytearray", "string_whitespace", "bytes_whitespace", "bytearray_whitespace"])
+def test_json_string_to_object_with_empty_valid_input_should_return_JSONDecodeError(type, simple_data_for_test):
+    value = simple_data_for_test[type] #Obtain the empty values
+    with pytest.raises(json.JSONDecodeError):
+        op.json_string_to_object(value) 
+        
+@pytest.mark.parametrize("type", ["int", "boolean", "None", "array", "dict", "float", "set", "tuple", "date"])
+def test_json_string_to_object_with_invalid_input_should_return_TypeError(type, simple_data_for_test):
+    value = simple_data_for_test[type] #Obtain the empty values
+    with pytest.raises(TypeError):
+        op.json_string_to_object(value) 
+                             
+@pytest.mark.parametrize("entries", ["extra_comma","unquoted_key","missing_bracket","unescaped_special_characters"])
+def test_json_string_to_object_with_invalid_JSON_format_should_return_JSONDecodeError(entries,json_data_for_test):
+    value = json_data_for_test[entries]
+    with pytest.raises(json.JSONDecodeError):
+        op.json_string_to_object(value)
+        
+@pytest.mark.parametrize("entries", ["complex_valid_string","complex_valid_bytes", "complex_valid_bytearray", "unicode_valid"])
+def test_json_string_to_object_with_valid_format_should_return_valid_JSON(entries,json_data_for_test):
+    expected = json.loads(json_data_for_test[entries])
+    assert op.json_string_to_object(json_data_for_test[entries]) == expected
 
 #Function 2 - to_json
 
-def test_to_json_with_empty_dict_should_return_empty_object():
-    #Arange
-    source = {}
-    expected = "{}"
-    #Act
-    result = op.to_json(source)
-    #Assert
-    assert result == expected
+@pytest.mark.parametrize("type", ["string", "int", "float", "boolean", "None", "array", "tuple", "dict", "non_string_key_dict"])
+def test_to_json_with_serializable_input_should_return_valid_json(type,simple_data_for_test):
+    value = simple_data_for_test[type]
+    assert op.to_json(value) == json.dumps(simple_data_for_test[type])
     
-def test_to_json_with_simple_input_should_return_valid_json():
-    #Arange
-    source_dict = {"name": "John", "age": 30}
-    source_list = [1, 2, 3]
-    #Act
-    result_dict = op.to_json(source_dict)
-    result_list = op.to_json(source_list)
-    #Assert
-    assert json.loads(result_dict) == source_dict
-    assert json.loads(result_list) == source_list
+@pytest.mark.parametrize("type", ["bytes", "bytearray", "set", "date"])
+def test_to_json_with_non_serializable_input_should_return_TypeError(type,simple_data_for_test):
+    with pytest.raises(TypeError):
+        op.to_json(simple_data_for_test[type])
 
-def test_to_json_with_none_input_should_return_null():
-    #Arange
-    source = None
-    expected = "null"
-    #Act
-    result = op.to_json(source)
-    #Assert
-    assert result == expected
-
-def test_to_json_with_boolean_should_return_true_or_false():
     #Arange
     source_true = True
     expected_true = "true"
@@ -318,80 +140,15 @@ def test_to_json_with_boolean_should_return_true_or_false():
     assert result_true == expected_true
     assert result_false == expected_false
 
-def test_to_json_with_complex_data_should_return_valid_json():
-    # Arrange
-    source = {
-        "company": "TechCorp",
-        "founded": 1995,
-        "active": True,
-        "address": {
-            "street": "123 Tech Lane",
-            "city": "San Francisco",
-            "zip": "94122",
-            "geo": {"lat": 37.7749, "lng": -122.4194}
-        },
-        "employees": [
-            {
-                "id": 1,
-                "name": "John Doe",
-                "age": 35,
-                "department": "Engineering",
-                "skills": ["Python", "Java", "Docker"],
-                "projects": ["Alpha", "Beta"]
-            },
-            {
-                "id": 2,
-                "name": "Jane Smith",
-                "age": 28,
-                "department": "Design",
-                "skills": ["UI/UX", "Sketch", "Photoshop"],
-                "projects": ["Gamma"]
-            }
-        ],
-        "products": ("Software A", "Software B", "Software C"),
-        "partners": None
-    }
+def test_to_json_with_complex_data_should_return_valid_json(complex_json_for_test):
+    expected = json.dumps(complex_json_for_test)
+    assert op.to_json(complex_json_for_test) == expected
+        
+def test_to_json_with_indent_parameter_should_return_indented_json(complex_json_for_test):
+    expected = json.dumps(complex_json_for_test, indent=4)
+    assert op.to_json(complex_json_for_test, indent=4) == expected
 
-    # Act
-    result = op.to_json(source)
-    parsed_result = json.loads(result)
-
-    # Assert
-    assert isinstance(parsed_result, dict)
-    assert parsed_result["company"] == "TechCorp"
-    assert parsed_result["founded"] == 1995
-    assert parsed_result["active"] is True
-    
-        # Check nested 
-    assert parsed_result["address"]["street"] == "123 Tech Lane"
-    assert parsed_result["address"]["geo"]["lat"] == pytest.approx(37.7749)
-    
-        # Check array
-    assert len(parsed_result["employees"]) == 2
-    assert parsed_result["employees"][0]["name"] == "John Doe"
-    assert "Python" in parsed_result["employees"][0]["skills"]
-    assert parsed_result["employees"][1]["department"] == "Design"
-    
-        # Check conversion of tuple to list
-    assert isinstance(parsed_result["products"], list)
-    assert parsed_result["products"] == ["Software A", "Software B", "Software C"]
-    
-        # Check None value
-    assert parsed_result["partners"] is None
-
-        # Verify the entire structure matches
-    assert parsed_result == {**source, "products": list(source["products"])} #Tuples will becomes list after serialzation
-    
-def test_to_json_with_indent_parameter_should_return_indented_json():
-    #Arange
-    source = {"name": "John", "age": 30}
-    #Act
-    result = op.to_json(source, indent=4)
-    #Assert
-    assert "\n" in result
-    assert json.loads(result) == source
-
-def test_to_json_with_non_ascii_characters_ensure_ascii_true_should_escape_characters():
+def test_to_json_with_non_ascii_characters_ensure_ascii_true_should_escape_characters(): #Specific for this method
     #Arange
     source = {"greeting": "こんにちは"}
     #Act
@@ -399,7 +156,7 @@ def test_to_json_with_non_ascii_characters_ensure_ascii_true_should_escape_chara
     # Assert
     assert "\\u3053" in result #checks non ascii works correctly
 
-def test_to_json_with_non_ascii_characters_ensure_ascii_false_should_not_escape_characters():
+def test_to_json_with_non_ascii_characters_ensure_ascii_false_should_not_escape_characters(): #Specific for this method
     # Arange
     source = {"greeting": "こんにちは"}
     # Act
@@ -407,46 +164,15 @@ def test_to_json_with_non_ascii_characters_ensure_ascii_false_should_not_escape_
     # Assert
     assert "こんにちは" in result # When ensure_ascii is False, non-ASCII characters appear as is.
 
-def test_to_json_with_float_nan_should_return_NaN():
-    #Arange
-    source = {"value": math.nan}
-    #Act
-    result = op.to_json(source)
-    # Assert
-    assert "NaN" in result #json.dumps should not quote NaNs
+def test_to_json_with_special_numbers(): #Specific for this method
+    assert "NaN" in op.to_json({"value":math.nan})
+    assert "Infinity" in op.to_json({"value":math.inf})
 
-def test_to_json_with_float_inf_should_return_Infinity():
-    #Arange
-    source = {"value": math.inf}
-    #Act
-    result = op.to_json(source)
-    #Assert
-    assert "Infinity" in result
-
-def test_to_json_with_tuple_should_convert_to_list():
-    #Arange
-    source = (1, 2, 3)
-    expected = "[1, 2, 3]" # Tuples are serialized as lists.
-    #Act
-    result = op.to_json(source)
-    #Assert
-    assert result == expected
-
-def test_to_json_with_non_string_dict_keys_should_convert_keys_to_strings():
-    #Arange
-    source = {1: "one", 2: "two"}
-    #Act
-    result = op.to_json(source)
-    #Assert
-    assert json.loads(result) == {"1": "one", "2": "two"}# JSON forces dictionary keys to be strings.
-
-def test_to_json_with_custom_object_should_raise_TypeError():
+def test_to_json_with_custom_object_should_raise_TypeError(): #Specific edge case for this method
     #Arange
     class Custom:
         pass
     source = Custom()
-    #Act
-    
     #Assert
     with pytest.raises(TypeError):# Custom objects are not serializable by default.
         op.to_json(source)
@@ -530,7 +256,7 @@ def test_to_json_file_with_nested_data_should_write_valid_json(tmp_path):
 def test_to_json_file_with_empty_dict_should_write_valid_json(tmp_path):
     #Arange
     source = {}
-    file_path = tmp_path / "empty_dict.json"
+    file_path = tmp_path / "dict.json"
     expected = json.dumps(source, indent=2)
     #Act
     op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
