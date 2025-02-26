@@ -118,27 +118,26 @@ class op:
             Method to create a directory
                 Accepts: dir_name: Name of the directory
                          permits: Permission bits for the directory
-                Returns: True if the directory was created successfully, False otherwise
-                Raises: 
-                    - PermissionError: if the directory cannot be created with the given permissions
+                Returns: True if the directory is correctly created, False otherwise
         """
         if not op.path_exists(dir_name):
             os.makedirs(dir_name, permits)
+            return True
+        return False
     
     
     @ staticmethod
-    def delete_dir(dir_name):
+    def delete_dir(dir_name) -> bool:
         """
             Method to delete a directory
                 Accepts: dir_name: Name of the directory
-                Returns: True if the directory was deleted successfully, False otherwise
-                Raises:
-                    - PermissionError: if the directory cannot be deleted due to permissions
+                Returns: True if the directory was successfully deleted, False otherwise
         """
-        if not op.path_exists(dir_name):
+        try:
+            shutil.rmtree(dir_name)
+            return True
+        except Exception as e:
             return False
-        
-        shutil.rmtree(dir_name)
     
     """
     Wrappers in snake_case convention for copying files and moving them.
@@ -149,7 +148,7 @@ class op:
             Wrapper method to copy a file to a destination
                 Accepts: file_path: Source file path
                          dst: Destination file path
-                Returns: True if the file was copied successfully, False otherwise
+                Returns: Destination route after file copied
         """
         return copyfile(file_path, dst)
 
@@ -159,7 +158,7 @@ class op:
             Wrapper method to move a file to a destination
                 Accepts: file_path: Source file path
                          dst: Destination file path
-                Returns: True if the file was moved successfully, False otherwise
+                Returns: Destination rout after file moved
         """
         return move(file_path, dst)
 
@@ -174,9 +173,11 @@ class op:
                 Raises:
                     - FileNotFoundError: if the file does not exist
                     - IOError: if the file cannot be opened
-                    - PermissionError: if the file cannot be opened due to permissions
         """
-        string = open(file_path, open_mode, encoding=encoding).read()
+        if "b" in open_mode: #If reading binary, encoding arg not supported
+            string = open(file_path, open_mode).read()
+        else:
+            string = open(file_path, open_mode, encoding=encoding).read()
         return string
     
     @ staticmethod
@@ -200,7 +201,7 @@ class op:
                 Accepts: file_path: Path to the file
                 Returns: True if the file was deleted successfully, False otherwise
                 Raises:
-                - PermissionError: if the file cannot be deleted due to permissions
+                - PermissionError/IsADirectoryError: if the file cannot be deleted due to permissions or is a directory
         """
         if not op.path_exists(file_path):
             return False
@@ -260,6 +261,7 @@ class op:
                 Raises:
                 - FileNotFoundError: if the file cannot be opened
                 - PermissionError: if the file cannot be opened due to permissions
+                - ValueError: if the open mode is not valid
         """
         if(data == "" or data == None):
             return False
