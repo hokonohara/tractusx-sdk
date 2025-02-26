@@ -26,9 +26,8 @@ class ParentExample(BaseModel):
     attr1:str
     complex_attr1:list = Field(default=[{"odrl:permission":[],"odrl:prohibition":[],"odrl:obligation":[]}] )
     complex_attr2:dict = Field(default={})
-    
+
 class ChildExample(ParentExample):
     attr2:dict|str|int|list|None
     attr3:str = Field(default="application/json")
-    
     

@@ -1,6 +1,4 @@
 #################################################################################
-# Eclipse Tractus-X - Software Development KIT
-#
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -21,11 +19,12 @@
 #################################################################################
 
 
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+# Script to setup packege installation
+from setuptools import setup, find_packages
 
-## Software Development KIT specific tools
-
-from .http_tools import HttpTools
-from .operators import op
+setup(
+    name="tractusx_sdk",
+    version="0.0.1",
+    packages=find_packages(),
+    install_requires=[],
+)

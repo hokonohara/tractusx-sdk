@@ -31,5 +31,4 @@ This module contains utility functions and classes for working with the Eclipse 
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .http_tools import HttpTools
-from .operators import op
+from .auth_manager import AuthManager

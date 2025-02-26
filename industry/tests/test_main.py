@@ -22,7 +22,7 @@
 
 import pytest
 from fastapi.testclient import TestClient
-from tractusx_sdk.industry import main
+from industry import main
 
 # Set test_mode to True before running tests to skip uvicorn.run
 def set_test_mode():
