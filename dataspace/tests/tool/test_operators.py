@@ -551,9 +551,9 @@ def test_timestamp_and_file_date_unvalid_timezone_should_raise_TypeError():
     Test get_filedatetime and get_filedate with unrecognized timezone: Should raise TypeError.
     """
     with pytest.raises(TypeError):
-        op.get_filedatetime(timezone="invalid")
+        op.get_filedatetime(zone="invalid")
     with pytest.raises(TypeError):
-        op.get_filedate(timezone="invalid")
+        op.get_filedate(zone="invalid")
 
 # Function: get_path_without_file - Wrapper method - No further tests needed
 def test_get_path_with_file_should_return_its_path(tmp_path):
