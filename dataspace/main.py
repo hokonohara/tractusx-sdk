@@ -29,7 +29,6 @@ from fastapi_keycloak_middleware import get_user
 
 ## Import Library Packeges
 
-import sys
 import argparse
 from logging import config
 import logging
@@ -39,12 +38,12 @@ import urllib3
 urllib3.disable_warnings()
 logging.captureWarnings(True)
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[2]))
 
-from tractusx_sdk.dataspace.managers import AuthManager
-from tractusx_sdk.dataspace.services import EdcService
-from tractusx_sdk.dataspace.tools import op
-from tractusx_sdk.dataspace.tools import HttpTools
+
+from managers import AuthManager
+from services import EdcService
+from tools import op
+from tools import HttpTools
 
 ## Declare Global Variables
 app_configuration:dict

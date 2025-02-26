@@ -157,4 +157,3 @@ class op:
             source_object=source_object[part]
         tmp_ret=source_object
         return tmp_ret
-    

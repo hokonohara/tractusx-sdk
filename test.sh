@@ -22,5 +22,6 @@
 
 cd dataspace
 pytest
+cd ..
 cd industry
 pytest
