@@ -28,7 +28,6 @@ from fastapi_keycloak_middleware import CheckPermissions
 from fastapi_keycloak_middleware import get_user
 
 ## Import Library Packeges
-
 import sys
 import argparse
 from logging import config
@@ -39,12 +38,15 @@ import urllib3
 urllib3.disable_warnings()
 logging.captureWarnings(True)
 from pathlib import Path
-sys.path.append(str(Path(__file__).resolve().parents[2]))
+import os
 
-from tractusx_sdk.dataspace.managers import AuthManager
-from tractusx_sdk.dataspace.services import EdcService
-from tractusx_sdk.dataspace.tools import op
-from tractusx_sdk.dataspace.tools import HttpTools
+## Import paths
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+sys.dont_write_bytecode = True
+
+from dataspace.managers import AuthManager
+from dataspace.services import EdcService
+from dataspace.tools import op, HttpTools
 
 ## Declare Global Variables
 app_configuration:dict
@@ -60,8 +62,13 @@ edc_service: EdcService
 ## Create Loggin Folder
 op.make_dir("logs")
 
+# Get the absolute path of the project directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_LOG_PATH = os.path.join(BASE_DIR, "config", "logging.yml")
+CONFIG_CONFIG_PATH = os.path.join(BASE_DIR, "config", "configuration.yml")
+
 # Load the logging config file
-with open('./config/logging.yml', 'rt') as f:
+with open(CONFIG_LOG_PATH, 'rt') as f:
     # Read the yaml configuration
     log_config = yaml.safe_load(f.read())
     current_date = op.get_filedate()
@@ -70,7 +77,7 @@ with open('./config/logging.yml', 'rt') as f:
     config.dictConfig(log_config)
 
 # Load the configuation for the application
-with open('./config/configuration.yml', 'rt') as f:
+with open(CONFIG_CONFIG_PATH, 'rt') as f:
     # Read the yaml configuration
     app_configuration = yaml.safe_load(f.read())
 
