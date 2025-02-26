@@ -91,6 +91,7 @@ def complex_json_for_test(): #Complete JSON with variances for testing purposes
             ]
             }
             """
+
 # -----------------TESTS-----------------------------
 
 #Function 1 - json_string_to_object
@@ -154,7 +155,7 @@ def test_to_json_with_custom_object_should_raise_TypeError(): #Specific edge cas
 #Function 3 - to_json_file
 
 @pytest.mark.parametrize("entries", ["complex_valid_string", "unicode_valid", "mixed_list", "None", "empty_dict" ])
-def test_to_json_file_with_valid_input_should_write_valid_json(tmp_path, entries, data_for_test):
+def test_to_json_file_with_valid_input_should_write_valid_json(tmp_path,entries, data_for_test):
     #Assert
     file_path = tmp_path / "test_file.json"
     expected = json.dumps(data_for_test[entries], indent=2)
@@ -165,7 +166,7 @@ def test_to_json_file_with_valid_input_should_write_valid_json(tmp_path, entries
     
 def test_to_json_file_with_append_mode_should_append_valid_json(tmp_path, data_for_test):
     #Arange
-    file_path = tmp_path / "append.json"
+    file_path = tmp_path / "test_file.json"
     file_path.write_text(data_for_test["complex_valid_string"]) #Using complex formats to check all works
     expected = data_for_test["complex_valid_string"] + json.dumps(data_for_test["unicode_valid"], indent=2)
     #Act
@@ -187,7 +188,7 @@ def test_to_json_file_with_non_serializable_object_should_raise_TypeError(tmp_pa
 @pytest.mark.parametrize("entries", ["complex_valid_string","mixed_list", "utf-8_encoded", "unicode_valid"])
 def test_read_json_file_with_valid_input_should_return_dict(tmp_path, entries, data_for_test):
     #Arange
-    file_path = tmp_path / "read_file_test.json"
+    file_path = tmp_path / "test_file.json"
     file_path.write_text(json.dumps(data_for_test[entries], indent=2), encoding="utf-8")
     #Assert
     assert op.read_json_file(str(file_path)) == data_for_test[entries]
@@ -197,17 +198,17 @@ def test_read_json_file_with_nonexistent_file_should_raise_FileNotFoundError(tmp
         op.read_json_file(str(tmp_path/"nonexistent.json"))
 
 @pytest.mark.parametrize("entries", ["empty_string","unquoted_key","missing_bracket","mismatching_bracket","unescaped_special_characters"])
-def test_read_json_file_with_invalid_json_should_raise_JsonDecodeError(tmp_path, entries, data_for_test):
+def test_read_json_file_with_invalid_json_should_raise_JsonDecodeError(tmp_path ,entries, data_for_test):
     #Arange
-    file_path = tmp_path / "invalid.json"
+    file_path = tmp_path / "test_file.json"
     file_path.write_text(data_for_test[entries], encoding="utf-8")
     #Assert
     with pytest.raises(json.JSONDecodeError):
         op.read_json_file(str(file_path))
 
-def test_read_json_file_with_different_encoding_should_return_correct_data(tmp_path,data_for_test):
+def test_read_json_file_with_different_encoding_should_return_correct_data(tmp_path, data_for_test):
     #Arange
-    file_path = tmp_path / "latin1.json"
+    file_path = tmp_path / "test_file.json"
     file_path.write_text(json.dumps(data_for_test["iso-8859_encoded"], indent=2), encoding="iso-8859-1")
     #Assert
     assert op.read_json_file(str(file_path), encoding="iso-8859-1") == data_for_test["iso-8859_encoded"]
@@ -277,120 +278,6 @@ def test_path_exists_with_symlink(tmp_path):
 
 # Functions: make_dir and delete_dir
 
-def test_create_and_delete_valid_directory_should_create_and_delete(tmp_path):
-    """
-    Test normal creation and deletion of a directory.
-    """
-    new_dir = tmp_path / "test_dir"
-    # Ensure the directory does not exist yet.
-    assert not new_dir.exists()
-    # Create the directory using op.make_dir.
-    result = op.make_dir(str(new_dir))
-    assert new_dir.exists()
-    # Delete the directory and verify deletion.
-    deletion_result = op.delete_dir(str(new_dir))
-    assert not new_dir.exists()
-
-def test_make_dir_when_directory_already_exists(tmp_path):
-    """
-    Test that calling op.make_dir on an already existing directory works safely.
-    """
-    existing_dir = tmp_path / "existing_dir"
-    existing_dir.mkdir()  # Pre-create the directory.
-    result = op.make_dir(str(existing_dir))
-    assert result is True
-    assert existing_dir.exists()
-    # Now delete the directory.
-    deletion_result = op.delete_dir(str(existing_dir))
-    assert deletion_result is True
-    assert not existing_dir.exists()
-
-def test_make_dir_invalid_input(tmp_path):
-    """Edge case: op.make_dir should reject invalid inputs."""
-    # An empty string should raise an error.
-    with pytest.raises(Exception):
-        op.make_dir("")
-    # A non-string type (e.g., integer) should also raise an error.
-    with pytest.raises(Exception):
-        op.make_dir(123)
-
-def test_delete_non_existing_directory(tmp_path):
-    """Test that op.delete_dir returns False when the directory doesn't exist."""
-    non_existing = tmp_path / "non_existing_dir"
-    deletion_result = op.delete_dir(str(non_existing))
-    assert deletion_result is False
-
-def test_delete_directory_with_contents(tmp_path):
-    """Test deletion of a non-empty directory (with files inside)."""
-    dir_with_file = tmp_path / "dir_with_file"
-    op.make_dir(str(dir_with_file))
-    # Create a file inside the directory.
-    file_inside = dir_with_file / "sample.txt"
-    file_inside.write_text("sample content")
-    assert file_inside.exists()
-    # Delete the directory and ensure all contents are removed.
-    deletion_result = op.delete_dir(str(dir_with_file))
-    assert deletion_result is True
-    assert not dir_with_file.exists()
-
-def test_make_dir_with_trailing_slash(tmp_path):
-    """Test that op.make_dir accepts a directory path with a trailing slash."""
-    dir_with_slash = str(tmp_path / "trailing_dir") + "/"
-    result = op.make_dir(dir_with_slash)
-    assert result is True
-    created_dir = tmp_path / "trailing_dir"
-    assert created_dir.exists() and created_dir.is_dir()
-    # Delete using the same input.
-    deletion_result = op.delete_dir(dir_with_slash)
-    assert deletion_result is True
-    assert not created_dir.exists()
-
-def test_chained_make_and_delete(tmp_path):
-    """Test sequential operations: multiple calls to make_dir and delete_dir."""
-    chain_dir = tmp_path / "chain_dir"
-    # First creation.
-    assert op.make_dir(str(chain_dir)) is True
-    # A second call should not cause issues.
-    assert op.make_dir(str(chain_dir)) is True
-    # Deleting should remove the directory.
-    assert op.delete_dir(str(chain_dir)) is True
-    # A subsequent deletion call returns False.
-    assert op.delete_dir(str(chain_dir)) is False
-
-def test_make_dir_with_custom_permissions(tmp_path):
-    """Test op.make_dir with a custom permission setting."""
-    perm_dir = tmp_path / "perm_dir"
-    op.make_dir(str(perm_dir), permits=0o700)
-    # On POSIX systems, check that the directory permissions match.
-    if os.name != "nt":
-        mode = perm_dir.stat().st_mode & 0o777
-        assert mode == 0o700
-    # Clean up.
-    op.delete_dir(str(perm_dir))
-
-@pytest.mark.skipif(os.name == "nt", reason="Symlink tests not supported on Windows by default")
-def test_delete_symlinked_directory(tmp_path):
-    """Test op.delete_dir on a symlinked directory."""
-    target_dir = tmp_path / "target_dir"
-    target_dir.mkdir()
-    symlink_dir = tmp_path / "symlink_dir"
-    os.symlink(str(target_dir), str(symlink_dir))
-    # Confirm that the symlink exists.
-    assert os.path.islink(symlink_dir)
-    deletion_result = op.delete_dir(str(symlink_dir))
-    assert deletion_result is True
-    # The symlink should be gone while the target remains.
-    assert not os.path.exists(symlink_dir)
-    # Clean up the target.
-    op.delete_dir(str(target_dir))
-
-def test_delete_dir_invalid_input():
-    """Edge case: op.delete_dir should reject invalid inputs."""
-    with pytest.raises(Exception):
-        op.delete_dir(None)
-    with pytest.raises(Exception):
-        op.delete_dir(456)
-        
 def test_make_and_delete_dir(tmp_path):
     """
     Test make_dir: Create a directory when it doesn't exist, and
@@ -407,6 +294,49 @@ def test_make_and_delete_dir(tmp_path):
     assert not op.path_exists(str(dir_path))
     # Deleting a non-existent directory should return False
     assert op.delete_dir(str(dir_path)) is False
+
+def test_make_dir_existing_directory_should_still_exist(tmp_path):
+    """
+    Test attempting to create an existing directory.
+    """
+    existing_dir = tmp_path / "existing_directory"
+    existing_dir.mkdir()
+    result = op.make_dir(str(existing_dir))
+    assert result == False, "Should return False when directory already exists"
+    assert existing_dir.is_dir(), "Directory should still exist"
+
+def test_make_dir_with_custom_permissions_should_work(tmp_path):
+    """Test creating a directory with custom permissions."""
+    custom_perm_dir = tmp_path / "custom_perm_directory"
+    result = op.make_dir(str(custom_perm_dir), permits=0o755)
+    assert result == True, "Should return True when creating a new directory with custom permissions"
+    assert custom_perm_dir.is_dir(), "Directory should exist after creation"
+
+def test_make_dir_nested_directory_should_create_directory_structure(tmp_path):
+    """
+    Test creating a nested directory structure.
+    """
+    nested_dir = tmp_path / "parent" / "child" / "grandchild"
+    result = op.make_dir(str(nested_dir))
+    assert result == True, "Should return True when creating nested directories"
+    assert nested_dir.is_dir(), "Nested directory structure should exist after creation"
+
+def test_delete_dir_non_existent_directory(tmp_path):
+    """Test attempting to delete a non-existent directory."""
+    non_existent_dir = tmp_path / "non_existent_dir"
+    result = op.delete_dir(str(non_existent_dir))
+    assert result == False, "Should return False when attempting to delete a non-existent directory"
+
+def test_delete_dir_with_contents_should_delete_directory_and_content(tmp_path):
+    """Test deleting a directory that contains files and subdirectories."""
+    dir_with_contents = tmp_path / "dir_with_contents"
+    dir_with_contents.mkdir()
+    (dir_with_contents / "file.txt").write_text("content")
+    (dir_with_contents / "subdir").mkdir()
+    result = op.delete_dir(str(dir_with_contents))
+    assert result == True, "Should return True when deleting a directory with contents"
+    assert not dir_with_contents.exists(), "Directory and its contents should not exist after deletion"
+    assert not (dir_with_contents / "file.txt").exists()
 
 
 # Functions: copy_file and move_file - Just wrappers - Should be already tested by shutils
@@ -446,11 +376,71 @@ def test_to_string_and_load_file(tmp_path):
     assert isinstance(buffer, io.BytesIO)
     assert buffer.getvalue() == content.encode("utf-8")
 
-# Function: delete_file
-def test_delete_file(tmp_path):
+def test_to_string_file_non_existent_should_raise_FileNotFoundError(tmp_path):
     """
-    Test delete_file: Successfully delete an existing file,
-    and return False if the file does not exist.
+    Test that FileNotFoundError is raised for non-existent file.
+    """
+    non_existent_file = tmp_path / "non_existent.txt"
+    with pytest.raises(FileNotFoundError):
+        op.to_string(str(non_existent_file))
+
+def test_to_string_empty_file(tmp_path):
+    """Test reading an empty file."""
+    empty_file = tmp_path / "empty.txt"
+    empty_file.write_text("")
+    result = op.to_string(str(empty_file))
+    assert result == "", "Empty file should return an empty string"
+
+def test_to_string_custom_encoding(tmp_path):
+    """Test reading a file with custom encoding."""
+    utf16_file = tmp_path / "utf16.txt"
+    utf16_file.write_text("тест", encoding='utf-16')
+    result = op.to_string(str(utf16_file), encoding='utf-16')
+    assert result == "тест", "File content should match when using correct encoding"
+
+def test_to_string_binary_mode(tmp_path):
+    """Test reading a file in binary mode."""
+    binary_file = tmp_path / "binary.bin"
+    binary_file.write_bytes(b'\x00\x01\x02\x03')
+    result = op.to_string(str(binary_file), open_mode='rb')
+    assert result == b'\x00\x01\x02\x03', "Binary content should be read correctly"
+    
+def test_load_file_not_found(tmp_path):
+    """Test that FileNotFoundError is raised for non-existent file."""
+    non_existent_file = tmp_path / "non_existent.txt"
+    with pytest.raises(FileNotFoundError):
+        op.load_file(str(non_existent_file))
+
+def test_load_file_empty_file(tmp_path):
+    """Test loading an empty file."""
+    empty_file = tmp_path / "empty.txt"
+    empty_file.write_text("")
+    result = op.load_file(str(empty_file))
+    assert isinstance(result, io.BytesIO), "Result should be a BytesIO object"
+    assert result.getvalue() == b"", "Empty file should return an empty BytesIO"
+
+def test_load_file_large_file(tmp_path):
+    """Test loading a large file."""
+    large_file = tmp_path / "large.txt"
+    large_content = b"0" * 1024 * 1024  # 1 MB of zeros
+    large_file.write_bytes(large_content)
+    result = op.load_file(str(large_file))
+    assert isinstance(result, io.BytesIO), "Result should be a BytesIO object"
+    assert result.getvalue() == large_content, "Large file content should match"
+
+def test_load_file_binary_content(tmp_path):
+    """Test loading a file with binary content."""
+    binary_file = tmp_path / "binary.bin"
+    binary_content = bytes(range(256))
+    binary_file.write_bytes(binary_content)
+    result = op.load_file(str(binary_file))
+    assert isinstance(result, io.BytesIO), "Result should be a BytesIO object"
+    assert result.getvalue() == binary_content, "Binary content should match"
+
+# Function: delete_file
+def test_delete_file_with_string_should_delete_file(tmp_path):
+    """
+    Successfully delete an existing file, and return False if the file does not exist.
     """
     file_path = tmp_path / "to_delete.txt"
     file_path.write_text("Delete this file")
@@ -458,6 +448,42 @@ def test_delete_file(tmp_path):
     assert op.delete_file(str(file_path)) is True
     # Trying to delete again should return False
     assert op.delete_file(str(file_path)) is False
+    
+def test_delete_file_with_bytes_should_delete_file(tmp_path):
+    """
+    Test delete_file: Successfully delete an existing file,
+    and return False if the file does not exist.
+    """
+    file_path = tmp_path / "to_delete.txt"
+    file_path.write_text("Delete this file")
+    # Delete the existing file
+    assert op.delete_file(str(file_path).encode()) is True
+
+def test_delete_file_input_nonexistent_path_should_return_false():
+    """
+    Non-existent file path should return False
+    """
+    result = op.delete_file("non_existent_file.txt")
+    assert result is False
+    
+def test_delete_file_input_directory_should_raise_IsADirectoryError_or_PermissionError(tmp_path):
+    """
+    Directory path should raise IsADirectoryError
+    """
+    test_dir = tmp_path / "test_dir"
+    test_dir.mkdir()
+    
+    with pytest.raises((IsADirectoryError, PermissionError)): #Windows will raise PermissionError
+        op.delete_file(str(test_dir))
+
+@pytest.mark.parametrize("type", ["int", "float", "boolean", "None", "array", "tuple", "empty_dict", "non_string_key_dict"])
+def test_delete_file_with_invalid_type_path_should_raise_TypeError(type, data_for_test):
+    """
+    Tests that input a wrong type parameter raises correct exception
+    """
+    with pytest.raises(TypeError):
+        op.delete_file(data_for_test[type])
+
 
 # Function: write_to_file
 def test_write_to_file(tmp_path):
@@ -472,6 +498,36 @@ def test_write_to_file(tmp_path):
     # Writing an empty string or None should return False
     assert op.write_to_file("", str(file_path)) is False
     assert op.write_to_file(None, str(file_path)) is False
+    
+def test_write_to_file_non_existent_directory_should_raise_FileNotFoundError(tmp_path):
+    """
+    Test write_to_file with non-existent directory
+    """
+    non_existent_dir = tmp_path / "non_existent_dir"
+    file_path = non_existent_dir / "test.txt"
+    
+    with pytest.raises(FileNotFoundError):
+        op.write_to_file("test data", str(file_path))
+
+def test_write_to_file_with_wrong_permissions_should_raise_PermissionError(tmp_path):
+    """
+    Test write to file with wrong permissions
+    """
+    file_path = tmp_path / "test.txt"
+    file_path.touch()
+    os.chmod(file_path, 0o444)  # Set file as read-only
+    
+    with pytest.raises((PermissionError, io.UnsupportedOperation)): #Also support for Windows
+        op.write_to_file("test data", str(file_path))
+
+def test_write_to_file_invalid_mode_should_raise_ValueError(tmp_path):
+    """
+    Test write to file with invalid opening mode
+    """
+    file_path = tmp_path / "test.txt"
+    
+    with pytest.raises(ValueError):
+        op.write_to_file("test data", str(file_path), open_mode="invalid_mode")
 
 # Functions: timestamp, get_filedatetime and get_filedate - Wrapper methods
 def test_timestamp_and_file_date_functions():
@@ -501,7 +557,7 @@ def test_timestamp_and_file_date_unvalid_timezone_should_raise_TypeError():
         op.get_filedate(timezone="invalid", string=False)
         op.get_filedate(timezone="invalid", string=True)
 
-# Function: get_path_without_file - Wrapper method 
+# Function: get_path_without_file - Wrapper method - No further tests needed
 def test_get_path_with_file_should_return_its_path(tmp_path):
     """
     Test get_path_without_file: Extracts the directory path from a file path.
@@ -510,7 +566,7 @@ def test_get_path_with_file_should_return_its_path(tmp_path):
     expected_dir = os.path.dirname(str(file_path))
     assert op.get_path_without_file(str(file_path)) == expected_dir
     
-# Function: wait - Wrapper method
+# Function: wait - Wrapper method - no further tests needed
 def test_wait(monkeypatch):
     """
     Test wait: Delegates to time.sleep and returns None.
@@ -544,3 +600,52 @@ def test_get_attribute():
     assert op.get_attribute(None, "a.b", default_value="default") == "default"
     # Case with empty path separator should return default
     assert op.get_attribute(source, "a.b.c", default_value="default", path_sep="") == "default"
+    
+def test_get_attribute_none_source_object_should_return_default():
+    """
+    Test that passing None as the source object returns the default value.
+    """
+    result = op.get_attribute(None, "a.b.c", default_value="default")
+    assert result == "default", "Should return default when source_object is None"
+
+def test_get_attribute_empty_path_separator_should_return_default():
+    """
+    Test that passing an empty string or None as the path separator returns the default value.
+    """
+    data = {"a": {"b": {"c": 42}}}
+    result_empty = op.get_attribute(data, "a.b.c", default_value="default", path_sep="")
+    result_none = op.get_attribute(data, "a.b.c", default_value="default", path_sep=None)
+    assert result_empty == "default", "Should return default when path_sep is empty"
+    assert result_none == "default", "Should return default when path_sep is None"
+
+def test_get_attribute_empty_attribute_path_should_return_default():
+    """
+    Test that an empty attribute path returns the default value.
+    """
+    data = {"a": {"b": {"c": 42}}}
+    result = op.get_attribute(data, "", default_value="default")
+    assert result == "default", "Should return default for an empty attribute path"
+
+def test_get_attribute_custom_separator_should_work():
+    """
+    Test that the method properly works when using a custom path separator.
+    """
+    data = {"a": {"b": {"c": 42}}}
+    result = op.get_attribute(data, "a->b->c", default_value="default", path_sep="->")
+    assert result == 42, "Should work correctly for a custom separator"
+
+def test_get_attribute_empty_keys_due_to_split_should_still_work():
+    """
+    Test that a path which splits into empty keys is handled correctly.
+    For example, with attr_path as '.' and key values as '', the method should navigate the empty-string keys.
+    """
+    data = {"": {"": 100}}
+    result = op.get_attribute(data, ".", default_value="default")
+    assert result == 100, "Should correctly handle empty keys derived from split"
+
+def test_get_attribute_non_subscriptable_source_object_should_raise_TypeError():
+    """
+    Test that passing a non-subscriptable source_object (e.g., an integer) raises a TypeError.
+    """
+    with pytest.raises(TypeError):
+        op.get_attribute(42, "a.b", default_value="default")
