@@ -23,18 +23,23 @@
 # -----------------IMPORTS---------------------------
 
 import math
-import os
-import pytest
 import json
+import os
+import sys
+import time
+import io
 import datetime
+import pytest
+from datetime import timezone
+from shutil import copyfile
 from dataspace.tools import op
 
 #------------TEST VARIABLES--------------------------
 
 @pytest.fixture
-def simple_data_for_test(): #Simple data examples
+def data_for_test(complex_json_for_test): #Simple data examples
     return {
-        "string": "",
+        "empty_string": "",
         "bytes": bytes(),
         "bytearray": bytearray(),
         "string_whitespace": " ",
@@ -44,12 +49,25 @@ def simple_data_for_test(): #Simple data examples
         "boolean": False,
         "None": None,
         "array": [1, 2, 3],
-        "dict": {},
+        "empty_dict": {},
         "float": 0.0,
         "set": set(),
         "tuple": tuple(),
         "date": datetime.datetime.now(),
+        "mixed_list": [1, "two", 3.0, True, None],
+        "non_ASCII": "こんにちは",
+        "utf-8_encoded": '{"saludo": "¡Hola, mundo!", "emoji": "😊"}',
+        "iso-8859_encoded":'{"mensaje": "¡Olé! – ñandú"}',
         "non_string_key_dict": {1: "one", 2: "two"},
+        "extra_comma" : '{"name": "John", "age": 30,}',
+        "unquoted_key" : '{name: "John", age: 30}',
+        "missing_bracket" : '{"name": "John", "age": 30',
+        "mismatching_bracket" : '{"name": "John"} "age": 30}',
+        "unescaped_special_characters" : '{"name": "John \n Doe"}',
+        "complex_valid_string":  complex_json_for_test,
+        "complex_valid_bytes": complex_json_for_test.encode('utf-8'), #converts empty_string version to bytes
+        "complex_valid_bytearray": bytearray(complex_json_for_test, 'utf-8'), #converts empty_string version to bytearray
+        "unicode_valid": '{"name": "Jöhn", "age": 30}',
     }
     
 @pytest.fixture
@@ -73,72 +91,40 @@ def complex_json_for_test(): #Complete JSON with variances for testing purposes
             ]
             }
             """
-
-@pytest.fixture
-def json_data_for_test(complex_json_for_test): #Json data for testing purposes
-    return{
-        "extra_comma" : '{"name": "John", "age": 30,}',
-        "unquoted_key" : '{name: "John", age: 30}',
-        "missing_bracket" : '{"name": "John", "age": 30',
-        "mismatching_bracket" : '{"name": "John"} "age": 30}',
-        "unescaped_special_characters" : '{"name": "John \n Doe"}',
-        "complex_valid_string":  complex_json_for_test,
-        "complex_valid_bytes": complex_json_for_test.encode('utf-8'), #converts string version to bytes
-        "complex_valid_bytearray": bytearray(complex_json_for_test, 'utf-8'), #converts string version to bytearray
-        "unicode_valid": '{"name": "Jöhn", "age": 30}'
-    }
-
-
 # -----------------TESTS-----------------------------
 
 #Function 1 - json_string_to_object
 
-@pytest.mark.parametrize("type", ["string", "bytes", "bytearray", "string_whitespace", "bytes_whitespace", "bytearray_whitespace"])
-def test_json_string_to_object_with_empty_valid_input_should_return_JSONDecodeError(type, simple_data_for_test):
-    value = simple_data_for_test[type] #Obtain the empty values
+@pytest.mark.parametrize("type", ["empty_string", "bytes", "bytearray", "string_whitespace", "bytes_whitespace", "bytearray_whitespace"])
+def test_json_string_to_object_with_empty_valid_input_should_return_JSONDecodeError(type, data_for_test):
     with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(value) 
+        op.json_string_to_object(data_for_test[type]) 
         
-@pytest.mark.parametrize("type", ["int", "boolean", "None", "array", "dict", "float", "set", "tuple", "date"])
-def test_json_string_to_object_with_invalid_input_should_return_TypeError(type, simple_data_for_test):
-    value = simple_data_for_test[type] #Obtain the empty values
+@pytest.mark.parametrize("type", ["int", "boolean", "None", "array", "empty_dict", "float", "set", "tuple", "date"])
+def test_json_string_to_object_with_invalid_input_should_return_TypeError(type, data_for_test):
     with pytest.raises(TypeError):
-        op.json_string_to_object(value) 
+        op.json_string_to_object(data_for_test[type]) 
                              
 @pytest.mark.parametrize("entries", ["extra_comma","unquoted_key","missing_bracket","unescaped_special_characters"])
-def test_json_string_to_object_with_invalid_JSON_format_should_return_JSONDecodeError(entries,json_data_for_test):
-    value = json_data_for_test[entries]
+def test_json_string_to_object_with_invalid_JSON_format_should_return_JSONDecodeError(entries,data_for_test):
     with pytest.raises(json.JSONDecodeError):
-        op.json_string_to_object(value)
+        op.json_string_to_object(data_for_test[entries])
         
 @pytest.mark.parametrize("entries", ["complex_valid_string","complex_valid_bytes", "complex_valid_bytearray", "unicode_valid"])
-def test_json_string_to_object_with_valid_format_should_return_valid_JSON(entries,json_data_for_test):
-    expected = json.loads(json_data_for_test[entries])
-    assert op.json_string_to_object(json_data_for_test[entries]) == expected
+def test_json_string_to_object_with_valid_format_should_return_valid_JSON(entries,data_for_test):
+    expected = json.loads(data_for_test[entries])
+    assert op.json_string_to_object(data_for_test[entries]) == expected
 
 #Function 2 - to_json
 
-@pytest.mark.parametrize("type", ["string", "int", "float", "boolean", "None", "array", "tuple", "dict", "non_string_key_dict"])
-def test_to_json_with_serializable_input_should_return_valid_json(type,simple_data_for_test):
-    value = simple_data_for_test[type]
-    assert op.to_json(value) == json.dumps(simple_data_for_test[type])
+@pytest.mark.parametrize("type", ["empty_string", "int", "float", "boolean", "None", "array", "tuple", "empty_dict", "non_string_key_dict"])
+def test_to_json_with_serializable_input_should_return_valid_json(type,data_for_test):
+    assert op.to_json(data_for_test[type]) == json.dumps(data_for_test[type])
     
 @pytest.mark.parametrize("type", ["bytes", "bytearray", "set", "date"])
-def test_to_json_with_non_serializable_input_should_return_TypeError(type,simple_data_for_test):
+def test_to_json_with_non_serializable_input_should_return_TypeError(type,data_for_test):
     with pytest.raises(TypeError):
-        op.to_json(simple_data_for_test[type])
-
-    #Arange
-    source_true = True
-    expected_true = "true"
-    source_false = False
-    expected_false = "false"
-    #Act
-    result_true = op.to_json(source_true)
-    result_false = op.to_json(source_false)
-    #Assert
-    assert result_true == expected_true
-    assert result_false == expected_false
+        op.to_json(data_for_test[type])
 
 def test_to_json_with_complex_data_should_return_valid_json(complex_json_for_test):
     expected = json.dumps(complex_json_for_test)
@@ -148,21 +134,9 @@ def test_to_json_with_indent_parameter_should_return_indented_json(complex_json_
     expected = json.dumps(complex_json_for_test, indent=4)
     assert op.to_json(complex_json_for_test, indent=4) == expected
 
-def test_to_json_with_non_ascii_characters_ensure_ascii_true_should_escape_characters(): #Specific for this method
-    #Arange
-    source = {"greeting": "こんにちは"}
-    #Act
-    result = op.to_json(source, ensure_ascii=True)
-    # Assert
-    assert "\\u3053" in result #checks non ascii works correctly
-
-def test_to_json_with_non_ascii_characters_ensure_ascii_false_should_not_escape_characters(): #Specific for this method
-    # Arange
-    source = {"greeting": "こんにちは"}
-    # Act
-    result = op.to_json(source, ensure_ascii=False)
-    # Assert
-    assert "こんにちは" in result # When ensure_ascii is False, non-ASCII characters appear as is.
+def test_to_json_with_non_ascii_characters_ensure_ascii_option_works(data_for_test): #Specific for this method
+    assert "\\u3053" in op.to_json(data_for_test["non_ASCII"], ensure_ascii=True)
+    assert "こんにちは" in op.to_json(data_for_test["non_ASCII"], ensure_ascii=False)
 
 def test_to_json_with_special_numbers(): #Specific for this method
     assert "NaN" in op.to_json({"value":math.nan})
@@ -179,346 +153,394 @@ def test_to_json_with_custom_object_should_raise_TypeError(): #Specific edge cas
 
 #Function 3 - to_json_file
 
-def test_to_json_file_with_simple_dict_should_write_valid_json(tmp_path):
-    #Arange
-    source = {"name": "Alice", "age": 30}
-    file_path = tmp_path / "simple_dict.json"
-    expected = json.dumps(source, indent=2)
-    #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
+@pytest.mark.parametrize("entries", ["complex_valid_string", "unicode_valid", "mixed_list", "None", "empty_dict" ])
+def test_to_json_file_with_valid_input_should_write_valid_json(tmp_path, entries, data_for_test):
     #Assert
-    content = file_path.read_text()
-    assert content == expected
-
-def test_to_json_file_with_list_should_write_valid_json(tmp_path):
-    #Arange
-    source = [1, "two", 3.0, True, None]
-    file_path = tmp_path / "list.json"
-    expected = json.dumps(source, indent=2)
+    file_path = tmp_path / "test_file.json"
+    expected = json.dumps(data_for_test[entries], indent=2)
     #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
-    #Assert.
-    content = file_path.read_text()
-    assert content == expected
-
-def test_to_json_file_with_none_should_write_valid_json(tmp_path):
-    #Arange
-    source = None
-    file_path = tmp_path / "none.json"
-    expected = json.dumps(source, indent=2) # "null"
-    #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
+    op.to_json_file(source_object=data_for_test[entries], json_file_path=str(file_path), file_open_mode="w", indent=2)
     #Assert
-    content = file_path.read_text()
-    assert content == expected
-
-def test_to_json_file_with_nested_data_should_write_valid_json(tmp_path):
+    assert file_path.read_text() == expected
+    
+def test_to_json_file_with_append_mode_should_append_valid_json(tmp_path, data_for_test):
     #Arange
-    source = {
-        "company": "TechCorp",
-        "founded": 1995,
-        "active": True,
-        "address": {
-            "street": "123 Tech Lane",
-            "city": "San Francisco",
-            "zip": "94122",
-            "geo": {"lat": 37.7749, "lng": -122.4194}
-        },
-        "employees": [
-            {
-                "id": 1,
-                "name": "John Doe",
-                "age": 35,
-                "department": "Engineering",
-                "skills": ["Python", "Java", "Docker"],
-                "projects": ["Alpha", "Beta"]
-            },
-            {
-                "id": 2,
-                "name": "Jane Smith",
-                "age": 28,
-                "department": "Design",
-                "skills": ["UI/UX", "Sketch", "Photoshop"],
-                "projects": ["Gamma"]
-            }
-        ],
-        "products": ("Software A", "Software B", "Software C"), # tuple, will be serialized as a JSON array (list)
-        "partners": None
-    }
-    file_path = tmp_path / "nested.json"
-    expected = json.dumps(source, indent=2)
-    #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
-    #Assert
-    content = file_path.read_text()
-    assert json.loads(content) == json.loads(expected)
-
-def test_to_json_file_with_empty_dict_should_write_valid_json(tmp_path):
-    #Arange
-    source = {}
-    file_path = tmp_path / "dict.json"
-    expected = json.dumps(source, indent=2)
-    #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
-    #Assert: An empty dictionary is correctly serialized.
-    content = file_path.read_text()
-    assert content == expected
-
-def test_to_json_file_with_non_ascii_characters_should_write_valid_json(tmp_path):
-    #Arange
-    source = {"greeting": "こんにちは"} # Non-ASCII text
-    file_path = tmp_path / "non_ascii.json"
-    expected = json.dumps(source, indent=2)
-    #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
-    #Assert
-    content = file_path.read_text()
-    assert content == expected #Ensure non-ASCII characters are serialized as expected (escaped if ensure_ascii is True).
-
-def test_to_json_file_with_append_mode_should_append_valid_json(tmp_path):
-    #Arange
-    source = {"appended": True}
     file_path = tmp_path / "append.json"
-    initial_content = "Existing Content\n"
-    file_path.write_text(initial_content)
-    expected = initial_content + json.dumps(source, indent=2)
+    file_path.write_text(data_for_test["complex_valid_string"]) #Using complex formats to check all works
+    expected = data_for_test["complex_valid_string"] + json.dumps(data_for_test["unicode_valid"], indent=2)
     #Act
-    op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="a", indent=2)
+    op.to_json_file(source_object=data_for_test["unicode_valid"], json_file_path=str(file_path), file_open_mode="a", indent=2)
     #Assert
-    content = file_path.read_text()
-    assert content == expected #The JSON data should be appended after the initial content.
+    assert file_path.read_text() == expected #The JSON data should be appended after the initial content.
 
-def test_to_json_file_with_invalid_file_mode_should_raise_exception(tmp_path):
-    #Arange
-    source = {"error": "test"}
-    file_path = tmp_path / "invalid_mode.json"
-    #Act
-    
-    # Assert
+def test_to_json_file_with_invalid_file_mode_should_raise_ValueError(tmp_path):
     with pytest.raises(ValueError): #  An invalid file mode should trigger an exception when opening the file.
-        op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="invalid", indent=2)
+        op.to_json_file(source_object="", json_file_path=str(tmp_path), file_open_mode="invalid", indent=2)
 
-def test_to_json_file_with_non_serializable_object_should_raise_type_error(tmp_path):
-    #Arange
-    source = {"non_serializable": lambda x: x} # Lambda functions cannot be JSON serialized.
-    file_path = tmp_path / "non_serializable.json"
-    #Act
-    
-    #Assert
+@pytest.mark.parametrize("entries", ["bytes", "bytearray", "set", "date"])
+def test_to_json_file_with_non_serializable_object_should_raise_TypeError(tmp_path, entries, data_for_test):
     with pytest.raises(TypeError):
-        op.to_json_file(source_object=source, json_file_path=str(file_path), file_open_mode="w", indent=2)
+        op.to_json_file(source_object=data_for_test[entries], json_file_path=str(tmp_path/"non_serializable.json"), file_open_mode="w", indent=2)
 
 #Function 4 - read_json_file
 
-def test_read_json_file_with_valid_dict_should_return_dict(tmp_path):
+@pytest.mark.parametrize("entries", ["complex_valid_string","mixed_list", "utf-8_encoded", "unicode_valid"])
+def test_read_json_file_with_valid_input_should_return_dict(tmp_path, entries, data_for_test):
     #Arange
-    source = {"name": "John", "age": 30}
-    file_path = tmp_path / "valid_dict.json"
-    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
-    #Act
-    result = op.read_json_file(str(file_path))
+    file_path = tmp_path / "read_file_test.json"
+    file_path.write_text(json.dumps(data_for_test[entries], indent=2), encoding="utf-8")
     #Assert
-    assert result == source
-
-def test_read_json_file_with_mixed_list_should_return_valid_list(tmp_path):
-    #Arange
-    source = [1, 2, 3, "four", True, None]
-    file_path = tmp_path / "valid_list.json"
-    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
-    #Act
-    result = op.read_json_file(str(file_path))
-    #Assert
-    assert result == source
-
-def test_read_json_file_with_nested_data_should_return_nested_structure(tmp_path):
-    #Arange
-    source = {
-        "company": "TechCorp",
-        "employees": [
-            {"id": 1, "name": "John Doe", "skills": ["Python", "Java"]},
-            {"id": 2, "name": "Jane Smith", "skills": ["UI/UX", "Design"]}
-        ],
-        "active": True
-    }
-    file_path = tmp_path / "nested.json"
-    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
-    #Act
-    result = op.read_json_file(str(file_path))
-    #Assert
-    assert result == source
-
-def test_read_json_file_with_utf8_encoding_should_return_correct_characters(tmp_path):
-    #Arange
-    source = {"saludo": "¡Hola, mundo!", "emoji": "😊"}
-    file_path = tmp_path / "utf8.json"
-    file_path.write_text(json.dumps(source, indent=2), encoding="utf-8")
-    #Act
-    result = op.read_json_file(str(file_path), encoding="utf-8")
-    #Assert
-    assert result == source
+    assert op.read_json_file(str(file_path)) == data_for_test[entries]
 
 def test_read_json_file_with_nonexistent_file_should_raise_FileNotFoundError(tmp_path):
-    #Arange
-    file_path = tmp_path / "nonexistent.json"
-    #Act
-    
-    #Assert
     with pytest.raises(FileNotFoundError):
-        op.read_json_file(str(file_path))
+        op.read_json_file(str(tmp_path/"nonexistent.json"))
 
-def test_read_json_file_with_invalid_json_should_raise_JsonDecodeError(tmp_path):
+@pytest.mark.parametrize("entries", ["empty_string","unquoted_key","missing_bracket","mismatching_bracket","unescaped_special_characters"])
+def test_read_json_file_with_invalid_json_should_raise_JsonDecodeError(tmp_path, entries, data_for_test):
     #Arange
     file_path = tmp_path / "invalid.json"
-    file_path.write_text("This is not valid JSON", encoding="utf-8")
-    #Act
-    
+    file_path.write_text(data_for_test[entries], encoding="utf-8")
     #Assert
     with pytest.raises(json.JSONDecodeError):
         op.read_json_file(str(file_path))
 
-def test_read_json_file_with_empty_file_should_raise_JsonDecodeError(tmp_path):
+def test_read_json_file_with_different_encoding_should_return_correct_data(tmp_path,data_for_test):
     #Arange
-    file_path = tmp_path / "empty.json"
-    file_path.write_text("", encoding="utf-8")
-    #Act
-    
-    #Assert
-    with pytest.raises(json.JSONDecodeError):
-        op.read_json_file(str(file_path))
-
-def test_read_json_file_with_different_encoding_should_return_correct_data(tmp_path):
-    #Arange
-    source = {"mensaje": "¡Olé! – ñandú"}
     file_path = tmp_path / "latin1.json"
-    file_path.write_text(json.dumps(source, indent=2), encoding="iso-8859-1")
-    #Act
-    result = op.read_json_file(str(file_path), encoding="iso-8859-1")
+    file_path.write_text(json.dumps(data_for_test["iso-8859_encoded"], indent=2), encoding="iso-8859-1")
     #Assert
-    assert result == source
+    assert op.read_json_file(str(file_path), encoding="iso-8859-1") == data_for_test["iso-8859_encoded"]
 
 #Function 5 - path_exists
 
-def test_path_exists_with_existing_file_should_return_true(tmp_path):
-    #Arange
+def test_path_exists_file(tmp_path):
+    """
+    Test path_exists: Existing file returns True.
+    """
     file = tmp_path / "existing.txt"
     file.write_text("Test content")
-    #Act
-    result = op.path_exists(str(file))
-    #Assert
-    assert result is True
+    assert op.path_exists(str(file)) is True
 
-def test_path_exists_with_nonexistent_file_should_return_false(tmp_path):
-    #Arange
+def test_path_exists_nonexistent(tmp_path):
+    """
+    Test path_exists: Nonexistent file returns False.
+    """
     file = tmp_path / "nonexistent.txt"
-    #Act
-    result = op.path_exists(str(file))
-    #Assert
-    assert result is False
+    assert op.path_exists(str(file)) is False
 
-def test_path_exists_with_existing_directory_should_return_true(tmp_path):
-    #Arange
+def test_path_exists_directory(tmp_path):
+    """
+    Test path_exists: Existing directory returns True.
+    """
     directory = tmp_path / "subdir"
     directory.mkdir()
-    #Act
-    result = op.path_exists(str(directory))
-    #Assert
-    assert result is True
+    assert op.path_exists(str(directory)) is True
 
-def test_path_exists_with_relative_path_should_return_true(tmp_path, monkeypatch):
-    #Arange
+def test_path_exists_relative_path(tmp_path, monkeypatch):
+    """
+    Test path_exists: Relative path is handled correctly.
+    """
     file = tmp_path / "relative.txt"
     file.write_text("Relative file content")
     monkeypatch.chdir(tmp_path)
-    relative_path = "relative.txt"
-    #Act
-    result = op.path_exists(relative_path)
-    #Assert
-    assert result is True
+    assert op.path_exists("relative.txt") is True
 
-def test_path_exists_with_directory_trailing_slash_should_return_true(tmp_path):
-    #Arange
+def test_path_exists_trailing_slash(tmp_path):
+    """
+    Test path_exists: Directory path with a trailing separator returns True.
+    """
     directory = tmp_path / "dir_with_slash"
     directory.mkdir()
     path_with_slash = str(directory) + os.sep
-    #Act
-    result = op.path_exists(path_with_slash)
-    #Assert
-    assert result is True
+    assert op.path_exists(path_with_slash) is True
 
-def test_path_exists_with_None_input_should_raise_TypeError():
-    #Arange
-    invalid_input = None
-    #Act
-     
-    #Assert
+def test_path_exists_with_none_should_raise_TypeError():
+    """
+    Test path_exists: Passing None as input should raise TypeError.
+    """
     with pytest.raises(TypeError):
-        op.path_exists(invalid_input)
-        
-#Execute with privileges in some systems to ensure that the test passes, otherwise skipped
-def test_path_exists_with_symbolic_link_should_return_true(tmp_path):
-    #Arange
+        op.path_exists(None)
+
+def test_path_exists_with_symlink(tmp_path):
+    """
+    Test path_exists: Symbolic link to an existing file returns True.
+    """
     target_file = tmp_path / "target.txt"
     target_file.write_text("Target content")
     symlink_file = tmp_path / "symlink.txt"
     try:
         os.symlink(str(target_file), str(symlink_file))
-    except (AttributeError, NotImplementedError, OSError): #if platform doesn't support symbolic links
-        pytest.skip("Symlink not supported on this platform")
-    #Act
-    result = op.path_exists(str(symlink_file))
-    #Assert
+    except (AttributeError, NotImplementedError, OSError):
+        pytest.skip("Symlink not supported or not enough privileges to execute test")
+    assert op.path_exists(str(symlink_file)) is True
+
+# Functions: make_dir and delete_dir
+
+def test_create_and_delete_valid_directory_should_create_and_delete(tmp_path):
+    """
+    Test normal creation and deletion of a directory.
+    """
+    new_dir = tmp_path / "test_dir"
+    # Ensure the directory does not exist yet.
+    assert not new_dir.exists()
+    # Create the directory using op.make_dir.
+    result = op.make_dir(str(new_dir))
+    assert new_dir.exists()
+    # Delete the directory and verify deletion.
+    deletion_result = op.delete_dir(str(new_dir))
+    assert not new_dir.exists()
+
+def test_make_dir_when_directory_already_exists(tmp_path):
+    """
+    Test that calling op.make_dir on an already existing directory works safely.
+    """
+    existing_dir = tmp_path / "existing_dir"
+    existing_dir.mkdir()  # Pre-create the directory.
+    result = op.make_dir(str(existing_dir))
     assert result is True
+    assert existing_dir.exists()
+    # Now delete the directory.
+    deletion_result = op.delete_dir(str(existing_dir))
+    assert deletion_result is True
+    assert not existing_dir.exists()
 
-#Function 6 - make_dir
+def test_make_dir_invalid_input(tmp_path):
+    """Edge case: op.make_dir should reject invalid inputs."""
+    # An empty string should raise an error.
+    with pytest.raises(Exception):
+        op.make_dir("")
+    # A non-string type (e.g., integer) should also raise an error.
+    with pytest.raises(Exception):
+        op.make_dir(123)
+
+def test_delete_non_existing_directory(tmp_path):
+    """Test that op.delete_dir returns False when the directory doesn't exist."""
+    non_existing = tmp_path / "non_existing_dir"
+    deletion_result = op.delete_dir(str(non_existing))
+    assert deletion_result is False
+
+def test_delete_directory_with_contents(tmp_path):
+    """Test deletion of a non-empty directory (with files inside)."""
+    dir_with_file = tmp_path / "dir_with_file"
+    op.make_dir(str(dir_with_file))
+    # Create a file inside the directory.
+    file_inside = dir_with_file / "sample.txt"
+    file_inside.write_text("sample content")
+    assert file_inside.exists()
+    # Delete the directory and ensure all contents are removed.
+    deletion_result = op.delete_dir(str(dir_with_file))
+    assert deletion_result is True
+    assert not dir_with_file.exists()
+
+def test_make_dir_with_trailing_slash(tmp_path):
+    """Test that op.make_dir accepts a directory path with a trailing slash."""
+    dir_with_slash = str(tmp_path / "trailing_dir") + "/"
+    result = op.make_dir(dir_with_slash)
+    assert result is True
+    created_dir = tmp_path / "trailing_dir"
+    assert created_dir.exists() and created_dir.is_dir()
+    # Delete using the same input.
+    deletion_result = op.delete_dir(dir_with_slash)
+    assert deletion_result is True
+    assert not created_dir.exists()
+
+def test_chained_make_and_delete(tmp_path):
+    """Test sequential operations: multiple calls to make_dir and delete_dir."""
+    chain_dir = tmp_path / "chain_dir"
+    # First creation.
+    assert op.make_dir(str(chain_dir)) is True
+    # A second call should not cause issues.
+    assert op.make_dir(str(chain_dir)) is True
+    # Deleting should remove the directory.
+    assert op.delete_dir(str(chain_dir)) is True
+    # A subsequent deletion call returns False.
+    assert op.delete_dir(str(chain_dir)) is False
+
+def test_make_dir_with_custom_permissions(tmp_path):
+    """Test op.make_dir with a custom permission setting."""
+    perm_dir = tmp_path / "perm_dir"
+    op.make_dir(str(perm_dir), permits=0o700)
+    # On POSIX systems, check that the directory permissions match.
+    if os.name != "nt":
+        mode = perm_dir.stat().st_mode & 0o777
+        assert mode == 0o700
+    # Clean up.
+    op.delete_dir(str(perm_dir))
+
+@pytest.mark.skipif(os.name == "nt", reason="Symlink tests not supported on Windows by default")
+def test_delete_symlinked_directory(tmp_path):
+    """Test op.delete_dir on a symlinked directory."""
+    target_dir = tmp_path / "target_dir"
+    target_dir.mkdir()
+    symlink_dir = tmp_path / "symlink_dir"
+    os.symlink(str(target_dir), str(symlink_dir))
+    # Confirm that the symlink exists.
+    assert os.path.islink(symlink_dir)
+    deletion_result = op.delete_dir(str(symlink_dir))
+    assert deletion_result is True
+    # The symlink should be gone while the target remains.
+    assert not os.path.exists(symlink_dir)
+    # Clean up the target.
+    op.delete_dir(str(target_dir))
+
+def test_delete_dir_invalid_input():
+    """Edge case: op.delete_dir should reject invalid inputs."""
+    with pytest.raises(Exception):
+        op.delete_dir(None)
+    with pytest.raises(Exception):
+        op.delete_dir(456)
+        
+def test_make_and_delete_dir(tmp_path):
+    """
+    Test make_dir: Create a directory when it doesn't exist, and
+    delete_dir: Remove the directory correctly.
+    """
+    dir_path = tmp_path / "new_dir"
+    # Ensure the directory does not exist
+    if op.path_exists(str(dir_path)):
+        op.delete_dir(str(dir_path))
+    op.make_dir(str(dir_path))
+    assert os.path.isdir(str(dir_path))
+    # Delete the directory
+    op.delete_dir(str(dir_path))
+    assert not op.path_exists(str(dir_path))
+    # Deleting a non-existent directory should return False
+    assert op.delete_dir(str(dir_path)) is False
 
 
+# Functions: copy_file and move_file - Just wrappers - Should be already tested by shutils
+def test_copy_and_move_file(tmp_path):
+    """
+    Test copy_file: Copy a file correctly,
+    and move_file: Move the file to the destination.
+    """
+    # Create original file
+    original = tmp_path / "original.txt"
+    original.write_text("Original content")
+    # Copy the file
+    copy_dest = tmp_path / "copy.txt"
+    op.copy_file(str(original), str(copy_dest))
+    assert op.path_exists(str(copy_dest)) is True
+    assert original.read_text() == copy_dest.read_text()
+    # Move the copied file
+    move_dest = tmp_path / "moved.txt"
+    op.move_file(str(copy_dest), str(move_dest))
+    assert not op.path_exists(str(copy_dest))  # The original copy should no longer exist
+    assert op.path_exists(str(move_dest)) is True
+    assert original.read_text() == move_dest.read_text()
 
-#Function 7 - delete_dir
+# Functions: to_string and load_file
+def test_to_string_and_load_file(tmp_path):
+    """
+    Test to_string: Read file as string;
+    load_file: Load file into a BytesIO buffer.
+    """
+    content = "Test file content."
+    file_path = tmp_path / "text.txt"
+    file_path.write_text(content, encoding="utf-8")
+    # Test to_string
+    assert op.to_string(str(file_path)) == content
+    # Test load_file
+    buffer = op.load_file(str(file_path))
+    assert isinstance(buffer, io.BytesIO)
+    assert buffer.getvalue() == content.encode("utf-8")
 
+# Function: delete_file
+def test_delete_file(tmp_path):
+    """
+    Test delete_file: Successfully delete an existing file,
+    and return False if the file does not exist.
+    """
+    file_path = tmp_path / "to_delete.txt"
+    file_path.write_text("Delete this file")
+    # Delete the existing file
+    assert op.delete_file(str(file_path)) is True
+    # Trying to delete again should return False
+    assert op.delete_file(str(file_path)) is False
 
+# Function: write_to_file
+def test_write_to_file(tmp_path):
+    """
+    Test write_to_file: Write data to a file.
+    """
+    file_path = tmp_path / "output.txt"
+    data = "Data to be written."
+    # Write valid data
+    assert op.write_to_file(data, str(file_path), "w", end="END") is True
+    assert file_path.read_text(encoding=sys.stdout.encoding) == data + "END"
+    # Writing an empty string or None should return False
+    assert op.write_to_file("", str(file_path)) is False
+    assert op.write_to_file(None, str(file_path)) is False
 
-#Function 8 - copy_file
+# Functions: timestamp, get_filedatetime and get_filedate - Wrapper methods
+def test_timestamp_and_file_date_functions():
+    """
+    Test timestamp: Returns a numeric value or string,
+    get_filedatetime and get_filedate: Return strings in the expected format.
+    """
+    ts_numeric = op.timestamp(string=False)
+    ts_string = op.timestamp(string=True)
+    assert isinstance(ts_numeric, float)
+    # The string should be convertible to float without error
+    float(ts_string)
+    file_dt = op.get_filedatetime()
+    file_d = op.get_filedate()
+    # Check basic length and format (YYYYMMDD and YYYYMMDD_HHMMSS)
+    assert len(file_d) == 8
+    assert len(file_dt) >= 15
 
+def test_timestamp_and_file_date_unvalid_timezone_should_raise_TypeError():
+    """
+    Test get_filedatetime and get_filedate with unrecognized timezone: Should raise TypeError.
+    """
+    with pytest.raises(TypeError):
+        op.get_filedatetime(timezone="invalid", string=False)
+        op.get_filedatetime(timezone="invalid", string=True)
+    with pytest.raises(TypeError):
+        op.get_filedate(timezone="invalid", string=False)
+        op.get_filedate(timezone="invalid", string=True)
 
+# Function: get_path_without_file - Wrapper method 
+def test_get_path_with_file_should_return_its_path(tmp_path):
+    """
+    Test get_path_without_file: Extracts the directory path from a file path.
+    """
+    file_path = tmp_path / "subdir" / "file.txt"
+    expected_dir = os.path.dirname(str(file_path))
+    assert op.get_path_without_file(str(file_path)) == expected_dir
+    
+# Function: wait - Wrapper method
+def test_wait(monkeypatch):
+    """
+    Test wait: Delegates to time.sleep and returns None.
+    Uses monkeypatch to avoid an actual delay.
+    """
+    called = False
+    def fake_sleep(seconds):
+        nonlocal called
+        called = True
+    monkeypatch.setattr(time, "sleep", fake_sleep)
+    result = op.wait(0.1)
+    assert called is True
+    assert result is None
 
-#Function 9 - move_file
-
-
-
-#Function 10 - to_string
-
-
-
-#Function 11 - load_file
-
-
-
-#Function 12 - delete_file
-
-
-
-#Function 13 - timestamp
-
-
-
-#Function 14 - get_filedatetime
-
-
-
-#Function 15 - get_filedate
-
-
-
-#Function 16 - get_path_without_file
-
-
-
-#Function 17 - write_to_file
-
-
-
-#Function 18 - wait
-
-
-
-#Function 19 - get_attribute
+# Function: get_attribute
+def test_get_attribute():
+    """
+    Test get_attribute: Retrieves nested attributes from a dictionary.
+    """
+    source = {
+        "a": {
+            "b": {
+                "c": 123
+            }
+        }
+    }
+    # Successful case: existing attribute
+    assert op.get_attribute(source, "a.b.c") == 123
+    # Default value case: non-existent attribute or invalid data
+    assert op.get_attribute(source, "a.x.c", default_value="default") == "default"
+    assert op.get_attribute(None, "a.b", default_value="default") == "default"
+    # Case with empty path separator should return default
+    assert op.get_attribute(source, "a.b.c", default_value="default", path_sep="") == "default"

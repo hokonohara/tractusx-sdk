@@ -23,6 +23,7 @@
 
 # Script to setup packege installation
 from setuptools import setup, find_packages
+import os
 
 setup(
     name="dspace",
