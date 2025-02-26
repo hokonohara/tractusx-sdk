@@ -67,8 +67,13 @@ logging.captureWarnings(True)
 ## Create Loggin Folder
 op.make_dir("logs")
 
+# Get the absolute path of the project directory
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONFIG_LOG_PATH = os.path.join(BASE_DIR, "config", "logging.yml")
+CONFIG_CONFIG_PATH = os.path.join(BASE_DIR, "config", "configuration.yml")
+
 # Load the logging config file
-with open('./config/logging.yml', 'rt') as f:
+with open(CONFIG_LOG_PATH, 'rt') as f:
     # Read the yaml configuration
     log_config = yaml.safe_load(f.read())
     # Set logging filename with datetime
@@ -78,7 +83,7 @@ with open('./config/logging.yml', 'rt') as f:
     logging.config.dictConfig(log_config)
 
 # Load the configuation for the application
-with open('./config/configuration.yml', 'rt') as f:
+with open(CONFIG_CONFIG_PATH, 'rt') as f:
     # Read the yaml configuration
     app_configuration = yaml.safe_load(f.read())
 
