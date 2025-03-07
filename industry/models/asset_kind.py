@@ -20,7 +20,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-## Where the models are stored
+from enum import Enum
 
-from .example import ParentExample, ChildExample
-from .asset_kind import AssetKind
+class AssetKind(str, Enum):
+    """Enum for Asset kinds as defined in the AAS Registry API."""
+    INSTANCE = "Instance"
+    NOT_APPLICABLE = "NotApplicable"
+    TYPE = "Type"
