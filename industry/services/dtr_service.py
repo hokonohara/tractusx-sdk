@@ -20,14 +20,22 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from typing import Dict, Optional, Any
-from industry.models import AssetKind
+from typing import Optional
+from industry.models import (
+    AssetKind,
+    ShellDescriptor,
+    SubModelDescriptor,
+    GetAllShellDescriptorsResponse,
+    GetSubmodelDescriptorsByAssResponse,
+)
 from dataspace.tools import HttpTools
 from industry.tools import encode_as_base64_url_safe
 
 
 class DtrService:
-    def __init__(self, dtr_base_url: str, dtr_base_lookup_url: str, dtr_api_endpoint: str):
+    def __init__(
+        self, dtr_base_url: str, dtr_base_lookup_url: str, dtr_api_endpoint: str
+    ):
         self.dtr_base_url = dtr_base_url
         self.dtr_base_lookup_url = dtr_base_lookup_url
         self.dtr_api_endpoint = dtr_api_endpoint
@@ -38,30 +46,40 @@ class DtrService:
             f"{self.dtr_base_lookup_url.rstrip('/')}{self.dtr_api_endpoint.rstrip('/')}"
         )
 
-    def get_all_ass_descriptors(
+    def get_all_asset_administration_shell_descriptors(
         self,
         limit: Optional[int] = None,
         cursor: Optional[str] = None,
         asset_kind: Optional[AssetKind] = None,
         asset_type: Optional[str] = None,
         bpn: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> GetAllShellDescriptorsResponse:
         """
-        Returns all Asset Administration Shell Descriptors.
+        Retrieves all Asset Administration Shell (AAS) Descriptors from the Digital Twin Registry.
+        
+        This method allows querying the DTR for shell descriptors with optional filtering by
+        asset kind and type, as well as pagination support.
 
         Args:
-            limit (int, optional): The maximum number of elements in the response array
-            cursor (str, optional): A server-generated identifier that specifies where to continue listing results
-            asset_kind (AssetKind, optional): The Asset's kind (Instance, Type, or NotApplicable)
-            asset_type (str, optional): The Asset's type (UTF8-BASE64-URL-encoded)
-            bpn (str, optional): External subject ID / BPN for authorization
+            limit (int, optional): The maximum number of shell descriptors to return in a single response. 
+                Must be a positive integer if provided.
+            cursor (str, optional): A server-generated identifier that specifies where to continue
+                listing results for pagination purposes. Obtained from a previous response.
+            asset_kind (AssetKind, optional): Filter by the Asset's kind (Instance, Type, or NotApplicable).
+            asset_type (str, optional): Filter by the Asset's type. Will be UTF8-BASE64-URL-encoded automatically.
+            bpn (str, optional): Business Partner Number for authorization purposes. 
+                When provided, it is added as an Edc-Bpn header to the request.
 
         Returns:
-            dict: A dictionary containing the paging metadata and the list of Asset Administration Shell Descriptors
+            GetAllShellDescriptorsResponse: A response object containing:
+                - A list of ShellDescriptor objects in the 'result' field
+                - Pagination metadata in the 'paging_metadata' field
 
         Raises:
-            HTTPError: If the request to the AAS Registry API fails
-            ValueError: If the provided parameters are invalid
+            ValueError: If the limit parameter is provided but is less than 1
+            HTTPError: If the request to the DTR API fails
+            ConnectionError: If there is a network connectivity issue
+            TimeoutError: If the request times out
         """
         # Validate parameters
         if limit is not None and limit < 1:
@@ -94,25 +112,29 @@ class DtrService:
         response.raise_for_status()
 
         # Return the parsed response
-        return response.json()
+        return GetAllShellDescriptorsResponse(**response.json())
 
-    def get_aas_descriptor_by_id(
-        self,
-        aas_identifier: str,
-        bpn: Optional[str] = None
-    ) -> Dict[str, Any]:
+    def get_asset_administration_shell_descriptor_by_id(
+        self, aas_identifier: str, bpn: Optional[str] = None
+    ) -> ShellDescriptor:
         """
-        Returns a specific Asset Administration Shell Descriptor.
+        Retrieves a specific Asset Administration Shell (AAS) Descriptor by its identifier.
+        
+        This method fetches a single AAS descriptor from the Digital Twin Registry using its unique ID.
 
         Args:
-            aas_identifier (str): The Asset Administration Shell's unique id
-            bpn (str, optional): External subject ID / BPN for authorization
+            aas_identifier (str): The unique identifier of the Asset Administration Shell.
+                This ID will be automatically encoded as URL-safe Base64.
+            bpn (str, optional): Business Partner Number for authorization purposes. When provided,
+                it is added as an Edc-Bpn header to the request.
 
         Returns:
-            dict: The requested Asset Administration Shell Descriptor
+            ShellDescriptor: The requested Asset Administration Shell Descriptor object.
 
         Raises:
-            HTTPError: If the request to the AAS Registry API fails
+            HTTPError: If the request fails
+            ConnectionError: If there is a network connectivity issue.
+            TimeoutError: If the request times out.
         """
         # Construct headers
         headers = {"Accept": "application/json"}
@@ -130,29 +152,41 @@ class DtrService:
         response.raise_for_status()
 
         # Return the parsed response
-        return response.json()
+        return ShellDescriptor(**response.json())
 
-    def get_submodel_descriptors_by_aas(
+    def get_submodel_descriptors_by_aas_id(
         self,
         aas_identifier: str,
         limit: Optional[int] = None,
         cursor: Optional[str] = None,
         bpn: Optional[str] = None,
-    ) -> Dict[str, Any]:
+    ) -> GetSubmodelDescriptorsByAssResponse:
         """
-        Returns all Submodel Descriptors for a specific AAS.
+        Retrieves all Submodel Descriptors associated with a specific Asset Administration Shell (AAS).
+        
+        This method fetches all submodels belonging to a particular AAS from the Digital Twin Registry,
+        with support for pagination.
 
         Args:
-            aas_identifier (str): The Asset Administration Shell's unique id
-            limit (int, optional): The maximum number of elements in the response array
-            cursor (str, optional): A server-generated identifier for pagination
-            bpn (str, optional): External subject ID / BPN for authorization
+            aas_identifier (str): The unique identifier of the Asset Administration Shell.
+                This ID will be automatically encoded as URL-safe Base64.
+            limit (int, optional): The maximum number of submodel descriptors to return in a single response.
+                Must be a positive integer if provided.
+            cursor (str, optional): A server-generated identifier that specifies where to continue 
+                listing results for pagination purposes. Obtained from a previous response.
+            bpn (str, optional): Business Partner Number for authorization purposes. When provided,
+                it is added as an Edc-Bpn header to the request.
 
         Returns:
-            dict: A dictionary containing the submodel descriptors
+            GetSubmodelDescriptorsByAssResponse: A response object containing:
+                - A list of SubModelDescriptor objects in the 'result' field
+                - Pagination metadata in the 'paging_metadata' field
 
         Raises:
-            HTTPError: If the request to the AAS Registry API fails
+            ValueError: If the limit parameter is provided but is less than 1.
+            HTTPError: If the request fails
+            ConnectionError: If there is a network connectivity issue.
+            TimeoutError: If the request times out.
         """
         # Validate parameters
         if limit is not None and limit < 1:
@@ -183,24 +217,33 @@ class DtrService:
         response.raise_for_status()
 
         # Return the parsed response
-        return response.json()
+        return GetSubmodelDescriptorsByAssResponse(**response.json())
 
-    def get_submodel_descriptor(
+    def get_submodel_descriptor_by_ass_and_submodel_id(
         self, aas_identifier: str, submodel_identifier: str, bpn: Optional[str] = None
-    ) -> Dict[str, Any]:
+    ) -> SubModelDescriptor:
         """
-        Returns a specific Submodel Descriptor.
+        Retrieves a specific Submodel Descriptor by its identifier and parent AAS identifier.
+        
+        This method fetches a single Submodel descriptor from the Digital Twin Registry using 
+        both the Asset Administration Shell ID and Submodel ID.
 
         Args:
-            aas_identifier (str): The Asset Administration Shell's unique id
-            submodel_identifier (str): The Submodel's unique id
-            bpn (str, optional): External subject ID / BPN for authorization
+            aas_identifier (str): The unique identifier of the parent Asset Administration Shell.
+                This ID will be automatically encoded as URL-safe Base64.
+            submodel_identifier (str): The unique identifier of the Submodel to retrieve.
+                This ID will be automatically encoded as URL-safe Base64.
+            bpn (str, optional): Business Partner Number for authorization purposes. When provided,
+                it is added as an Edc-Bpn header to the request.
 
         Returns:
-            dict: The requested Submodel Descriptor
+            SubModelDescriptor: The requested Submodel Descriptor object.
+                If no matching Submodel is found, the server will typically return a 404 error.
 
         Raises:
-            HTTPError: If the request to the AAS Registry API fails
+            HTTPError: If the request fails
+            ConnectionError: If there is a network connectivity issue.
+            TimeoutError: If the request times out.
         """
         # Construct headers
         headers = {"Accept": "application/json"}
@@ -219,4 +262,4 @@ class DtrService:
         response.raise_for_status()
 
         # Return the parsed response
-        return response.json()
+        return SubModelDescriptor(**response.json())
