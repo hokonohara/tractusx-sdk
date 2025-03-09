@@ -152,15 +152,15 @@ class Endpoint(BaseModel):
 class SubModelDescriptor(BaseModel):
     """Submodel descriptor for AAS."""
 
-    description: List[MultiLanguage] = Field(default_factory=list)
-    display_name: List[MultiLanguage] = Field(default_factory=list)
+    description: List[MultiLanguage] | None = Field(None)
+    display_name: List[MultiLanguage] | None = Field(None)
     administration: AdministrativeInformation | None = None
-    endpoints: List[Endpoint] = Field(default_factory=list)
+    endpoints: List[Endpoint] | None = Field(None)
     id_short: str | None = Field(None, max_length=128)
     id: str | None = Field(None, min_length=1, max_length=2000)
     semantic_id: Reference | None = None
-    supplemental_semantic_ids: List[Reference] = Field(
-        default_factory=list, alias="supplementalSemanticIds"
+    supplemental_semantic_ids: List[Reference] | None = Field(
+        None, alias="supplementalSemanticIds"
     )
 
     def to_json_string(self) -> str:
@@ -174,8 +174,8 @@ class SpecificAssetId(BaseModel):
     name: str = Field(min_length=1, max_length=64)
     value: str = Field(min_length=1, max_length=2000)
     semantic_id: Reference | None = Field(None, alias="semanticId")
-    supplemental_semantic_ids: List[Reference] = Field(
-        default_factory=list, alias="supplementalSemanticIds"
+    supplemental_semantic_ids: List[Reference] | None = Field(
+        None, alias="supplementalSemanticIds"
     )
     external_subject_id: Reference | None = Field(None, alias="externalSubjectId")
 
@@ -183,41 +183,49 @@ class SpecificAssetId(BaseModel):
 class ShellDescriptor(BaseModel):
     """Asset Administration Shell (AAS) Descriptor."""
 
-    description: List[MultiLanguage] = Field(default_factory=list)
-    display_name: List[MultiLanguage] = Field(alias="displayName", default_factory=list)
-    administration: AdministrativeInformation | None = Field(None)
+    description: List[MultiLanguage] | None = Field(None)
+    display_name: List[MultiLanguage] | None = Field(None, alias="displayName")
+    administration: AdministrativeInformation | None = None
     id_short: str | None = Field(None, alias="idShort", max_length=128)
     asset_kind: AssetKind | None = Field(None, alias="assetKind")
     asset_type: str | None = Field(None, alias="assetType")
-    endpoints: List[Endpoint] = Field(default_factory=list)
-    id: str = Field(default_factory=lambda: uuid.uuid4(), min_length=1, max_length=2000)
+    endpoints: List[Endpoint] | None = Field(None)
+    id: str = Field(
+        default_factory=lambda: str(uuid.uuid4()), min_length=1, max_length=2000
+    )
     global_asset_id: str | None = Field(
         None,
         alias="globalAssetId",
         min_length=1,
         max_length=2000,
     )
-    specific_asset_ids: List[SpecificAssetId] = Field(
-        alias="specificAssetIds", default_factory=list
-    )
-    submodel_descriptors: List[SubModelDescriptor] = Field(
-        alias="submodelDescriptors", default_factory=list
+    specific_asset_ids: List[SpecificAssetId] | None = Field(alias="specificAssetIds")
+    submodel_descriptors: List[SubModelDescriptor] | None = Field(
+        None, alias="submodelDescriptors"
     )
 
     def add_description(self, text: str, language: str = "en") -> None:
         """Add a description in the specified language."""
+        if self.description is None:
+            self.description = []
         self.description.append(MultiLanguage(language=language, text=text))
 
     def add_display_name(self, text: str, language: str = "en") -> None:
         """Add a display name in the specified language."""
+        if self.display_name is None:
+            self.display_name = []
         self.display_name.append(MultiLanguage(language=language, text=text))
 
     def add_specific_asset_id(self, asset_id: SpecificAssetId) -> None:
         """Add a specific asset ID."""
+        if self.specific_asset_ids is None:
+            self.specific_asset_ids = []
         self.specific_asset_ids.append(asset_id)
 
     def add_submodel(self, submodel: SubModelDescriptor) -> None:
         """Add a submodel descriptor."""
+        if self.submodel_descriptors is None:
+            self.submodel_descriptors = []
         self.submodel_descriptors.append(submodel)
 
     def to_dict(self) -> Dict[str, Any]:
