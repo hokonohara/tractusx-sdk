@@ -20,7 +20,6 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from typing import Optional
 from industry.models import (
     AssetKind,
     ShellDescriptor,
@@ -263,3 +262,45 @@ class DtrService:
 
         # Return the parsed response
         return SubModelDescriptor(**response.json())
+
+    def create_asset_administration_shell_descriptor(
+        self, shell_descriptor: ShellDescriptor, bpn: str | None = None
+    ) -> ShellDescriptor:
+        """
+        Creates a new Asset Administration Shell (AAS) Descriptor in the Digital Twin Registry.
+
+        Args:
+            shell_descriptor (ShellDescriptor): The shell descriptor to create
+            bpn (str, optional): Business Partner Number for authorization purposes.
+                When provided, it is added as an Edc-Bpn header to the request.
+
+        Returns:
+            ShellDescriptor: The created Asset Administration Shell Descriptor object
+            with server-assigned fields.
+
+        Raises:
+            HTTPError: If the request fails
+            ConnectionError: If there is a network connectivity issue
+            TimeoutError: If the request times out
+        """
+        # Add Content-Type header for POST request
+        headers = {"Content-Type": "application/json", "Accept": "application/json"}
+        if bpn:
+            headers["Edc-Bpn"] = bpn
+
+        # Convert ShellDescriptor to dictionary with proper handling of empty lists
+        shell_descriptor_dict = shell_descriptor.to_dict()
+
+        url = f"{self.dtr_url}/shell-descriptors"
+        response = HttpTools.do_post(
+            url=url,
+            headers=headers,
+            json=shell_descriptor_dict,
+            verify=False,
+        )
+
+        # Check for errors
+        response.raise_for_status()
+
+        # Return the parsed response
+        return ShellDescriptor(**response.json())
