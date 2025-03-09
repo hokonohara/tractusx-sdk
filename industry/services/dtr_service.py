@@ -48,26 +48,26 @@ class DtrService:
 
     def get_all_asset_administration_shell_descriptors(
         self,
-        limit: Optional[int] = None,
-        cursor: Optional[str] = None,
-        asset_kind: Optional[AssetKind] = None,
-        asset_type: Optional[str] = None,
-        bpn: Optional[str] = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        asset_kind: AssetKind | None = None,
+        asset_type: str | None = None,
+        bpn: str | None = None,
     ) -> GetAllShellDescriptorsResponse:
         """
         Retrieves all Asset Administration Shell (AAS) Descriptors from the Digital Twin Registry.
-        
+
         This method allows querying the DTR for shell descriptors with optional filtering by
         asset kind and type, as well as pagination support.
 
         Args:
-            limit (int, optional): The maximum number of shell descriptors to return in a single response. 
+            limit (int, optional): The maximum number of shell descriptors to return in a single response.
                 Must be a positive integer if provided.
             cursor (str, optional): A server-generated identifier that specifies where to continue
                 listing results for pagination purposes. Obtained from a previous response.
             asset_kind (AssetKind, optional): Filter by the Asset's kind (Instance, Type, or NotApplicable).
             asset_type (str, optional): Filter by the Asset's type. Will be UTF8-BASE64-URL-encoded automatically.
-            bpn (str, optional): Business Partner Number for authorization purposes. 
+            bpn (str, optional): Business Partner Number for authorization purposes.
                 When provided, it is added as an Edc-Bpn header to the request.
 
         Returns:
@@ -115,11 +115,11 @@ class DtrService:
         return GetAllShellDescriptorsResponse(**response.json())
 
     def get_asset_administration_shell_descriptor_by_id(
-        self, aas_identifier: str, bpn: Optional[str] = None
+        self, aas_identifier: str, bpn: str | None = None
     ) -> ShellDescriptor:
         """
         Retrieves a specific Asset Administration Shell (AAS) Descriptor by its identifier.
-        
+
         This method fetches a single AAS descriptor from the Digital Twin Registry using its unique ID.
 
         Args:
@@ -157,13 +157,13 @@ class DtrService:
     def get_submodel_descriptors_by_aas_id(
         self,
         aas_identifier: str,
-        limit: Optional[int] = None,
-        cursor: Optional[str] = None,
-        bpn: Optional[str] = None,
+        limit: int | None = None,
+        cursor: str | None = None,
+        bpn: str | None = None,
     ) -> GetSubmodelDescriptorsByAssResponse:
         """
         Retrieves all Submodel Descriptors associated with a specific Asset Administration Shell (AAS).
-        
+
         This method fetches all submodels belonging to a particular AAS from the Digital Twin Registry,
         with support for pagination.
 
@@ -172,7 +172,7 @@ class DtrService:
                 This ID will be automatically encoded as URL-safe Base64.
             limit (int, optional): The maximum number of submodel descriptors to return in a single response.
                 Must be a positive integer if provided.
-            cursor (str, optional): A server-generated identifier that specifies where to continue 
+            cursor (str, optional): A server-generated identifier that specifies where to continue
                 listing results for pagination purposes. Obtained from a previous response.
             bpn (str, optional): Business Partner Number for authorization purposes. When provided,
                 it is added as an Edc-Bpn header to the request.
@@ -220,12 +220,12 @@ class DtrService:
         return GetSubmodelDescriptorsByAssResponse(**response.json())
 
     def get_submodel_descriptor_by_ass_and_submodel_id(
-        self, aas_identifier: str, submodel_identifier: str, bpn: Optional[str] = None
+        self, aas_identifier: str, submodel_identifier: str, bpn: str | None = None
     ) -> SubModelDescriptor:
         """
         Retrieves a specific Submodel Descriptor by its identifier and parent AAS identifier.
-        
-        This method fetches a single Submodel descriptor from the Digital Twin Registry using 
+
+        This method fetches a single Submodel descriptor from the Digital Twin Registry using
         both the Asset Administration Shell ID and Submodel ID.
 
         Args:

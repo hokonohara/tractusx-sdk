@@ -20,7 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from typing import Dict, List, Optional, Any
+from typing import Dict, List, Any
 from enum import Enum
 import uuid
 from pydantic import BaseModel, Field
@@ -102,44 +102,42 @@ class ProtocolInformationSecurityAttributesTypes(str, Enum):
 class ProtocolInformationSecurityAttributes(BaseModel):
     """Protocol information security for endpoints."""
 
-    type: Optional[ProtocolInformationSecurityAttributesTypes]
-    key: Optional[str]
-    value: Optional[str]
+    type: ProtocolInformationSecurityAttributesTypes | None
+    key: str | None
+    value: str | None
 
 
 class ProtocolInformation(BaseModel):
     """Protocol information for endpoints."""
 
-    href: Optional[str] = None
-    endpoint_protocol: Optional[str] = Field(None, alias="endpointProtocol")
-    endpoint_protocol_version: Optional[List[str]] = Field(
+    href: str | None = None
+    endpoint_protocol: str | None = Field(None, alias="endpointProtocol")
+    endpoint_protocol_version: List[str] | None = Field(
         None, alias="endpointProtocolVersion"
     )
-    subprotocol: Optional[str] = None
-    subprotocol_body: Optional[str] = Field(None, alias="subprotocolBody")
-    subprotocol_body_encoding: Optional[str] = Field(
-        None, alias="subprotocolBodyEncoding"
-    )
-    security_attributes: Optional[List[ProtocolInformationSecurityAttributes]] = Field(
+    subprotocol: str | None = None
+    subprotocol_body: str | None = Field(None, alias="subprotocolBody")
+    subprotocol_body_encoding: str | None = Field(None, alias="subprotocolBodyEncoding")
+    security_attributes: List[ProtocolInformationSecurityAttributes] = Field(
         default_factory=list, alias="securityAttributes"
     )
 
 
 class EmbeddedDataSpecification(BaseModel):
-    data_specification: Optional[Reference] = Field(None, alias="dataSpecification")
-    dataSpecificationContent: Optional[Dict[str, Any]] = Field(
+    data_specification: Reference | None = Field(None, alias="dataSpecification")
+    dataSpecificationContent: Dict[str, Any] | None = Field(
         None, alias="dataSpecificationContent"
     )
 
 
 class AdministrativeInformation(BaseModel):
-    embedded_data_specifications: Optional[EmbeddedDataSpecification] = Field(
+    embedded_data_specifications: EmbeddedDataSpecification | None = Field(
         alias="embeddedDataSpecifications"
     )
-    version: Optional[str] = Field(None, min_length=1, max_length=4)
-    revision: Optional[str] = Field(None, min_length=1, max_length=4)
-    creator: Optional[Reference]
-    template_id: Optional[str] = Field(
+    version: str | None = Field(None, min_length=1, max_length=4)
+    revision: str | None = Field(None, min_length=1, max_length=4)
+    creator: Reference | None
+    template_id: str | None = Field(
         None, min_length=1, max_length=2000, alias="templateId"
     )
 
@@ -156,13 +154,13 @@ class SubModelDescriptor(BaseModel):
 
     description: List[MultiLanguage] = Field(default_factory=list)
     display_name: List[MultiLanguage] = Field(default_factory=list)
-    administration: Optional[AdministrativeInformation] = None
+    administration: AdministrativeInformation | None = None
     endpoints: List[Endpoint] = Field(default_factory=list)
-    id_short: Optional[str] = Field(None, max_length=128)
-    id: Optional[str] = Field(None, min_length=1, max_length=2000)
-    semantic_id: Optional[Reference] = None
-    supplemental_semantic_ids: Optional[List[Reference]] = Field(
-        None, alias="supplementalSemanticIds"
+    id_short: str | None = Field(None, max_length=128)
+    id: str | None = Field(None, min_length=1, max_length=2000)
+    semantic_id: Reference | None = None
+    supplemental_semantic_ids: List[Reference] = Field(
+        default_factory=list, alias="supplementalSemanticIds"
     )
 
     def to_json_string(self) -> str:
@@ -175,11 +173,11 @@ class SpecificAssetId(BaseModel):
 
     name: str = Field(min_length=1, max_length=64)
     value: str = Field(min_length=1, max_length=2000)
-    semantic_id: Optional[Reference] = Field(None, alias="semanticId")
-    supplemental_semantic_ids: Optional[List[Reference]] = Field(
-        None, alias="supplementalSemanticIds"
+    semantic_id: Reference | None = Field(None, alias="semanticId")
+    supplemental_semantic_ids: List[Reference] = Field(
+        default_factory=list, alias="supplementalSemanticIds"
     )
-    external_subject_id: Optional[Reference] = Field(None, alias="externalSubjectId")
+    external_subject_id: Reference | None = Field(None, alias="externalSubjectId")
 
 
 class ShellDescriptor(BaseModel):
@@ -187,13 +185,13 @@ class ShellDescriptor(BaseModel):
 
     description: List[MultiLanguage] = Field(default_factory=list)
     display_name: List[MultiLanguage] = Field(alias="displayName", default_factory=list)
-    administration: Optional[AdministrativeInformation] = None
-    id_short: Optional[str] = Field(None, alias="idShort", max_length=128)
-    asset_kind: Optional[AssetKind] = Field(None, alias="assetKind")
-    asset_type: Optional[str] = Field(None, alias="assetType")
+    administration: AdministrativeInformation | None = Field(None)
+    id_short: str | None = Field(None, alias="idShort", max_length=128)
+    asset_kind: AssetKind | None = Field(None, alias="assetKind")
+    asset_type: str | None = Field(None, alias="assetType")
     endpoints: List[Endpoint] = Field(default_factory=list)
     id: str = Field(default_factory=lambda: uuid.uuid4(), min_length=1, max_length=2000)
-    global_asset_id: Optional[str] = Field(
+    global_asset_id: str | None = Field(
         None,
         alias="globalAssetId",
         min_length=1,
@@ -234,13 +232,13 @@ class ShellDescriptor(BaseModel):
 class PagingMetadata(BaseModel):
     """Paging metadata for the response."""
 
-    cursor: Optional[str] = Field(None)
+    cursor: str | None = Field(None)
 
 
 class BasePaginatedResponse(BaseModel):
     """Base class for paginated responses."""
 
-    paging_metadata: Optional[PagingMetadata] = Field(None)
+    paging_metadata: PagingMetadata | None = Field(None)
 
 
 class GetAllShellDescriptorsResponse(BasePaginatedResponse):
