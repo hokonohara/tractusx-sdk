@@ -22,7 +22,6 @@
 
 from typing import Dict, List, Any
 from enum import Enum
-import uuid
 from pydantic import BaseModel, Field
 
 
@@ -190,8 +189,7 @@ class ShellDescriptor(BaseModel):
     asset_kind: AssetKind | None = Field(None, alias="assetKind")
     asset_type: str | None = Field(None, alias="assetType")
     endpoints: List[Endpoint] | None = Field(None)
-    id: str = Field(
-        default_factory=lambda: str(uuid.uuid4()), min_length=1, max_length=2000
+    id: str = Field(min_length=1, max_length=2000
     )
     global_asset_id: str | None = Field(
         None,
