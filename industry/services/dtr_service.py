@@ -20,6 +20,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+import logging
+from typing import Dict
+import requests
+
 from industry.models import (
     AssetKind,
     ShellDescriptor,
@@ -29,29 +33,86 @@ from industry.models import (
 )
 from dataspace.tools import HttpTools
 from industry.tools import encode_as_base64_url_safe
+from industry.services.keycloak_service import KeycloakService
+
+logger = logging.getLogger(__name__)
 
 
 class DtrService:
+    """
+    Service for interacting with the Digital Twin Registry (DTR).
+
+    This service provides methods for retrieving and creating shell descriptors
+    and submodel descriptors in the Digital Twin Registry.
+    """
+
     def __init__(
         self,
         dtr_base_url: str,
         dtr_base_lookup_url: str,
         dtr_api_endpoint: str,
-        auth_url: str | None = None,
-        auth_client_id: str | None = None,
-        auth_client_secret: str | None = None,
-        auth_grant_type: str | None = None,
-        auth_scope: str | None = None,
+        auth_service: KeycloakService = None,
+        verify_ssl: bool = True,
     ):
-        self.dtr_base_url = dtr_base_url
-        self.dtr_base_lookup_url = dtr_base_lookup_url
-        self.dtr_api_endpoint = dtr_api_endpoint
-        self.dtr_url = (
-            f"{self.dtr_base_url.rstrip('/')}{self.dtr_api_endpoint.rstrip('/')}"
-        )
-        self.dtr_lookup_url = (
-            f"{self.dtr_base_lookup_url.rstrip('/')}{self.dtr_api_endpoint.rstrip('/')}"
-        )
+        """
+        Initialize the DTR service.
+
+        Args:
+            dtr_base_url (str): Base URL of the DTR API
+            dtr_base_lookup_url (str): Base URL for the DTR lookup service
+            dtr_api_endpoint (str): API endpoint path
+            auth_service (KeycloakService, optional): Authentication service for obtaining access tokens
+            verify_ssl (bool): Whether to verify SSL certificates
+        """
+        self.base_url = dtr_base_url.rstrip("/")
+        self.dtr_base_lookup_url = dtr_base_lookup_url.rstrip("/")
+        self.dtr_api_endpoint = dtr_api_endpoint.rstrip("/")
+        self.auth_service = auth_service
+        self.verify_ssl = verify_ssl
+
+        # Build complete URLs
+        self.dtr_url = f"{self.base_url}{self.dtr_api_endpoint}"
+        self.dtr_lookup_url = f"{self.dtr_base_lookup_url}{self.dtr_api_endpoint}"
+
+    def _prepare_headers(
+        self, bpn: str | None = None, method: str = "GET"
+    ) -> Dict[str, str]:
+        """
+        Prepare headers for DTR API requests.
+
+        Args:
+            bpn (str, optional): Business Partner Number for authorization
+
+        Returns:
+            Dict[str, str]: Headers for the request
+        """
+        headers = {"Accept": "application/json"}
+
+        # Add content type for POST requests
+        if method == "POST":
+            headers["Content-Type"] = "application/json"
+
+        # Add authentication if available
+        if self.auth_service:
+            token = self.auth_service.get_access_token()
+            headers["Authorization"] = f"Bearer {token}"
+
+        # Add BPN if provided
+        if bpn:
+            headers["Edc-Bpn"] = bpn
+
+        return headers
+
+    def _get_session(self) -> requests.Session | None:
+        """
+        Get an authenticated session if auth_service is available.
+
+        Returns:
+            requests.Session or None: Authenticated session if available
+        """
+        if self.auth_service:
+            return self.auth_service.get_session()
+        return None
 
     def get_all_asset_administration_shell_descriptors(
         self,
@@ -69,50 +130,42 @@ class DtrService:
 
         Args:
             limit (int, optional): The maximum number of shell descriptors to return in a single response.
-                Must be a positive integer if provided.
-            cursor (str, optional): A server-generated identifier that specifies where to continue
-                listing results for pagination purposes. Obtained from a previous response.
-            asset_kind (AssetKind, optional): Filter by the Asset's kind (Instance, Type, or NotApplicable).
-            asset_type (str, optional): Filter by the Asset's type. Will be UTF8-BASE64-URL-encoded automatically.
-            bpn (str, optional): Business Partner Number for authorization purposes.
-                When provided, it is added as an Edc-Bpn header to the request.
+            cursor (str, optional): A server-generated identifier for pagination.
+            asset_kind (AssetKind, optional): Filter by the Asset's kind.
+            asset_type (str, optional): Filter by the Asset's type (automatically BASE64-URL-encoded).
+            bpn (str, optional): Business Partner Number for authorization.
 
         Returns:
-            GetAllShellDescriptorsResponse: A response object containing:
-                - A list of ShellDescriptor objects in the 'result' field
-                - Pagination metadata in the 'paging_metadata' field
+            GetAllShellDescriptorsResponse: Response containing shell descriptors and pagination metadata.
 
         Raises:
-            ValueError: If the limit parameter is provided but is less than 1
-            HTTPError: If the request to the DTR API fails
+            HTTPError: If the request fails
             ConnectionError: If there is a network connectivity issue
             TimeoutError: If the request times out
         """
-        # Validate parameters
-        if limit is not None and limit < 1:
-            raise ValueError("Limit must be a positive integer")
-
-        # Construct query parameters
+        # Prepare query parameters
         params = {}
         if limit is not None:
             params["limit"] = limit
-        if cursor:
+        if cursor is not None:
             params["cursor"] = cursor
-        if asset_kind:
+        if asset_kind is not None:
             params["assetKind"] = asset_kind.value
-        if asset_type:
-            encoded_asset_type = encode_as_base64_url_safe(asset_type)
-            params["assetType"] = encoded_asset_type
+        if asset_type is not None:
+            params["assetType"] = encode_as_base64_url_safe(asset_type)
 
-        # Construct headers
-        headers = {"Accept": "application/json"}
-        if bpn:
-            headers["Edc-Bpn"] = bpn
+        # Get headers and session
+        headers = self._prepare_headers(bpn)
+        session = self._get_session()
 
-        # Make the request using HttpTools
+        # Make the request
         url = f"{self.dtr_url}/shell-descriptors"
         response = HttpTools.do_get(
-            url=url, params=params, headers=headers, verify=False
+            url=url,
+            params=params,
+            headers=headers,
+            session=session,
+            verify=self.verify_ssl,
         )
 
         # Check for errors
@@ -143,17 +196,18 @@ class DtrService:
             ConnectionError: If there is a network connectivity issue.
             TimeoutError: If the request times out.
         """
-        # Construct headers
-        headers = {"Accept": "application/json"}
-        if bpn:
-            headers["Edc-Bpn"] = bpn
+        # Get headers and session
+        headers = self._prepare_headers(bpn)
+        session = self._get_session()
 
         # Properly encode the AAS identifier as URL-safe Base64
         encoded_identifier = encode_as_base64_url_safe(aas_identifier)
 
         # Make the request
         url = f"{self.dtr_url}/shell-descriptors/{encoded_identifier}"
-        response = HttpTools.do_get(url=url, headers=headers, verify=False)
+        response = HttpTools.do_get(
+            url=url, headers=headers, session=session, verify=self.verify_ssl
+        )
 
         # Check for errors
         response.raise_for_status()
@@ -206,10 +260,9 @@ class DtrService:
         if cursor:
             params["cursor"] = cursor
 
-        # Construct headers
-        headers = {"Accept": "application/json"}
-        if bpn:
-            headers["Edc-Bpn"] = bpn
+        # Get headers and session
+        headers = self._prepare_headers(bpn)
+        session = self._get_session()
 
         # Properly encode the AAS identifier as URL-safe Base64
         encoded_identifier = encode_as_base64_url_safe(aas_identifier)
@@ -217,7 +270,11 @@ class DtrService:
         # Make the request
         url = f"{self.dtr_url}/shell-descriptors/{encoded_identifier}/submodel-descriptors"
         response = HttpTools.do_get(
-            url=url, params=params, headers=headers, verify=False
+            url=url,
+            params=params,
+            headers=headers,
+            session=session,
+            verify=self.verify_ssl,
         )
 
         # Check for errors
@@ -252,10 +309,9 @@ class DtrService:
             ConnectionError: If there is a network connectivity issue.
             TimeoutError: If the request times out.
         """
-        # Construct headers
-        headers = {"Accept": "application/json"}
-        if bpn:
-            headers["Edc-Bpn"] = bpn
+        # Get headers and session
+        headers = self._prepare_headers(bpn)
+        session = self._get_session()
 
         # Properly encode the AAS and Submodel identifiers as URL-safe Base64
         encoded_aas_identifier = encode_as_base64_url_safe(aas_identifier)
@@ -263,7 +319,9 @@ class DtrService:
 
         # Make the request
         url = f"{self.dtr_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
-        response = HttpTools.do_get(url=url, headers=headers, verify=False)
+        response = HttpTools.do_get(
+            url=url, headers=headers, session=session, verify=self.verify_ssl
+        )
 
         # Check for errors
         response.raise_for_status()
@@ -291,20 +349,21 @@ class DtrService:
             ConnectionError: If there is a network connectivity issue
             TimeoutError: If the request times out
         """
-        # Add Content-Type header for POST request
-        headers = {"Content-Type": "application/json", "Accept": "application/json"}
-        if bpn:
-            headers["Edc-Bpn"] = bpn
+        # Get headers with content type added
+        headers = self._prepare_headers(bpn, method="POST")
+        session = self._get_session()
 
         # Convert ShellDescriptor to dictionary with proper handling of empty lists
         shell_descriptor_dict = shell_descriptor.to_dict()
 
+        # Make the request
         url = f"{self.dtr_url}/shell-descriptors"
         response = HttpTools.do_post(
             url=url,
-            headers=headers,
             json=shell_descriptor_dict,
-            verify=False,
+            headers=headers,
+            session=session,
+            verify=self.verify_ssl,
         )
 
         # Check for errors
