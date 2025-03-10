@@ -33,7 +33,15 @@ from industry.tools import encode_as_base64_url_safe
 
 class DtrService:
     def __init__(
-        self, dtr_base_url: str, dtr_base_lookup_url: str, dtr_api_endpoint: str
+        self,
+        dtr_base_url: str,
+        dtr_base_lookup_url: str,
+        dtr_api_endpoint: str,
+        auth_url: str | None = None,
+        auth_client_id: str | None = None,
+        auth_client_secret: str | None = None,
+        auth_grant_type: str | None = None,
+        auth_scope: str | None = None,
     ):
         self.dtr_base_url = dtr_base_url
         self.dtr_base_lookup_url = dtr_base_lookup_url

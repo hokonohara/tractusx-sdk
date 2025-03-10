@@ -26,3 +26,4 @@ __license__ = "Apache License, Version 2.0"
 
 from .aas_service import AasService
 from .dtr_service import DtrService
+from .keycloak_service import KeycloakService
