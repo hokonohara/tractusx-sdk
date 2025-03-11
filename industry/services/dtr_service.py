@@ -24,7 +24,7 @@ import logging
 from typing import Dict
 import requests
 
-from industry.models import (
+from industry.models.v3.aas import (
     AssetKind,
     ShellDescriptor,
     SubModelDescriptor,
@@ -131,12 +131,12 @@ class DtrService:
         Args:
             limit (int, optional): The maximum number of shell descriptors to return in a single response.
             cursor (str, optional): A server-generated identifier for pagination.
-            asset_kind (AssetKind, optional): Filter by the Asset's kind.
+            asset_kind (AssetKind_3_0, optional): Filter by the Asset's kind.
             asset_type (str, optional): Filter by the Asset's type (automatically BASE64-URL-encoded).
             bpn (str, optional): Business Partner Number for authorization.
 
         Returns:
-            GetAllShellDescriptorsResponse: Response containing shell descriptors and pagination metadata.
+            GetAllShellDescriptorsResponse_3_0: Response containing shell descriptors and pagination metadata.
 
         Raises:
             HTTPError: If the request fails
@@ -189,7 +189,7 @@ class DtrService:
                 it is added as an Edc-Bpn header to the request.
 
         Returns:
-            ShellDescriptor: The requested Asset Administration Shell Descriptor object.
+            ShellDescriptor_3_0: The requested Asset Administration Shell Descriptor object.
 
         Raises:
             HTTPError: If the request fails
@@ -239,8 +239,8 @@ class DtrService:
                 it is added as an Edc-Bpn header to the request.
 
         Returns:
-            GetSubmodelDescriptorsByAssResponse: A response object containing:
-                - A list of SubModelDescriptor objects in the 'result' field
+            GetSubmodelDescriptorsByAssResponse_3_0: A response object containing:
+                - A list of SubModelDescriptor_3_0 objects in the 'result' field
                 - Pagination metadata in the 'paging_metadata' field
 
         Raises:
@@ -301,7 +301,7 @@ class DtrService:
                 it is added as an Edc-Bpn header to the request.
 
         Returns:
-            SubModelDescriptor: The requested Submodel Descriptor object.
+            SubModelDescriptor_3_0: The requested Submodel Descriptor object.
                 If no matching Submodel is found, the server will typically return a 404 error.
 
         Raises:
@@ -336,12 +336,12 @@ class DtrService:
         Creates a new Asset Administration Shell (AAS) Descriptor in the Digital Twin Registry.
 
         Args:
-            shell_descriptor (ShellDescriptor): The shell descriptor to create
+            shell_descriptor (ShellDescriptor_3_0): The shell descriptor to create
             bpn (str, optional): Business Partner Number for authorization purposes.
                 When provided, it is added as an Edc-Bpn header to the request.
 
         Returns:
-            ShellDescriptor: The created Asset Administration Shell Descriptor object
+            ShellDescriptor_3_0: The created Asset Administration Shell Descriptor object
             with server-assigned fields.
 
         Raises:
@@ -353,7 +353,7 @@ class DtrService:
         headers = self._prepare_headers(bpn, method="POST")
         session = self._get_session()
 
-        # Convert ShellDescriptor to dictionary with proper handling of empty lists
+        # Convert ShellDescriptor_3_0 to dictionary with proper handling of empty lists
         shell_descriptor_dict = shell_descriptor.to_dict()
 
         # Make the request

@@ -55,7 +55,7 @@ class KeycloakService:
         )
         self.grant_type = grant_type
         self.token = None
-        self.token_expiry: datetime = None
+        self.token_expiry: datetime | None = None
         self.session = requests.Session()
     
     def get_session(self) -> requests.Session:
