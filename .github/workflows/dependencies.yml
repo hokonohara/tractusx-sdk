@@ -64,11 +64,11 @@ jobs:
       # If the poetry.lock file is not present, we use install as a fallback
       - name: Install dependencies
         run: |
-          IF [ -f poetry.lock ]; THEN
+          if [ -f poetry.lock ]; then
             $POETRY_HOME/bin/poetry sync --no-root
-          ELSE
+          else
             $POETRY_HOME/bin/poetry install --no-root
-          FI
+          fi
 
       - name: List packages
         run: |
