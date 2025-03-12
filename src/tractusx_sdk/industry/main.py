@@ -46,10 +46,10 @@ sys.dont_write_bytecode = True
 
 
 ## Import Library Packeges
-from dataspace.tools import op, HttpTools
-from dataspace.managers import AuthManager
-from dataspace.services import EdcService
-from industry.services import AasService
+from tractusx_sdk.dataspace.tools import op, HttpTools
+from tractusx_sdk.dataspace.managers import AuthManager
+from tractusx_sdk.dataspace.services import EdcService
+from tractusx_sdk.industry.services import AasService
 
 ## Declare Global Variables
 app_configuration:dict

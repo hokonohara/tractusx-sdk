@@ -44,9 +44,9 @@ import os
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 sys.dont_write_bytecode = True
 
-from dataspace.managers import AuthManager
-from dataspace.services import EdcService
-from dataspace.tools import op, HttpTools
+from tractusx_sdk.dataspace.managers import AuthManager
+from tractusx_sdk.dataspace.services import EdcService
+from tractusx_sdk.dataspace.tools import op, HttpTools
 
 ## Declare Global Variables
 app_configuration:dict

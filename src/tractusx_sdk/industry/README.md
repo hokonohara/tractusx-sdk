@@ -28,7 +28,7 @@ Welcome to the Eclipse Tractus-X Industry Software Development KIT! This SDK is 
 ## Folder Structure
 
 ```
-industry-sdk/
+industry/
     ├── config
     ├── managers
     ├── models
@@ -39,12 +39,13 @@ industry-sdk/
 
 ## Install in your local environment
 
-1. Run `pip install -e .`
-2. It will install the SDK in your local environment
-3. Import the SDK like this:
+1. Go to the root '/' folder
+2. Run `pip install -e .`
+3. It will install the SDK in your local environment
+4. Import the SDK like this:
 
 ```python
-   from tx_industry_sdk.services import AasService
+   from tractusx_sdk.industry.services import AasService
 ```
 
 ## Run it in your local environment
