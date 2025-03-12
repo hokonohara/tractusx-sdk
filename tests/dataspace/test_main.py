@@ -20,5 +20,32 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+import pytest
+from fastapi.testclient import TestClient
+from tractusx_sdk.dataspace import main
+
+# Set test_mode to True before running tests to skip uvicorn.run
+def set_test_mode():
+    import sys
+    sys.argv = sys.argv + ['--test-mode'] 
+
+@pytest.fixture
+def client():
+    set_test_mode()
+    main.start()
+    return TestClient(main.app)
+
+def test_api_call_success(client):
+    """
+    Test API call with successful authentication.
+
+    Args:
+        client: A test client instance used to simulate HTTP requests.
+
+    Assertions:
+        - The response status code must be 200.
+        - The response JSON must be None.
+    """
+    response = client.get("/example")
+    assert (200 == response.status_code)
+    assert response.json() is None
