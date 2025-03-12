@@ -26,12 +26,13 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  POETRY_HOME: /opt/poetry
+  POETRY_VERSION: 2.0.0
+
 jobs:
   check-dependencies-backend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        folder: [dataspace,industry]
 
     steps:
 
@@ -47,42 +48,41 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@42375524e23c412d93fb67b49958b491fce71c38 # v5.4.0
         with:
-            python-version: '3.10'
+            python-version: '3.12'
 
-      - name: Create and activate virtual environment
+      # We don't need to create a python virtual environment because Poetry already handles it for us
+      # Poetry is installed in a separate virtual environment because it is highly recommended
+      # https://python-poetry.org/docs/#ci-recommendations
+      - name: Create a venv for Poetry and install Poetry
         run: |
-          python -m venv ${{ matrix.folder }}/venv
-          source ${{ matrix.folder }}/venv/bin/activate
-          echo "VIRTUAL_ENV=${{ matrix.folder }}/venv" >> $GITHUB_ENV
-          echo "PATH=${{ matrix.folder }}/venv/bin:$PATH" >> $GITHUB_ENV
+          python3 -m venv $POETRY_HOME
+          $POETRY_HOME/bin/pip install poetry==$POETRY_VERSION
+          $POETRY_HOME/bin/poetry --version
 
-      - name: Install dependencies in isolated environment
+      # Poetry sync is preferred over install because it makes sure to be in sync with the poetry.lock file
+      # We use --no-root to avoid installing the current package in the virtual environment
+      # If the poetry.lock file is not present, we use install as a fallback
+      - name: Install dependencies
         run: |
-          source ${{ matrix.folder }}/venv/bin/activate
-          if [ -f ${{ matrix.folder }}/requirements.txt ]; then
-            pip install -r ${{ matrix.folder }}/requirements.txt
-          else
-            echo "No requirements.txt found in ${{ matrix.folder }}, skipping..."
-          fi
+          IF [ -f poetry.lock ]; THEN
+            $POETRY_HOME/bin/poetry sync --no-root
+          ELSE
+            $POETRY_HOME/bin/poetry install --no-root
+          FI
 
       - name: List packages
         run: |
-            source ${{ matrix.folder }}/venv/bin/activate
-            pip list --format=freeze | grep -Pv "^(pip|setuptools|wheel|virtualenv|distlib|pkg_resources)" | awk -F'==' '{print "pypi/pypi/-/" $1 "/" $2}' | awk '!seen[$0]++' > ${{ matrix.folder }}/PACKAGE
+             $POETRY_HOME/bin/poetry run pip list --format=freeze | grep -Pv "^(pip|setuptools|wheel|virtualenv|distlib|pkg_resources)" | awk -F'==' '{print "pypi/pypi/-/" $1 "/" $2}' | awk '!seen[$0]++' > PACKAGE
 
       - name: Generate Dependencies file
         run: |
-            curl -L --output ./org.eclipse.dash.licenses-1.1.1.jar 'https://repo.eclipse.org/service/local/artifact/maven/redirect?r=dash-licenses&g=org.eclipse.dash&a=org.eclipse.dash.licenses&v=LATEST'
+            curl -L --output ./dash.jar 'https://repo.eclipse.org/service/local/artifact/maven/redirect?r=dash-licenses&g=org.eclipse.dash&a=org.eclipse.dash.licenses&v=LATEST'
             
-            if [[ "${{ matrix.folder }}" == "dataspace" ]]; then
-                DEP_FILE="DEPENDENCIES_TX_DATASPACE_SDK"
-            else
-                DEP_FILE="DEPENDENCIES_TX_INDUSTRY_SDK"
-            fi
+            DEP_FILE="DEPENDENCIES_TRACTUS-X_SDK"
 
             echo "DEP_FILE=$DEP_FILE" >> $GITHUB_ENV
 
-            java -jar ./org.eclipse.dash.licenses-1.1.1.jar ${{ matrix.folder }}/PACKAGE -project automotive.tractusx -summary $DEP_FILE || true
+            java -jar ./dash.jar PACKAGE -project automotive.tractusx -summary $DEP_FILE || true
 
       - name: Check if dependencies were changed
         id: dependencies-changed
