@@ -1,25 +1,6 @@
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
+requires = ["poetry-core>=2.0"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry]
-name = "tractusx_sdk"
-version = "0.0.1"
-description = "Eclipse Tractus-X Software Development KIT - The Dataspace & Industry Foundation Libraries"
-license = "Apache-2.0"
-readme = "README.md"
-
-packages = [
-    { include = "src", to = "tractusx_sdk" }
-]
-exclude = ["docs*", "tests*"]
-
-repository = "https://github.com/eclipse-tractusx/tractusx-sdk"
-
-[tool.poetry.urls]
-"GitHub" = "https://github.com/eclipse-tractusx/tractusx-sdk"
-"Issues" = "https://github.com/eclipse-tractusx/tractusx-sdk/issues"
-"Changelog" = "https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/CHANGELOG.md"
 
 [project]
 name = "tractusx_sdk"
@@ -93,3 +74,10 @@ dependencies = [
 
 [project.urls]
 repository = "https://github.com/eclipse-tractusx/tractusx-sdk"
+documentation = "https://github.com/eclipse-tractusx/tractusx-sdk/tree/main/docs"
+"Issues" = "https://github.com/eclipse-tractusx/tractusx-sdk/issues"
+"Changelog" = "https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/CHANGELOG.md"
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+testpaths = ["tests"]
