@@ -30,8 +30,7 @@ from tractusx_sdk.industry.models.v3.aas import (
     GetAllShellDescriptorsResponse,
     GetSubmodelDescriptorsByAssResponse,
 )
-from tractusx_sdk.dataspace.tools import HttpTools
-from tractusx_sdk.industry.tools import encode_as_base64_url_safe
+from tractusx_sdk.dataspace.tools import HttpTools, encode_as_base64_url_safe
 from tractusx_sdk.industry.services.keycloak_service import KeycloakService
 
 

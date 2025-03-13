@@ -20,7 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from tractusx_sdk.industry.tools import encode_as_base64_url_safe, decode_base64_url_safe
+from tractusx_sdk.dataspace.tools import encode_as_base64_url_safe, decode_base64_url_safe
 
 
 class TestEncodingUtils:

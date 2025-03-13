@@ -27,8 +27,6 @@ def encode_as_base64_url_safe(string: str) -> str:
     """
     Encodes as a URL-safe Base64 UTF-8 string without padding.
     
-    This function is particularly useful for encoding identifiers for AAS Registry API,
-    which requires UTF8-BASE64-URL-encoded identifiers.
 
     Args:
         string (str): The string to encode
