@@ -21,43 +21,48 @@
 #################################################################################
 
 
-from fastapi import FastAPI, Request
+from datetime import datetime
+import sys
+
+# Set up imports configuration
+import argparse
+import logging.config
+import logging
+import yaml
+import uvicorn
+import urllib3
+import os
+from pathlib import Path
+
+from fastapi import FastAPI, HTTPException, Request
 
 ## FAST API example for keycloak
 from fastapi_keycloak_middleware import CheckPermissions
 from fastapi_keycloak_middleware import get_user
 
-## Import Library Packeges
-import sys
-import argparse
-from logging import config
-import logging
-import yaml
-import uvicorn
-import urllib3
-urllib3.disable_warnings()
-logging.captureWarnings(True)
-from pathlib import Path
-import os
-
 ## Import paths
 sys.path.append(str(Path(__file__).resolve().parents[1]))
 sys.dont_write_bytecode = True
 
-from dataspace.managers import AuthManager
-from dataspace.services import EdcService
-from dataspace.tools import op, HttpTools
+
+## Import Library Packeges
+from tractusx_sdk.dataspace.tools import op, HttpTools
+from tractusx_sdk.dataspace.managers import AuthManager
+from tractusx_sdk.dataspace.services import EdcService
+from tractusx_sdk.industry.services import AasService
 
 ## Declare Global Variables
 app_configuration:dict
 log_config:dict
-app = FastAPI(title="main")
+
+## In memory storage/management services
+edc_service: EdcService
 
 ## In memory authentication manager service
 auth_manager: AuthManager
 
-## In memory storage/management services
-edc_service: EdcService
+urllib3.disable_warnings()
+logging.captureWarnings(True)
 
 ## Create Loggin Folder
 op.make_dir("logs")
@@ -71,15 +76,18 @@ CONFIG_CONFIG_PATH = os.path.join(BASE_DIR, "config", "configuration.yml")
 with open(CONFIG_LOG_PATH, 'rt') as f:
     # Read the yaml configuration
     log_config = yaml.safe_load(f.read())
-    current_date = op.get_filedate()
-    op.make_dir(dir_name="logs/"+current_date)
-    log_config["handlers"]["file"]["filename"] = f'logs/{current_date}/{op.get_filedatetime()}-dataspace-sdk.log'
-    config.dictConfig(log_config)
+    # Set logging filename with datetime
+    date = op.get_filedate()
+    op.make_dir(dir_name="logs/"+date)
+    log_config["handlers"]["file"]["filename"] = f'logs/{date}/{op.get_filedatetime()}-industry-sdk.log'
+    logging.config.dictConfig(log_config)
 
 # Load the configuation for the application
 with open(CONFIG_CONFIG_PATH, 'rt') as f:
     # Read the yaml configuration
     app_configuration = yaml.safe_load(f.read())
+
+app = FastAPI(title="main")
 
 @app.get("/example")
 async def api_call(request: Request):
@@ -113,14 +121,11 @@ def start():
     ## Load in memory data storages and authentication manager
     global edc_service, auth_manager, logger
     
-    # Initialize the server environment and get the comand line arguments
     args = get_arguments()
-
-    # Configure the logging confiuration depending on the configuration stated
     logger = logging.getLogger('staging')
     if(args.debug):
         logger = logging.getLogger('development')
-
+        
     ## Start storage and edc communication service
     edc_service = EdcService()
 
@@ -132,17 +137,17 @@ def start():
 
     # Only start the Uvicorn server if not in test mode
     if not args.test_mode:
-        uvicorn.run(app, host=args.host, port=args.port, log_level=("debug" if args.debug else "info"))         
+        uvicorn.run(app, host=args.host, port=args.port, log_level=("debug" if args.debug else "info"))      
     
 def get_arguments():
     
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--test-mode', action='store_true', help="Run in test mode (skips uvicorn.run())", required=False)
-    
+        
     parser.add_argument("--debug", default=False, action="store_false", help="Enable and disable the debug", required=False)
     
-    parser.add_argument("--port", default=9000, help="The server port where it will be available", type=int, required=False,)
+    parser.add_argument("--port", default=7000, help="The server port where it will be available", type=int, required=False,)
     
     parser.add_argument("--host", default="localhost", help="The server host where it will be available", type=str, required=False)
     
@@ -153,17 +158,16 @@ def get_arguments():
 if __name__ == "__main__":
     
     print("\nEclipse Tractus-X\n"+
-        "    ____        __                                      _____ ____  __ __\n"+
-        "   / __ \\____ _/ /_____ __________  ____ _________     / ___// __ \\/ //_/\n"+
-        "  / / / / __ `/ __/ __ `/ ___/ __ \\/ __ `/ ___/ _ \\    \\__ \\/ / / / ,<   \n"+
-        " / /_/ / /_/ / /_/ /_/ (__  ) /_/ / /_/ / /__/  __/   ___/ / /_/ / /| |  \n"+
-        "/_____/\\__,_/\\__/\\__,_/____/ .___/\\__,_/\\___/\\___/   /____/_____/_/ |_|  \n"+
-        "                          /_/                                            \n"+
+        "    ____          __           __                _____ ____  __ __\n"+
+        "   /  _/___  ____/ /_  _______/ /________  __   / ___// __ \\/ //_/\n"+
+        "   / // __ \\/ __  / / / / ___/ __/ ___/ / / /   \\__ \\/ / / / ,<   \n"+
+        " _/ // / / / /_/ / /_/ (__  ) /_/ /  / /_/ /   ___/ / /_/ / /| |  \n"+
+        "/___/_/ /_/\\__,_/\\__,_/____/\\__/_/   \\__, /   /____/_____/_/ |_|  \n"+
+        "                                    /____/                        \n"+
         "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.1")
 
     print("Application starting, listening to requests...\n")
-
-    # Init application
+        
     start()
 
     print("\nClosing the application... Thank you for using the Eclipse Tractus-X Software Development KIT!")

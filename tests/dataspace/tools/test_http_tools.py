@@ -27,7 +27,7 @@ import requests
 from fastapi.responses import Response, JSONResponse
 from io import BytesIO
 
-from dataspace.tools.http_tools import HttpTools
+from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 
 class TestHttpTools(unittest.TestCase):
     def setUp(self):

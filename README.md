@@ -84,10 +84,10 @@ Our aim is to automate the target releases and compatibility with this systems u
 
 Providing two reusable libraries:
 
-- [Dataspace Foundation Library](./dataspace)
+- [Dataspace Foundation Library](./src/tractusx_sdk/dataspace)
   - Enables your "bytes" data exchange using the EDC and the core services from Catena-X.
   - It provides tools for your exchange agnostic from your use case.
-- [Industry Foundation Library](./industry)
+- [Industry Foundation Library](./src/tractusx_sdk/industry)
   - Enables your data exchange using the dataspace foundation library but for the usage of Digital Twins in the Digital Twin Registry.
 
 ![Architecture](./docs/media/catena-x-speedway-sdk.svg)

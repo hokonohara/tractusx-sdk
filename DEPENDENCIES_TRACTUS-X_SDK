@@ -5,6 +5,7 @@ pypi/pypi/-/Pygments/2.19.1, , approved, #19382
 pypi/pypi/-/SQLAlchemy/2.0.38, MIT AND LGPL-2.0-only AND BSD-3-Clause AND LGPL-2.0-or-later, approved, #19392
 pypi/pypi/-/annotated-types/0.7.0, MIT, approved, clearlydefined
 pypi/pypi/-/anyio/4.8.0, MIT, approved, #19384
+pypi/pypi/-/build/1.2.2.post1, MIT, approved, clearlydefined
 pypi/pypi/-/certifi/2023.7.22, MPL-2.0, approved, #19826
 pypi/pypi/-/cffi/1.17.1, MIT, approved, #19388
 pypi/pypi/-/charset-normalizer/3.4.1, MIT AND (LGPL-2.1-only AND MIT) AND LGPL-2.1-only AND CC-BY-SA-3.0, approved, #19391
@@ -32,6 +33,7 @@ pypi/pypi/-/pluggy/1.5.0, MIT, approved, clearlydefined
 pypi/pypi/-/pycparser/2.22, LGPL-2.0-or-later AND BSD-3-Clause, approved, #14636
 pypi/pypi/-/pydantic/2.6.3, MIT, approved, #13069
 pypi/pypi/-/pydantic_core/2.16.3, MIT, approved, clearlydefined
+pypi/pypi/-/pyproject_hooks/1.2.0, MIT, approved, clearlydefined
 pypi/pypi/-/pytest-asyncio/0.15.1, Apache-2.0, approved, clearlydefined
 pypi/pypi/-/pytest/8.1.1, MIT, approved, #19365
 pypi/pypi/-/python-dotenv/1.0.1, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined

@@ -20,13 +20,5 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
-# Script to setup packege installation
-from setuptools import setup, find_packages
-
-setup(
-    name="tx_industry_sdk",
-    version="0.0.1",
-    packages=find_packages(),
-    install_requires=[],
-)
+__author__ = 'Eclipse Tractus-X Contributors'
+__license__ = "Apache License, Version 2.0"

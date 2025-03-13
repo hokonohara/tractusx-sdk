@@ -32,7 +32,7 @@ import datetime
 import pytest
 from datetime import timezone
 from shutil import copyfile
-from dataspace.tools import op
+from tractusx_sdk.dataspace.tools import op
 
 #------------TEST VARIABLES--------------------------
 

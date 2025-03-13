@@ -1,4 +1,6 @@
 #################################################################################
+# Eclipse Tractus-X - Software Development KIT
+#
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -18,13 +20,32 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+import pytest
+from fastapi.testclient import TestClient
+from tractusx_sdk.dataspace import main
 
-# Script to setup packege installation
-from setuptools import setup, find_packages
+# Set test_mode to True before running tests to skip uvicorn.run
+def set_test_mode():
+    import sys
+    sys.argv = sys.argv + ['--test-mode'] 
 
-setup(
-    name="tractusx_sdk",
-    version="0.0.1",
-    packages=find_packages(),
-    install_requires=[],
-)
+@pytest.fixture
+def client():
+    set_test_mode()
+    main.start()
+    return TestClient(main.app)
+
+def test_api_call_success(client):
+    """
+    Test API call with successful authentication.
+
+    Args:
+        client: A test client instance used to simulate HTTP requests.
+
+    Assertions:
+        - The response status code must be 200.
+        - The response JSON must be None.
+    """
+    response = client.get("/example")
+    assert (200 == response.status_code)
+    assert response.json() is None

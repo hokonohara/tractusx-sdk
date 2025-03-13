@@ -28,7 +28,7 @@ Welcome to the Eclipse Tractus-X Dataspace Software Development KIT! This SDK is
 ## Folder Structure
 
 ```
-dataspace-sdk/
+dataspace/
     ├── config
     ├── managers
     ├── models
@@ -39,13 +39,13 @@ dataspace-sdk/
 
 ## Install in your local environment
 
-1. Go to the '/src' folder
+1. Go to the root '/' folder
 2. Run `pip install -e .`
 3. It will install the SDK in your local environment
 4. Import the SDK like this:
 
 ```python
-   from tx_dataspace_sdk.services import EdcService
+   from tractusx_sdk.dataspace.services import EdcService
 ```
 
 ## Run it in your local environment

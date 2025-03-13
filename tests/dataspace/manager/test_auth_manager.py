@@ -24,7 +24,7 @@ import unittest
 from unittest.mock import Mock
 from fastapi import Request
 from starlette.datastructures import Headers
-from dataspace.managers.auth_manager import AuthManager
+from tractusx_sdk.dataspace.managers.auth_manager import AuthManager
 
 class TestAuthManager(unittest.TestCase):
 
