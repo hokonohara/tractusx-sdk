@@ -21,7 +21,6 @@
 #################################################################################
 
 from typing import Dict
-import requests
 
 from tractusx_sdk.industry.models.v3.aas import (
     AssetKind,
@@ -99,17 +98,6 @@ class AasService:
 
         return headers
 
-    def _get_session(self) -> requests.Session | None:
-        """
-        Get an authenticated session if auth_service is available.
-
-        Returns:
-            requests.Session or None: Authenticated session if available
-        """
-        if self.auth_service:
-            return self.auth_service.get_session()
-        return None
-
     def get_all_asset_administration_shell_descriptors(
         self,
         limit: int | None = None,
@@ -152,7 +140,6 @@ class AasService:
 
         # Get headers and session
         headers = self._prepare_headers(bpn)
-        session = self._get_session()
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors"
@@ -160,7 +147,6 @@ class AasService:
             url=url,
             params=params,
             headers=headers,
-            session=session,
             verify=self.verify_ssl,
         )
 
@@ -194,7 +180,6 @@ class AasService:
         """
         # Get headers and session
         headers = self._prepare_headers(bpn)
-        session = self._get_session()
 
         # Properly encode the AAS identifier as URL-safe Base64
         encoded_identifier = encode_as_base64_url_safe(aas_identifier)
@@ -202,7 +187,7 @@ class AasService:
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}"
         response = HttpTools.do_get(
-            url=url, headers=headers, session=session, verify=self.verify_ssl
+            url=url, headers=headers, verify=self.verify_ssl
         )
 
         # Check for errors
@@ -258,7 +243,6 @@ class AasService:
 
         # Get headers and session
         headers = self._prepare_headers(bpn)
-        session = self._get_session()
 
         # Properly encode the AAS identifier as URL-safe Base64
         encoded_identifier = encode_as_base64_url_safe(aas_identifier)
@@ -269,7 +253,6 @@ class AasService:
             url=url,
             params=params,
             headers=headers,
-            session=session,
             verify=self.verify_ssl,
         )
 
@@ -307,7 +290,6 @@ class AasService:
         """
         # Get headers and session
         headers = self._prepare_headers(bpn)
-        session = self._get_session()
 
         # Properly encode the AAS and Submodel identifiers as URL-safe Base64
         encoded_aas_identifier = encode_as_base64_url_safe(aas_identifier)
@@ -316,7 +298,7 @@ class AasService:
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
         response = HttpTools.do_get(
-            url=url, headers=headers, session=session, verify=self.verify_ssl
+            url=url, headers=headers, verify=self.verify_ssl
         )
 
         # Check for errors
@@ -347,7 +329,6 @@ class AasService:
         """
         # Get headers with content type added
         headers = self._prepare_headers(bpn, method="POST")
-        session = self._get_session()
 
         # Convert ShellDescriptor_3_0 to dictionary with proper handling of empty lists
         shell_descriptor_dict = shell_descriptor.to_dict()
@@ -358,7 +339,6 @@ class AasService:
             url=url,
             json=shell_descriptor_dict,
             headers=headers,
-            session=session,
             verify=self.verify_ssl,
         )
 
