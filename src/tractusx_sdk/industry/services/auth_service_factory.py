@@ -21,7 +21,7 @@
 #################################################################################
 
 import logging
-from industry.services.keycloak_service import KeycloakService
+from tractusx_sdk.industry.services import AuthService, KeycloakService
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +38,7 @@ class AuthServiceFactory:
         client_secret: str,
         realm: str = "default",
         grant_type: str = "client_credentials",
-    ) -> KeycloakService | None:
+    ) -> AuthService | None:
         """
         Create a KeycloakService if authentication parameters are provided.
 

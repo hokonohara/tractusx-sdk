@@ -22,12 +22,12 @@
 
 from keycloak import KeycloakOpenID
 from datetime import datetime, timedelta
-import requests
 import logging
+from tractusx_sdk.industry.services import AuthService
 
 logger = logging.getLogger(__name__)
 
-class KeycloakService:
+class KeycloakService(AuthService):
     """
     KeycloakService is a wrapper around the KeycloakOpenID class from the keycloak library.
     It provides authentication services for accessing protected resources.
@@ -44,8 +44,8 @@ class KeycloakService:
         server_url: str,
         client_id: str,
         client_secret: str,
-        realm: str,
-        grant_type: str,
+        realm: str = "master",
+        grant_type: str = "client_credentials",
     ):
         self.keycloak_openid = KeycloakOpenID(
             server_url=server_url,
@@ -56,30 +56,19 @@ class KeycloakService:
         self.grant_type = grant_type
         self.token = None
         self.token_expiry: datetime | None = None
-        self.session = requests.Session()
-    
-    def get_session(self) -> requests.Session:
-        """
-        Get a session object with the necessary headers to authenticate with the Keycloak server.
-        
-        Returns:
-            requests.Session: Session with authentication headers
-        """
-        # Ensure the token is valid
-        self._refresh_token()
-        return self.session
 
-    def get_access_token(self) -> str:
+    def get_token(self) -> str:
         """
         Get a valid access token, refreshing if necessary.
         
         Returns:
             str: The access token
         """
+        # Refresh token if it has expired
         self._refresh_token()
         return self.token["access_token"]
 
-    def _is_token_expired(self) -> bool:
+    def is_token_valid(self) -> bool:
         """
         Check if the token has expired
         
@@ -106,15 +95,12 @@ class KeycloakService:
             KeycloakError: If token retrieval fails
         """
         try:
-            if self.token is None or self._is_token_expired():
+            if self.token is None or self.is_token_valid():
                 logger.debug("Refreshing Keycloak token")
+                
                 self.token = self.keycloak_openid.token(grant_type=self.grant_type)
                 self.token_expiry = datetime.now() + timedelta(seconds=self.token.get("expires_in", 300))
                 
-                # Update session headers with the new token
-                self.session.headers.update(
-                    {"Authorization": f"Bearer {self.token['access_token']}"}
-                )
                 logger.debug("Token refreshed successfully")
             return self.token["access_token"]
         except Exception as e:

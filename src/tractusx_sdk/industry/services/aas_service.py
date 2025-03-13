@@ -90,7 +90,7 @@ class AasService:
 
         # Add authentication if available
         if self.auth_service:
-            token = self.auth_service.get_access_token()
+            token = self.auth_service.get_token()
             headers["Authorization"] = f"Bearer {token}"
 
         # Add BPN if provided
