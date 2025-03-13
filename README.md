@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This Sofware is still in development. Please consult our [Roadmap](#roadmap)
+
 # Tractus-X Software Development KIT
 
 Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
@@ -9,7 +12,7 @@ Is the literal "tool box" you need to provide data and consume data, how you orc
 
 This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, providing a "smart REST API middleware" that will be maintained by the community.
 
-No specific use case logic will be configured here, only the bare minimum for interacting and complying to the [Catena-X Standards](https://catenax-ev.github.io/docs/standards/overview), and with the KITs which adopt the core data exchange functionalities, in concrete the following ones:
+No specific use case logic will be configured here, only the bare minimum for interacting in a Dataspace and developing your own applications with this stack, based on the KITs which adopt the core data exchange functionalities, in concrete the following ones:
 
 - [Connector KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Connector%20Kit/Adoption%20View/connector_kit_adoption_view)
 - [Digital Twin KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Digital%20Twin%20Kit/Adoption%20View%20Digital%20Twin%20Kit)
@@ -81,10 +84,10 @@ Our aim is to automate the target releases and compatibility with this systems u
 
 Providing two reusable libraries:
 
-- [Dataspace Foundation Library](./dataspace)
+- [Dataspace Foundation Library](./src/tractusx_sdk/dataspace)
   - Enables your "bytes" data exchange using the EDC and the core services from Catena-X.
   - It provides tools for your exchange agnostic from your use case.
-- [Industry Foundation Library](./industry)
+- [Industry Foundation Library](./src/tractusx_sdk/industry)
   - Enables your data exchange using the dataspace foundation library but for the usage of Digital Twins in the Digital Twin Registry.
 
 ![Architecture](./docs/media/catena-x-speedway-sdk.svg)
