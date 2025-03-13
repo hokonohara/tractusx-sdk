@@ -12,7 +12,7 @@ Is the literal "tool box" you need to provide data and consume data, how you orc
 
 This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, providing a "smart REST API middleware" that will be maintained by the community.
 
-No specific use case logic will be configured here, only the bare minimum for interacting and complying to the [Catena-X Standards](https://catenax-ev.github.io/docs/standards/overview), and with the KITs which adopt the core data exchange functionalities, in concrete the following ones:
+No specific use case logic will be configured here, only the bare minimum for interacting in a Dataspace and developing your own applications with this stack, based on the KITs which adopt the core data exchange functionalities, in concrete the following ones:
 
 - [Connector KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Connector%20Kit/Adoption%20View/connector_kit_adoption_view)
 - [Digital Twin KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Digital%20Twin%20Kit/Adoption%20View%20Digital%20Twin%20Kit)
