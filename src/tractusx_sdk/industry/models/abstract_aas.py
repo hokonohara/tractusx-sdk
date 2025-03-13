@@ -272,12 +272,12 @@ class AbstractSubModelDescriptor(
     """
 
     description: List[TMultiLanguage] | None = Field(None)
-    display_name: List[TMultiLanguage] | None = Field(None)
+    display_name: List[TMultiLanguage] | None = Field(None, alias="displayName")
     administration: TAdminInfo | None = None
     endpoints: List[TEndpoint] | None = Field(None)
-    id_short: str | None = Field(None, max_length=128)
+    id_short: str | None = Field(None, max_length=128, alias="idShort")
     id: str | None = Field(None, min_length=1, max_length=2000)
-    semantic_id: TReference | None = None
+    semantic_id: TReference | None = Field(None, alias="semanticId")
     supplemental_semantic_ids: List[TReference] | None = Field(
         None, alias="supplementalSemanticIds"
     )
