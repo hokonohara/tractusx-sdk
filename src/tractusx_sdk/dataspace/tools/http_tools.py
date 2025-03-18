@@ -39,13 +39,13 @@ logger = logging.getLogger('staging')
 class HttpTools:
 
     # do get request without session
-    def do_get(url,verify=False,headers=None,timeout=None,params=None,allow_redirects=False):
+    def do_get(url,verify=True,headers=None,timeout=None,params=None,allow_redirects=False):
         return requests.get(url=url,verify=verify,
                             timeout=timeout,headers=headers,
                             params=params,allow_redirects=allow_redirects)
     
     # do get request with session
-    def do_get(url,session=None,verify=False,headers=None,timeout=None, params=None,allow_redirects=False):
+    def do_get(url,session=None,verify=True,headers=None,timeout=None, params=None,allow_redirects=False):
         if session is None:
             session = requests.Session()
         return session.get(url=url,verify=verify,
@@ -53,21 +53,55 @@ class HttpTools:
                            params=params,allow_redirects=allow_redirects)
     
     # do post request without session
-    def do_post(url,data=None,verify=False,headers=None,timeout=None,json=None,allow_redirects=False):
+    def do_post(url,data=None,verify=True,headers=None,timeout=None,json=None,allow_redirects=False):
         return requests.post(url=url,verify=verify,
                              timeout=timeout,headers=headers,
                              data=data,json=json,
                              allow_redirects=allow_redirects)
     
     # do post request with session
-    def do_post(url,session=None,data=None,verify=False,headers=None,timeout=None,json=None,allow_redirects=False):
+    def do_post(url,session=None,data=None,verify=True,headers=None,timeout=None,json=None,allow_redirects=False):
         if session is None:
             session = requests.Session()
         return session.post(url=url,verify=verify,
                             timeout=timeout,headers=headers,
                             data=data,json=json,
                             allow_redirects=allow_redirects)
-    
+
+    # do put request without session
+    @staticmethod
+    def do_put(url, data=None, verify=True, headers=None, timeout=None, json=None, allow_redirects=False):
+        return requests.put(url=url, verify=verify,
+                            timeout=timeout, headers=headers,
+                            data=data, json=json,
+                            allow_redirects=allow_redirects)
+
+    # do put request with session
+    @staticmethod
+    def do_put(url, session=None, data=None, verify=True, headers=None, timeout=None, json=None, allow_redirects=False):
+        if session is None:
+            session = requests.Session()
+        return session.put(url=url, verify=verify,
+                           timeout=timeout, headers=headers,
+                           data=data, json=json,
+                           allow_redirects=allow_redirects)
+
+    # do delete request without session
+    @staticmethod
+    def do_delete(url, verify=True, headers=None, timeout=None, params=None, allow_redirects=False):
+        return requests.delete(url=url, verify=verify,
+                               timeout=timeout, headers=headers,
+                               params=params, allow_redirects=allow_redirects)
+
+    # do delete request with session
+    @staticmethod
+    def do_delete(url, session=None, verify=True, headers=None, timeout=None, params=None, allow_redirects=False):
+        if session is None:
+            session = requests.Session()
+        return session.delete(url=url, verify=verify,
+                              timeout=timeout, headers=headers,
+                              params=params, allow_redirects=allow_redirects)
+
     # prepare response
     @staticmethod
     def response(data, status=200, content_type='application/json'):
