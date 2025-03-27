@@ -22,6 +22,11 @@
 
 from fastapi import FastAPI, HTTPException, Request
 
+## Import FastAPI Router
+from tractusx_sdk.industry.controllers import (
+    checks_router
+)
+
 ## FAST API example for keycloak
 from fastapi_keycloak_middleware import CheckPermissions
 from fastapi_keycloak_middleware import get_user
@@ -39,6 +44,8 @@ import urllib3
 urllib3.disable_warnings()
 
 app = FastAPI(title="main")
+
+app.include_router(checks_router, prefix="/api/check")
 
 @app.get("/example")
 async def api_call(request: Request):
