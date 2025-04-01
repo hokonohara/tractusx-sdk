@@ -55,6 +55,7 @@ class HttpTools:
                            params=params,allow_redirects=allow_redirects)
     
     # do post request without session
+    @staticmethod
     def do_post_without_session(url,data=None,verify=True,headers=None,timeout=None,json=None,allow_redirects=False):
         return requests.post(url=url,verify=verify,
                              timeout=timeout,headers=headers,
