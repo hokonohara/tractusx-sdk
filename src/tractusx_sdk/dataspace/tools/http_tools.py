@@ -46,6 +46,7 @@ class HttpTools:
                             params=params,allow_redirects=allow_redirects)
     
     # do get request with session
+    @staticmethod
     def do_get_with_session(url,session=None,verify=True,headers=None,timeout=None, params=None,allow_redirects=False):
         if session is None:
             session = requests.Session()
