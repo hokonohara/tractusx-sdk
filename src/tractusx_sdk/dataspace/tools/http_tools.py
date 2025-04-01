@@ -39,6 +39,7 @@ logger = logging.getLogger('staging')
 class HttpTools:
 
     # do get request without session
+    @staticmethod
     def do_get_without_session(url,verify=True,headers=None,timeout=None,params=None,allow_redirects=False):
         return requests.get(url=url,verify=verify,
                             timeout=timeout,headers=headers,
