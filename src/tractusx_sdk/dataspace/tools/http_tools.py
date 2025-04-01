@@ -63,6 +63,7 @@ class HttpTools:
                              allow_redirects=allow_redirects)
     
     # do post request with session
+    @staticmethod
     def do_post_with_session(url,session=None,data=None,verify=True,headers=None,timeout=None,json=None,allow_redirects=False):
         if session is None:
             session = requests.Session()
