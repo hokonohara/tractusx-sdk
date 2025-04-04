@@ -51,3 +51,12 @@ class TestAdapterFactory(unittest.TestCase):
                     base_url=self.base_url,
                     headers=self.headers
                 )
+
+    def test_get_dataplane_adapter_failure(self):
+        # TODO: There is no dataplane adapter yet. Adjust this test when it is implemented.
+        with self.assertRaises(AttributeError):
+            AdapterFactory.get_dataplane_adapter(
+                connector_version="v0_9_0",
+                base_url=self.base_url,
+                headers=self.headers
+            )
