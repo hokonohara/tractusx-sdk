@@ -7,7 +7,7 @@ from src.tractusx_sdk.dataspace.adapters.connector.adapter_factory import Adapte
 class TestAdapterFactory(unittest.TestCase):
 
     def setUp(self):
-        self.base_url = "http://example.com"
+        self.base_url = "https://example.com"
         self.headers = {"Authorization": "Bearer token"}
         self.dma_path = "/dma"
 
