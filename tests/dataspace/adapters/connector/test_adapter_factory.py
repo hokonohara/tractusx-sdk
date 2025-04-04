@@ -32,7 +32,7 @@ class TestAdapterFactory(unittest.TestCase):
             )
 
     def test_get_adapter_unsupported_type(self):
-        with self.assertRaises(ImportError):
+        with self.assertRaises(AttributeError):
             adapter_type = Enum('AdapterType', { 'foo': 'bar' })
             AdapterFactory._get_adapter(
                 adapter_type=adapter_type.foo,

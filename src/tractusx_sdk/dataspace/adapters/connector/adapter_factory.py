@@ -53,16 +53,21 @@ class AdapterFactory:
         if connector_version not in AdapterFactory.SUPPORTED_VERSIONS:
             raise ValueError(f"Unsupported version {connector_version}")
 
-        module_name = f"{".".join(__name__.split(".")[0:-1])}.{connector_version}.{adapter_type.value.lower()}_adapter"
+        # Compute the adapter module path dynamically, depending on the connector version
+        connector_module = ".".join(__name__.split(".")[0:-1])
+        module_name = f"{connector_module}.{connector_version}"
+
+        # Compute the adapter class name based on the adapter type
         adapter_class_name = f"{adapter_type.value}Adapter"
 
         try:
+            # Dynamically import the adapter class
             module = import_module(module_name)
             adapter_class = getattr(module, adapter_class_name)
             return adapter_class(base_url=base_url, headers=headers, **kwargs)
         except AttributeError as attr_exception:
             raise AttributeError(
-                f"Failed to import adapter class '{adapter_class_name}' for module '{module_name}'"
+                f"Failed to import adapter class {adapter_class_name} for module {module_name}"
             ) from attr_exception
         except (ModuleNotFoundError, ImportError) as import_exception:
             raise ImportError(
