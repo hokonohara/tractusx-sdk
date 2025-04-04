@@ -16,7 +16,7 @@ SPDX-License-Identifier: CC-BY-4.0
 
 -->
 
-# 2. Data Storage Architecture
+# 3. SDK Module Architecture
 
 Date: 2025-03-31
 
