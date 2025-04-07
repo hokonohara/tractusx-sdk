@@ -21,12 +21,13 @@
 #################################################################################
 
 from json import dumps as jdumps
+from pydantic import Field
 
 from ..base_asset_model import BaseAssetModel
 
 
 class AssetModel(BaseAssetModel):
-    _TYPE: str = "Asset"
+    TYPE: str = Field(default="Asset", frozen=True)
 
     def to_data(self):
         """
@@ -38,8 +39,8 @@ class AssetModel(BaseAssetModel):
 
         data = {
             "@context": self.context,
-            "@type": self._TYPE,
-            "@id": self.id,
+            "@type": self.TYPE,
+            "@id": self.oid,
             "properties": self.properties,
             "privateProperties": self.private_properties,
             "dataAddress": self.data_address

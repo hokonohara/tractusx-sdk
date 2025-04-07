@@ -21,14 +21,15 @@
 #################################################################################
 
 from json import dumps as jdumps
+from pydantic import Field
 
 from ..base_policy_model import BasePolicyModel
 
 
 class PolicyModel(BasePolicyModel):
-    _TYPE = "PolicyDefinition"
-    _ODRL_TYPE = "odrl:Set"
-    _ODRL_CONTEXT = "http://www.w3.org/ns/odrl.jsonld"
+    TYPE: str = Field(default="PolicyDefinition", frozen=True)
+    ODRL_TYPE: str = Field(default="odrl:Set", frozen=True)
+    ODRL_CONTEXT: str = Field(default="http://www.w3.org/ns/odrl.jsonld", frozen=True)
 
     def to_data(self):
         """
@@ -39,15 +40,15 @@ class PolicyModel(BasePolicyModel):
         """
 
         data = {
-            "@context": self._context,
-            "@type": self._TYPE,
-            "@id": self._id,
+            "@context": self.context,
+            "@type": self.TYPE,
+            "@id": self.oid,
             "policy": {
-                "@context": self._ODRL_CONTEXT,
-                "@type": self._ODRL_TYPE,
-                "permission": self._permissions,
-                "prohibition": self._prohibitions,
-                "obligation": self._obligations
+                "@context": self.ODRL_CONTEXT,
+                "@type": self.ODRL_TYPE,
+                "permission": self.permissions,
+                "prohibition": self.prohibitions,
+                "obligation": self.obligations
             }
         }
 
