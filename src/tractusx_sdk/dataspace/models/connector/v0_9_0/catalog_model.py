@@ -20,16 +20,32 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .policy_model import PolicyModel
-from .contract_definition_model import ContractDefinitionModel
-from .queryspec_model import QuerySpecModel
-from .contract_negotiation import ContractNegotiationModel
+from json import dumps as jdumps
+from pydantic import Field
 
-__all__ = [
-    'AssetModel',
-    'PolicyModel',
-    'ContractDefinitionModel',
-    'QuerySpecModel',
-    'ContractNegotiationModel'
-]
+from ..base_catalog_model import BaseCatalogModel
+
+
+class CatalogModel(BaseCatalogModel):
+    TYPE: str = Field(default="CatalogRequest", frozen=True)
+    PROTOCOL: str = Field(default="dataspace-protocol-http")
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a v0.9.0 connector when using a catalog model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "counterPartyAddress": self.counter_party_address,
+            "counterPartyId": self.counter_party_id,
+            "protocol": self.PROTOCOL,
+            "additionalScopes": self.additional_scopes,
+            "querySpec": self.query_spec
+        }
+
+        return jdumps(data)
