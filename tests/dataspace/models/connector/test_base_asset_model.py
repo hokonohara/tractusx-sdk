@@ -62,7 +62,7 @@ class TestBaseAssetModel(unittest.TestCase):
         self.assertEqual(ConcreteAssetModel, type(asset))
         self.assertEqual(self.oid, asset.oid)
         self.assertEqual(self.data_address, asset.data_address)
-        self.assertEqual({}, asset.context)
+        self.assertEqual({"@vocab": "https://w3id.org/edc/v0.0.1/ns/"}, asset.context)
         self.assertEqual({}, asset.properties)
         self.assertEqual({}, asset.private_properties)
 

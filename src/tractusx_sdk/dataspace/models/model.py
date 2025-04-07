@@ -25,9 +25,8 @@ from pydantic import BaseModel as PydanticBaseModel
 
 
 class BaseModel(PydanticBaseModel, ABC):
-    @classmethod
     @abstractmethod
-    def to_data(cls):
+    def to_data(self):
         """
         This method is intended to convert the model inheriting this class to a JSON
         representing the data that will be sent to the connector when using a policy model.

@@ -33,7 +33,9 @@ class BasePolicyModel(BaseModel, ABC):
     """
 
     oid: str
-    context: Optional[dict] = Field(default={"@vocab": "https://w3id.org/edc/v0.0.1/ns/"})
+    context: Optional[dict] = Field(default={
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    })
     permissions: Optional[list[dict]] = Field(default_factory=list)
     prohibitions: Optional[list[dict]] = Field(default_factory=list)
     obligations: Optional[list[dict]] = Field(default_factory=list)

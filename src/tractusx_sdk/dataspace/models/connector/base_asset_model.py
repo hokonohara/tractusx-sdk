@@ -34,7 +34,9 @@ class BaseAssetModel(BaseModel, ABC):
 
     oid: str
     data_address: dict
-    context: Optional[dict] = Field(default_factory=dict)
+    context: Optional[dict] = Field(default={
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    })
     properties: Optional[dict] = Field(default_factory=dict)
     private_properties: Optional[dict] = Field(default_factory=dict)
 

@@ -73,7 +73,7 @@ class TestBasePolicyModel(unittest.TestCase):
         self.assertEqual(self.oid, contract_definition.oid)
         self.assertEqual(self.access_policy_id, contract_definition.access_policy_id)
         self.assertEqual(self.contract_policy_id, contract_definition.contract_policy_id)
-        self.assertEqual({}, contract_definition.context)
+        self.assertEqual({"@vocab": "https://w3id.org/edc/v0.0.1/ns/"}, contract_definition.context)
         self.assertEqual([], contract_definition.assets_selector)
 
     def test_complete_builder(self):
