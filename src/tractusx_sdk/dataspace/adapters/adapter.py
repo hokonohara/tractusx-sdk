@@ -79,6 +79,18 @@ class Adapter:
             self._data["headers"] = headers
             return self
 
+        def data(self, data: dict):
+            """
+            This method is intended to set all the data of the adapters inheriting this class.
+
+            It can be used to set all the data of the adapter in a single call, without the need to declare
+            each builder method separately. This is useful for cases where an adapter may deviate from its base
+            adapter implementation, and the base adapter builder methods are not sufficient to set all the necessary data.
+            """
+
+            self._data.update(data)
+            return self
+
         def build(self):
             """
             :return: an instance of the class inheriting the base adapter

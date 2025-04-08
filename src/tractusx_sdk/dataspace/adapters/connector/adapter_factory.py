@@ -96,6 +96,7 @@ class AdapterFactory:
             base_url: str,
             dma_path: str,
             headers: dict = None,
+            **kwargs
     ):
         """
         Create a (DMA) adapter instance, based a specific version.
@@ -115,6 +116,9 @@ class AdapterFactory:
         builder.base_url(base_url)
         builder.headers(headers)
         builder.dma_path(dma_path)
+
+        # Include any additional parameters
+        builder.data(kwargs)
         return builder.build()
 
     @staticmethod
@@ -122,6 +126,7 @@ class AdapterFactory:
             connector_version: str,
             base_url: str,
             headers: dict = None,
+            **kwargs
     ):
         """
         Create a dataplane adapter instance, based a specific version.
@@ -139,4 +144,7 @@ class AdapterFactory:
 
         builder.base_url(base_url)
         builder.headers(headers)
+
+        # Include any additional parameters
+        builder.data(kwargs)
         return builder.build()
