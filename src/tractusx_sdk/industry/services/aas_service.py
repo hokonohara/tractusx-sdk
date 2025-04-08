@@ -157,7 +157,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors"
-        response = HttpTools.do_get_without_session(
+        response = HttpTools.do_get(
             url=url,
             params=params,
             headers=headers,
@@ -357,7 +357,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}/submodel-descriptors"
-        response = HttpTools.do_get_without_session(
+        response = HttpTools.do_get(
             url=url,
             params=params,
             headers=headers,
