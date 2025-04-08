@@ -67,7 +67,7 @@ class TestHttpTools(unittest.TestCase):
         """Test POST request with bad request response."""
         mock_post.return_value = Mock(status_code=400, json=lambda: {"error": "Bad Request"})
         
-        response = HttpTools.do_post_without_session(self.test_url, json=self.payload)
+        response = HttpTools.do_post(self.test_url, json=self.payload)
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), {"error": "Bad Request"})
 
