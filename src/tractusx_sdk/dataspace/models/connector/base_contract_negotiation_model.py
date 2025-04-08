@@ -24,7 +24,7 @@ from abc import ABC
 from typing import Optional
 from pydantic import Field
 
-from .v0_9_0 import PolicyModel
+from .base_policy_model import BasePolicyModel
 from ..model import BaseModel
 
 
@@ -64,7 +64,7 @@ class BaseContractNegotiationModel(BaseModel, ABC):
             self._data["provider_id"] = provider_id
             return self
 
-        def offer_policy_from_policy_model(self, policy_model: PolicyModel):
+        def offer_policy_from_policy_model(self, policy_model: BasePolicyModel):
             # Remove unnecessary fields from policy model data
             policy_model_data = policy_model.to_data()
             policy_model_data.pop("oid", None)
