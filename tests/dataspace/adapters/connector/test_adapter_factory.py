@@ -56,22 +56,17 @@ class TestAdapterFactory(unittest.TestCase):
     def test_get_adapter_unsupported_type(self):
         with self.assertRaises(AttributeError):
             adapter_type = Enum('AdapterType', { 'foo': 'bar' })
-            AdapterFactory._get_adapter(
+            AdapterFactory._get_adapter_builder(
                 adapter_type=adapter_type.foo,
-                connector_version="v0_9_0",
-                base_url=self.base_url,
-                dma_path=self.dma_path,
-                headers=self.headers
+                connector_version="v0_9_0"
             )
 
     def test_get_adapter_import_error(self):
         with patch.object(AdapterFactory, "SUPPORTED_VERSIONS", new=["v0_0_0"]):
             with self.assertRaises(ImportError):
-                AdapterFactory._get_adapter(
+                AdapterFactory._get_adapter_builder(
                     adapter_type=AdapterType.DMA_ADAPTER,
-                    connector_version="v0_0_0",
-                    base_url=self.base_url,
-                    headers=self.headers
+                    connector_version="v0_0_0"
                 )
 
     def test_get_dataplane_adapter_failure(self):

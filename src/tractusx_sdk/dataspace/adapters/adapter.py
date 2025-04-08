@@ -30,7 +30,7 @@ class Adapter:
     Base adapter class
     """
 
-    base_url: str = ""
+    base_url: str
     session = None
 
     def __init__(
@@ -50,6 +50,40 @@ class Adapter:
 
         if headers:
             self.session.headers.update(headers)
+
+    @classmethod
+    def builder(cls):
+        """
+        This method is intended to return a builder for adapters inheriting this class.
+        This means that such an adapter should implement its own `_Builder` inner class.
+        By default, the `Adapter._Builder` class is used.
+
+        :return: a builder for the model inheriting this class
+        """
+        return cls._Builder(cls)
+
+    class _Builder:
+        """
+        Default _Builder class for an Adapter.
+        """
+
+        def __init__(self, cls):
+            self.cls = cls
+            self._data = {}
+
+        def base_url(self, base_url: str):
+            self._data["base_url"] = base_url
+            return self
+
+        def headers(self, headers: dict):
+            self._data["headers"] = headers
+            return self
+
+        def build(self):
+            """
+            :return: an instance of the class inheriting the base adapter
+            """
+            return self.cls(**self._data)
 
     @staticmethod
     def concat_into_url(*args):
@@ -127,18 +161,18 @@ class Adapter:
 
         return self.request("delete", url, **kwargs)
 
-    def request(self, method: str, url: str, **kwargs):
+    def request(self, method: str, path: str = "", **kwargs):
         """
         Main method for performing requests
 
         :param method: HTTP method to use with requests
-        :param url: Partial URL to append to the base adapter URL
+        :param path: Path to append to the base adapter URL
         :param kwargs: Keyword arguments to include in the request
 
         :return: The response of the request
         """
 
-        url = self.concat_into_url(self.base_url, url)
+        url = self.concat_into_url(self.base_url, path)
 
         response = self.session.request(
             method=method,
