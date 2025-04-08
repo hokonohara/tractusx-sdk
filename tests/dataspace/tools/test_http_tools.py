@@ -138,7 +138,7 @@ class TestHttpTools(unittest.TestCase):
         """Test DELETE request with not found response."""
         mock_delete.return_value = Mock(status_code=404, json=lambda: {"error": "Not Found"})
         
-        response = HttpTools.do_delete_without_session(self.test_url)
+        response = HttpTools.do_delete(self.test_url)
         self.assertEqual(response.status_code, 404)
         self.assertEqual(response.json(), {"error": "Not Found"})
 
