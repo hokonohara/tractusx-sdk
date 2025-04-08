@@ -34,8 +34,8 @@ class BaseTransferProcessModel(BaseModel, ABC):
 
     counter_party_address: str
     transfer_type: str
-    contract_id: dict
-    data_destination: str
+    contract_id: str
+    data_destination: dict
     private_properties: Optional[dict] = Field(default_factory=dict)
     callback_addresses: Optional[list[dict]] = Field(default_factory=list)
     context: Optional[dict] = Field(default={
@@ -51,10 +51,22 @@ class BaseTransferProcessModel(BaseModel, ABC):
             self._data["counter_party_address"] = counter_party_address
             return self
 
+        def transfer_type(self, transfer_type: str):
+            self._data["transfer_type"] = transfer_type
+            return self
+
         def contract_id(self, contract_id: str):
             self._data["contract_id"] = contract_id
             return self
 
-        def asset_id(self, asset_id: str):
-            self._data["asset_id"] = asset_id
+        def data_destination(self, data_destination: dict):
+            self._data["data_destination"] = data_destination
+            return self
+
+        def private_properties(self, private_properties: dict):
+            self._data["private_properties"] = private_properties
+            return self
+
+        def callback_addresses(self, callback_addresses: list[dict]):
+            self._data["callback_addresses"] = callback_addresses
             return self
