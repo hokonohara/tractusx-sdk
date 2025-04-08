@@ -74,7 +74,7 @@ class HttpTools:
 
     # do put request without session
     @staticmethod
-    def do_put_without_session(url, data=None, verify=True, headers=None, timeout=None, json=None, allow_redirects=False):
+    def do_put(url, data=None, verify=True, headers=None, timeout=None, json=None, allow_redirects=False):
         return requests.put(url=url, verify=verify,
                             timeout=timeout, headers=headers,
                             data=data, json=json,
