@@ -22,45 +22,49 @@
 
 import unittest
 
+from src.tractusx_sdk.dataspace.models.connector.base_contract_definition_model import BaseContractDefinitionModel
 from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
-class TestModelFactoryAsset(unittest.TestCase):
+class TestModelFactoryContractDefinition(unittest.TestCase):
     def setUp(self):
         self.connector_version = "v0_9_0"
         self.oid = "test-oid"
-        self.data_address = {"type": "test_type", "value": "test_value"}
+        self.access_policy_id = "test-access-policy-id"
+        self.contract_policy_id = "test-contract-policy-id"
         self.context = {"key": "value"}
-        self.properties = {"prop_key": "prop_value"}
-        self.private_properties = {"private_key": "private_value"}
+        self.assets_selector = [{"key": "value"}]
 
-    def test_get_asset_model_with_defaults(self):
-        model = ModelFactory.get_asset_model(
+    def test_get_contract_definition_model_with_defaults(self):
+        model = ModelFactory.get_contract_definition_model(
             connector_version=self.connector_version,
             oid=self.oid,
-            data_address=self.data_address
+            access_policy_id=self.access_policy_id,
+            contract_policy_id=self.contract_policy_id
         )
 
+        self.assertIsInstance(model, BaseContractDefinitionModel)
         self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
+        self.assertEqual(self.access_policy_id, model.access_policy_id)
+        self.assertEqual(self.contract_policy_id, model.contract_policy_id)
         self.assertEqual({
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }, model.context)
-        self.assertEqual({}, model.properties)
-        self.assertEqual({}, model.private_properties)
+        self.assertEqual([], model.assets_selector)
 
-    def test_get_asset_model_without_defaults(self):
-        model = ModelFactory.get_asset_model(
+    def test_get_contract_definition_model_without_defaults(self):
+        model = ModelFactory.get_contract_definition_model(
             connector_version=self.connector_version,
             oid=self.oid,
-            data_address=self.data_address,
+            access_policy_id=self.access_policy_id,
+            contract_policy_id=self.contract_policy_id,
             context=self.context,
-            properties=self.properties,
-            private_properties=self.private_properties
+            assets_selector=self.assets_selector
         )
 
+        self.assertIsInstance(model, BaseContractDefinitionModel)
         self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
+        self.assertEqual(self.access_policy_id, model.access_policy_id)
+        self.assertEqual(self.contract_policy_id, model.contract_policy_id)
         self.assertEqual(self.context, model.context)
-        self.assertEqual(self.properties, model.properties)
-        self.assertEqual(self.private_properties, model.private_properties)
+        self.assertEqual(self.assets_selector, model.assets_selector)

@@ -22,45 +22,49 @@
 
 import unittest
 
+from src.tractusx_sdk.dataspace.models.connector.base_queryspec_model import BaseQuerySpecModel
 from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
-class TestModelFactoryAsset(unittest.TestCase):
+class TestModelFactoryQuerySpec(unittest.TestCase):
     def setUp(self):
         self.connector_version = "v0_9_0"
-        self.oid = "test-oid"
-        self.data_address = {"type": "test_type", "value": "test_value"}
         self.context = {"key": "value"}
-        self.properties = {"prop_key": "prop_value"}
-        self.private_properties = {"private_key": "private_value"}
+        self.offset = 5
+        self.limit = 20
+        self.sort_order = "ASC"
+        self.sort_field = "name"
+        self.filter_expression = [{"key": "value"}]
 
-    def test_get_asset_model_with_defaults(self):
-        model = ModelFactory.get_asset_model(
-            connector_version=self.connector_version,
-            oid=self.oid,
-            data_address=self.data_address
+    def test_get_queryspec_model_with_defaults(self):
+        model = ModelFactory.get_queryspec_model(
+            connector_version=self.connector_version
         )
 
-        self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
+        self.assertIsInstance(model, BaseQuerySpecModel)
+        self.assertEqual(0, model.offset)
+        self.assertEqual(10, model.limit)
+        self.assertEqual("DESC", model.sort_order)
+        self.assertEqual("", model.sort_field)
+        self.assertEqual([], model.filter_expression)
         self.assertEqual({
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }, model.context)
-        self.assertEqual({}, model.properties)
-        self.assertEqual({}, model.private_properties)
 
-    def test_get_asset_model_without_defaults(self):
-        model = ModelFactory.get_asset_model(
+    def test_get_queryspec_model_without_defaults(self):
+        model = ModelFactory.get_queryspec_model(
             connector_version=self.connector_version,
-            oid=self.oid,
-            data_address=self.data_address,
             context=self.context,
-            properties=self.properties,
-            private_properties=self.private_properties
+            offset=self.offset,
+            limit=self.limit,
+            sort_order=self.sort_order,
+            sort_field=self.sort_field,
+            filter_expression=self.filter_expression
         )
 
-        self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
+        self.assertEqual(self.offset, model.offset)
+        self.assertEqual(self.limit, model.limit)
+        self.assertEqual(self.sort_order, model.sort_order)
+        self.assertEqual(self.sort_field, model.sort_field)
+        self.assertEqual(self.filter_expression, model.filter_expression)
         self.assertEqual(self.context, model.context)
-        self.assertEqual(self.properties, model.properties)
-        self.assertEqual(self.private_properties, model.private_properties)

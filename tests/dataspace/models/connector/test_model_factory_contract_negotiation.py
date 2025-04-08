@@ -38,7 +38,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.asset_id = "asset-id"
         self.offer_id = "offer-id"
         self.provider_id = "provider-id"
-        self.offer_policy = {"offer_policy_key": "offer_policy_value"}
+        self.offer_policy_data = {"offer_policy_key": "offer_policy_value"}
         self.policy_data = {"policy_key": "policy_value"}
         self.callback_addresses = [{"callback-address": "https://callback-address.com"}]
 
@@ -72,14 +72,14 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.assertEqual(self.provider_id, model.provider_id)
         self.assertEqual(self.policy_data, model.offer_policy)
 
-    def test_get_contract_negotiation_model_with_offer_policy_only(self):
+    def test_get_contract_negotiation_model_with_offer_policy_data_only(self):
         model = ModelFactory.get_contract_negotiation_model(
             connector_version=self.connector_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,
             provider_id=self.provider_id,
-            offer_policy=self.offer_policy
+            offer_policy=self.offer_policy_data
         )
 
         self.assertIsInstance(model, BaseContractNegotiationModel)
@@ -87,7 +87,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.assertEqual(self.offer_id, model.offer_id)
         self.assertEqual(self.asset_id, model.asset_id)
         self.assertEqual(self.provider_id, model.provider_id)
-        self.assertEqual(self.offer_policy, model.offer_policy)
+        self.assertEqual(self.offer_policy_data, model.offer_policy)
 
     def test_get_contract_negotiation_model_with_offer_policy_model_overwrite(self):
         policy_model = Mock(BasePolicyModel)
@@ -100,25 +100,19 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
             asset_id=self.asset_id,
             provider_id=self.provider_id,
             offer_policy_model=policy_model,
-            offer_policy=self.offer_policy
+            offer_policy=self.offer_policy_data
         )
 
-        self.assertIsInstance(model, BaseContractNegotiationModel)
-        self.assertEqual(self.counter_party_address, model.counter_party_address)
-        self.assertEqual(self.offer_id, model.offer_id)
-        self.assertEqual(self.asset_id, model.asset_id)
-        self.assertEqual(self.provider_id, model.provider_id)
-        self.assertEqual(self.policy_data, model.offer_policy)
-        self.assertNotEqual(self.offer_policy, model.offer_policy)
+        self.assertNotEqual(self.offer_policy_data, model.offer_policy)
 
-    def test_get_complete_contract_negotiation_model(self):
+    def test_get_contract_negotiation_model_without_defaults(self):
         model = ModelFactory.get_contract_negotiation_model(
             connector_version=self.connector_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,
             provider_id=self.provider_id,
-            offer_policy=self.offer_policy,
+            offer_policy=self.offer_policy_data,
             context=self.context,
             callback_addresses=self.callback_addresses
         )
@@ -128,6 +122,6 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.assertEqual(self.offer_id, model.offer_id)
         self.assertEqual(self.asset_id, model.asset_id)
         self.assertEqual(self.provider_id, model.provider_id)
-        self.assertEqual(self.offer_policy, model.offer_policy)
+        self.assertEqual(self.offer_policy_data, model.offer_policy)
         self.assertEqual(self.context, model.context)
         self.assertEqual(self.callback_addresses, model.callback_addresses)

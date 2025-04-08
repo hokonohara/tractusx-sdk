@@ -22,45 +22,47 @@
 
 import unittest
 
+from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
 from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
-class TestModelFactoryAsset(unittest.TestCase):
+class TestModelFactoryPolicy(unittest.TestCase):
     def setUp(self):
         self.connector_version = "v0_9_0"
         self.oid = "test-oid"
-        self.data_address = {"type": "test_type", "value": "test_value"}
         self.context = {"key": "value"}
-        self.properties = {"prop_key": "prop_value"}
-        self.private_properties = {"private_key": "private_value"}
+        self.permissions = [{"action": "permission"}]
+        self.prohibitions = [{"action": "prohibitions"}]
+        self.obligations = [{"action": "obligations"}]
 
-    def test_get_asset_model_with_defaults(self):
-        model = ModelFactory.get_asset_model(
+    def test_get_policy_model_with_defaults(self):
+        model = ModelFactory.get_policy_model(
             connector_version=self.connector_version,
-            oid=self.oid,
-            data_address=self.data_address
+            oid=self.oid
         )
 
+        self.assertIsInstance(model, BasePolicyModel)
         self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
         self.assertEqual({
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
         }, model.context)
-        self.assertEqual({}, model.properties)
-        self.assertEqual({}, model.private_properties)
+        self.assertEqual([], model.permissions)
+        self.assertEqual([], model.prohibitions)
+        self.assertEqual([], model.obligations)
 
-    def test_get_asset_model_without_defaults(self):
-        model = ModelFactory.get_asset_model(
+    def test_get_policy_model_without_defaults(self):
+        model = ModelFactory.get_policy_model(
             connector_version=self.connector_version,
             oid=self.oid,
-            data_address=self.data_address,
             context=self.context,
-            properties=self.properties,
-            private_properties=self.private_properties
+            permissions=self.permissions,
+            prohibitions=self.prohibitions,
+            obligations=self.obligations
         )
 
+        self.assertIsInstance(model, BasePolicyModel)
         self.assertEqual(self.oid, model.oid)
-        self.assertEqual(self.data_address, model.data_address)
         self.assertEqual(self.context, model.context)
-        self.assertEqual(self.properties, model.properties)
-        self.assertEqual(self.private_properties, model.private_properties)
+        self.assertEqual(self.permissions, model.permissions)
+        self.assertEqual(self.prohibitions, model.prohibitions)
+        self.assertEqual(self.obligations, model.obligations)
