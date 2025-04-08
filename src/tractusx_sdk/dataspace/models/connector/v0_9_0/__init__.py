@@ -21,15 +21,19 @@
 #################################################################################
 
 from .asset_model import AssetModel
-from .policy_model import PolicyModel
+from .catalog_model import CatalogModel
 from .contract_definition_model import ContractDefinitionModel
+from .contract_negotiation_model import ContractNegotiationModel
+from .policy_model import PolicyModel
 from .queryspec_model import QuerySpecModel
-from .contract_negotiation import ContractNegotiationModel
+from .transfer_process_model import TransferProcessModel
 
 __all__ = [
     'AssetModel',
-    'PolicyModel',
+    'CatalogModel',
     'ContractDefinitionModel',
+    'ContractNegotiationModel',
+    'PolicyModel',
     'QuerySpecModel',
-    'ContractNegotiationModel'
+    'TransferProcessModel'
 ]
