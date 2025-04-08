@@ -94,7 +94,7 @@ class TestHttpTools(unittest.TestCase):
         """Test a successful PUT request."""
         mock_put.return_value = Mock(status_code=200, json=lambda: {"message": "updated"})
         
-        response = HttpTools.do_put_without_session(self.test_url, json=self.payload)
+        response = HttpTools.do_put(self.test_url, json=self.payload)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "updated"})
 
