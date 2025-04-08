@@ -131,13 +131,13 @@ class ModelFactory:
         builder.data_address(data_address)
 
         # Check for the optional parameters
-        if context:
+        if context is not None:
             builder.context(context)
 
-        if properties:
+        if properties is not None:
             builder.properties(properties)
 
-        if private_properties:
+        if private_properties is not None:
             builder.private_properties(private_properties)
 
         # Include any additional parameters
@@ -178,15 +178,15 @@ class ModelFactory:
         builder.counter_party_id(counter_party_id)
 
         # Check for the optional parameters
-        if context:
+        if context is not None:
             builder.context(context)
 
-        if additional_scopes:
+        if additional_scopes is not None:
             builder.additional_scopes(additional_scopes)
 
-        if queryspec_model:
+        if queryspec_model is not None:
             builder.queryspec_from_queryspec_model(queryspec_model)
-        elif queryspec:
+        elif queryspec is not None:
             builder.queryspec(queryspec)
 
         # Include any additional parameters
@@ -224,10 +224,10 @@ class ModelFactory:
         builder.contract_policy_id(contract_policy_id)
 
         # Check for the optional parameters
-        if context:
+        if context is not None:
             builder.context(context)
 
-        if assets_selector:
+        if assets_selector is not None:
             builder.assets_selector(assets_selector)
 
         # Include any additional parameters
@@ -276,15 +276,15 @@ class ModelFactory:
         builder.provider_id(provider_id)
 
         # Check for the optional parameters
-        if offer_policy_model:
+        if offer_policy_model is not None:
             builder.offer_policy_from_policy_model(offer_policy_model)
-        elif offer_policy:
+        elif offer_policy is not None:
             builder.offer_policy(offer_policy)
 
-        if context:
+        if context is not None:
             builder.context(context)
 
-        if callback_addresses:
+        if callback_addresses is not None:
             builder.callback_addresses(callback_addresses)
 
         # Include any additional parameters
