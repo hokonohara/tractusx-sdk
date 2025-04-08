@@ -146,7 +146,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors"
-        response = HttpTools.do_get_without_session(
+        response = HttpTools.do_get(
             url=url,
             params=params,
             headers=headers,
@@ -194,7 +194,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}"
-        response = HttpTools.do_get_without_session(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
 
         try:
             # Check for errors
@@ -265,7 +265,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}/submodel-descriptors"
-        response = HttpTools.do_get_without_session(
+        response = HttpTools.do_get(
             url=url,
             params=params,
             headers=headers,
@@ -316,7 +316,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
-        response = HttpTools.do_get_without_session(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
 
         try:
             # Check for errors
