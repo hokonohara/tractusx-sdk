@@ -92,7 +92,7 @@ class HttpTools:
 
     # do delete request without session
     @staticmethod
-    def do_delete_without_session(url, verify=True, headers=None, timeout=None, params=None, allow_redirects=False):
+    def do_delete(url, verify=True, headers=None, timeout=None, params=None, allow_redirects=False):
         return requests.delete(url=url, verify=verify,
                                timeout=timeout, headers=headers,
                                params=params, allow_redirects=allow_redirects)
