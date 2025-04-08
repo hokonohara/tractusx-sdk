@@ -33,7 +33,6 @@ class ConcreteAssetModel(BaseAssetModel):
 
 
 class TestBaseAssetModel(unittest.TestCase):
-
     def setUp(self):
         self.oid = "test-oid"
         self.context = {"key": "value"}
@@ -65,6 +64,31 @@ class TestBaseAssetModel(unittest.TestCase):
         self.assertEqual({"@vocab": "https://w3id.org/edc/v0.0.1/ns/"}, asset.context)
         self.assertEqual({}, asset.properties)
         self.assertEqual({}, asset.private_properties)
+
+    def test_builder_using_data(self):
+        builder = ConcreteAssetModel.builder()
+        builder.data({
+            "oid": self.oid,
+            "data_address": self.data_address
+        })
+        asset = builder.build()
+
+        self.assertEqual(ConcreteAssetModel, type(asset))
+        self.assertEqual(self.oid, asset.oid)
+        self.assertEqual(self.data_address, asset.data_address)
+
+    def test_builder_using_bad_data(self):
+        builder = ConcreteAssetModel.builder()
+        builder.data({
+            "oid": self.oid,
+            "data_address": self.data_address,
+            "non-existing-key": "value"
+        })
+        asset = builder.build()
+
+        self.assertEqual(ConcreteAssetModel, type(asset))
+        self.assertEqual(self.oid, asset.oid)
+        self.assertEqual(self.data_address, asset.data_address)
 
     def test_complete_builder(self):
         builder = ConcreteAssetModel.builder()

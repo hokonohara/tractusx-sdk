@@ -56,6 +56,18 @@ class BaseModel(PydanticBaseModel, ABC):
             self.cls = cls
             self._data = {}
 
+        def data(self, data: dict):
+            """
+            This method is intended to set all the data of the model inheriting this class.
+
+            It can be used to set all the data of the model in a single call, without the need to declare
+            each builder method separately. This is useful for cases where a model may deviate from its base
+            model implementation, and the base model builder methods are not sufficient to set all the necessary data.
+            """
+
+            self._data.update(data)
+            return self
+
         def build(self):
             """
             :return: an instance of the class inheriting the base model
