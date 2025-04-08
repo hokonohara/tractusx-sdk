@@ -149,7 +149,7 @@ class TestHttpTools(unittest.TestCase):
         """Test a successful DELETE request."""
         mock_delete.return_value = Mock(status_code=204, json=lambda: {"message": "deleted"})
         
-        response = HttpTools.do_delete_without_session(self.test_url)
+        response = HttpTools.do_delete(self.test_url)
         self.assertEqual(response.status_code, 204)
 
     @patch("requests.Session.delete")
