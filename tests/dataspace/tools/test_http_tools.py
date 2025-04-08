@@ -50,7 +50,7 @@ class TestHttpTools(unittest.TestCase):
         """Test GET request when server returns an error."""
         mock_get.return_value = Mock(status_code=500, json=lambda: {"error": "Internal Server Error"})
         
-        response = HttpTools.do_get_without_session(self.test_url)
+        response = HttpTools.do_get(self.test_url)
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json(), {"error": "Internal Server Error"})
 
