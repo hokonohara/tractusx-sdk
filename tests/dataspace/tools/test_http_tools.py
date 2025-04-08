@@ -53,6 +53,24 @@ class TestHttpTools(unittest.TestCase):
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json(), {"error": "Internal Server Error"})
 
+    @patch("requests.Session.get")
+    def test_do_get_with_session_success(self, mock_get):
+        """Test a successful GET request."""
+        mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
+        
+        response = HttpTools.do_get_with_session(self.test_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json(), {"message": "success"})
+
+    @patch("requests.Session.get")
+    def test_do_get_with_session_failure(self, mock_get):
+        """Test GET request when server returns an error."""
+        mock_get.return_value = Mock(status_code=500, json=lambda: {"error": "Internal Server Error"})
+        
+        response = HttpTools.do_get_with_session(self.test_url)
+        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.json(), {"error": "Internal Server Error"})
+
     @patch("requests.Session.post")
     def test_do_post_without_session_success(self, mock_post):
         """Test a successful POST request."""
