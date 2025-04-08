@@ -58,7 +58,7 @@ class TestHttpTools(unittest.TestCase):
         """Test a successful POST request."""
         mock_post.return_value = Mock(status_code=201, json=lambda: {"message": "created"})
         
-        response = HttpTools.do_post_without_session(self.test_url, json=self.payload)
+        response = HttpTools.do_post(self.test_url, json=self.payload)
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.json(), {"message": "created"})
 
