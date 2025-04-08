@@ -41,7 +41,7 @@ class TestHttpTools(unittest.TestCase):
         """Test a successful GET request."""
         mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
         
-        response = HttpTools.do_get_without_session(self.test_url)
+        response = HttpTools.do_get(self.test_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "success"})
 
