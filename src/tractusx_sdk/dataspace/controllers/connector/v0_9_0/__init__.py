@@ -19,3 +19,23 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
+
+from .asset_controller import AssetController
+from .catalog_controller import CatalogController
+from .contract_agreement_controller import ContractAgreementController
+from .contract_definition_controller import ContractDefinitionController
+from .contract_negotiation_controller import ContractNegotiationController
+from .edr_controller import EdrController
+from .policy_controller import PolicyController
+from .transfer_process_controller import TransferProcessController
+
+__all__ = [
+    'AssetController',
+    'CatalogController',
+    'ContractAgreementController',
+    'ContractDefinitionController',
+    'ContractNegotiationController',
+    'EdrController',
+    'PolicyController',
+    'TransferProcessController'
+]
