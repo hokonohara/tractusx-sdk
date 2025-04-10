@@ -49,12 +49,9 @@ class AdapterFactory:
             SUPPORTED_VERSIONS.append(module)
 
     @staticmethod
-    def _get_adapter(
+    def _get_adapter_builder(
             adapter_type: AdapterType,
             connector_version: str,
-            base_url: str,
-            headers: dict = None,
-            **kwargs
     ):
         """
         Create an adapter, based on the specified adapter type and version.
@@ -65,9 +62,6 @@ class AdapterFactory:
 
         :param adapter_type: The type of adapter to create, as per the AdapterType enum
         :param connector_version: The version of the Connector (e.g., "v0_9_0")
-        :param base_url: The URL of the Connector to be requested
-        :param headers: The headers (i.e.: API Key) of the Connector to be requested
-        :param kwargs: Additional keyword arguments to be passed to the adapter constructor
         :return: An instance of the specified Adapter subclass
         """
 
@@ -86,7 +80,7 @@ class AdapterFactory:
             # Dynamically import the adapter class
             module = import_module(module_name)
             adapter_class = getattr(module, adapter_class_name)
-            return adapter_class(base_url=base_url, headers=headers, **kwargs)
+            return adapter_class.builder()
         except AttributeError as attr_exception:
             raise AttributeError(
                 f"Failed to import adapter class {adapter_class_name} for module {module_name}"
@@ -102,6 +96,7 @@ class AdapterFactory:
             base_url: str,
             dma_path: str,
             headers: dict = None,
+            **kwargs
     ):
         """
         Create a (DMA) adapter instance, based a specific version.
@@ -113,19 +108,25 @@ class AdapterFactory:
         :return: An instance of the specified Adapter subclass
         """
 
-        return AdapterFactory._get_adapter(
+        builder = AdapterFactory._get_adapter_builder(
             adapter_type=AdapterType.DMA_ADAPTER,
             connector_version=connector_version,
-            base_url=base_url,
-            headers=headers,
-            dma_path=dma_path
         )
+
+        builder.base_url(base_url)
+        builder.headers(headers)
+        builder.dma_path(dma_path)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()
 
     @staticmethod
     def get_dataplane_adapter(
             connector_version: str,
             base_url: str,
             headers: dict = None,
+            **kwargs
     ):
         """
         Create a dataplane adapter instance, based a specific version.
@@ -136,9 +137,14 @@ class AdapterFactory:
         :return: An instance of the specified Adapter subclass
         """
 
-        return AdapterFactory._get_adapter(
+        builder = AdapterFactory._get_adapter_builder(
             adapter_type=AdapterType.DATAPLANE_ADAPTER,
             connector_version=connector_version,
-            base_url=base_url,
-            headers=headers
         )
+
+        builder.base_url(base_url)
+        builder.headers(headers)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()
