@@ -42,6 +42,7 @@ pypi/pypi/-/pytest/8.3.5, MIT, approved, #20053
 pypi/pypi/-/python-dotenv/1.1.0, BSD-3-Clause, restricted, clearlydefined
 pypi/pypi/-/python-keycloak/4.7.3, MIT, restricted, clearlydefined
 pypi/pypi/-/python-multipart/0.0.20, Apache-2.0, approved, clearlydefined
+pypi/pypi/-/requests-mock/1.12.1, Apache-2.0, approved, clearlydefined
 pypi/pypi/-/requests-toolbelt/1.0.0, Apache-2.0, approved, #15024
 pypi/pypi/-/requests/2.32.3, Apache-2.0 AND MIT AND Apache-2.0, approved, #14884
 pypi/pypi/-/rich-toolkit/0.14.1, MIT, approved, clearlydefined

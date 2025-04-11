@@ -20,7 +20,20 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-# tractusx_sdk Package-level variables
-__version__ = '0.0.2'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from ..adapter import Adapter
+from ...tools import HttpTools
+
+
+class BaseDmaAdapter(Adapter):
+    dma_path: str = ""
+
+    def __init__(self, base_url: str, dma_path: str, headers: dict = None):
+        self.dma_path = dma_path
+
+        dma_url = HttpTools.concat_into_url(base_url, dma_path)
+        super().__init__(dma_url, headers)
+
+    class _Builder(Adapter._Builder):
+        def dma_path(self, dma_path: str):
+            self._data["dma_path"] = dma_path
+            return self
