@@ -4,7 +4,7 @@ build-backend = "poetry.core.masonry.api"
 
 [project]
 name = "tractusx_sdk"
-version = "0.0.1"
+version = "0.0.2"
 description = "Eclipse Tractus-X Software Development KIT - The Dataspace & Industry Foundation Middleware"
 license = {text = "Apache-2.0"}
 readme = "README.md"
@@ -52,6 +52,7 @@ dependencies = [
     "python-multipart (==0.0.20)",
     "pyyaml (==6.0.2)",
     "requests (==2.32.3)",
+    "requests-mock (==1.12.1)",
     "requests-toolbelt (==1.0.0)",
     "rfc3986 (==1.5.0)",
     "rich (==13.9.4)",
