@@ -20,6 +20,14 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-class EdcService:
-    def __init__(self):
-        pass
+from ..base_edc_service import BaseEdcService
+
+
+class EdcService(BaseEdcService):
+    def __init__(self, base_url: str, dma_path: str, headers: dict = None):
+        super().__init__(
+            version="v0_9_0",
+            base_url=base_url,
+            dma_path=dma_path,
+            headers=headers
+        )
