@@ -32,13 +32,15 @@ class BaseService(ABC):
     def __init__(self, version: str, base_url: str, headers: dict = None):
         """
         A base init method for services inheriting this class.
-        Each service should implement its own init method, with at least the version and base_url parameters.
+
+        Each service should implement its own init method, with at least the version and base_url parameters,
+        both of which are needed to instantiate the controllers and adapters corresponding with that service's version.
 
         :param version: The version of the service
         :param base_url: The base URL of the service
         :param headers: The headers to be used for requests to the service
         """
-        pass
+        raise NotImplemented
 
     @classmethod
     def builder(cls):

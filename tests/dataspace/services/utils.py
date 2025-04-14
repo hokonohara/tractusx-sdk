@@ -20,8 +20,11 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from src.tractusx_sdk.dataspace.services.service import BaseService
 
-from .connector.base_edc_service import BaseEdcService
+
+class TestService(BaseService):
+    def __init__(self, version: str, base_url: str, headers: dict = None):
+        self.version = version
+        self.base_url = base_url
+        self.headers = headers
