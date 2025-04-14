@@ -20,7 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 
 ## Import FastAPI Router
 from tractusx_sdk.industry.controllers import (
@@ -28,8 +28,8 @@ from tractusx_sdk.industry.controllers import (
 )
 
 ## FAST API example for keycloak
-from fastapi_keycloak_middleware import CheckPermissions
-from fastapi_keycloak_middleware import get_user
+# from fastapi_keycloak_middleware import CheckPermissions
+# from fastapi_keycloak_middleware import get_user
 
 ## Import Library Packeges
 from tractusx_sdk.dataspace.tools import HttpTools, get_arguments
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         " _/ // / / / /_/ / /_/ (__  ) /_/ /  / /_/ /   ___/ / /_/ / /| |  \n"+
         "/___/_/ /_/\\__,_/\\__,_/____/\\__/_/   \\__, /   /____/_____/_/ |_|  \n"+
         "                                    /____/                        \n"+
-        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.1")
+        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.2")
 
     print("Application starting, listening to requests...\n")
         

@@ -21,7 +21,7 @@
 #################################################################################
 
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 
 ## Import FastAPI Router
 from tractusx_sdk.dataspace.controllers import (
@@ -29,8 +29,8 @@ from tractusx_sdk.dataspace.controllers import (
 )
 
 ## FAST API example for keycloak
-from fastapi_keycloak_middleware import CheckPermissions
-from fastapi_keycloak_middleware import get_user
+# from fastapi_keycloak_middleware import CheckPermissions
+# from fastapi_keycloak_middleware import get_user
 
 ## Import Library Packeges
 import uvicorn
@@ -96,7 +96,7 @@ if __name__ == "__main__":
         " / /_/ / /_/ / /_/ /_/ (__  ) /_/ / /_/ / /__/  __/   ___/ / /_/ / /| |  \n"+
         "/_____/\\__,_/\\__/\\__,_/____/ .___/\\__,_/\\___/\\___/   /____/_____/_/ |_|  \n"+
         "                          /_/                                            \n"+
-        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.1")
+        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.2")
 
     print("Application starting, listening to requests...\n")
 
