@@ -21,6 +21,7 @@
 #################################################################################
 
 import unittest
+from copy import deepcopy
 from unittest.mock import MagicMock, Mock
 
 from pydantic import ValidationError
@@ -33,13 +34,24 @@ from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFacto
 class TestModelFactoryContractNegotiation(unittest.TestCase):
     def setUp(self):
         self.connector_version = "v0_9_0"
-        self.context = {"key": "value"}
+        self.context = { "key": "value" }
         self.counter_party_address = "https://counterparty.com"
         self.asset_id = "asset-id"
         self.offer_id = "offer-id"
         self.provider_id = "provider-id"
-        self.offer_policy_data = {"offer_policy_key": "offer_policy_value"}
-        self.policy_data = {"policy_key": "policy_value"}
+        self.offer_policy_data = {
+            "@context": { "key": "value" },
+            "permission": "permission-obj",
+            "prohibition": "prohibition-obj",
+            "obligation": "obligation-obj",
+        }
+        self.policy_data = {
+            "policy": {
+                "@id": "policy-id",
+                "@type": "policy-type",
+                **self.offer_policy_data,
+            }
+        }
         self.callback_addresses = [{"callback-address": "https://callback-address.com"}]
 
     def test_get_contract_negotiation_model_with_no_offer(self):
@@ -54,7 +66,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
 
     def test_get_contract_negotiation_model_with_offer_policy_model_only(self):
         policy_model = Mock(BasePolicyModel)
-        policy_model.to_data = MagicMock(return_value=self.policy_data)
+        policy_model.to_data = MagicMock(return_value=deepcopy(self.policy_data))
 
         model = ModelFactory.get_contract_negotiation_model(
             connector_version=self.connector_version,
@@ -70,7 +82,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.assertEqual(self.offer_id, model.offer_id)
         self.assertEqual(self.asset_id, model.asset_id)
         self.assertEqual(self.provider_id, model.provider_id)
-        self.assertEqual(self.policy_data, model.offer_policy)
+        self.assertEqual(self.offer_policy_data, model.offer_policy)
 
     def test_get_contract_negotiation_model_with_offer_policy_data_only(self):
         model = ModelFactory.get_contract_negotiation_model(
@@ -90,8 +102,17 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         self.assertEqual(self.offer_policy_data, model.offer_policy)
 
     def test_get_contract_negotiation_model_with_offer_policy_model_overwrite(self):
+        another_offer_policy_data = { "key": "value" }
+        another_policy_data = {
+            "policy": {
+                "@id": "policy-id2",
+                "@type": "policy-type2",
+                **another_offer_policy_data,
+            }
+        }
+
         policy_model = Mock(BasePolicyModel)
-        policy_model.to_data = MagicMock(return_value=self.policy_data)
+        policy_model.to_data = MagicMock(return_value=deepcopy(self.policy_data))
 
         model = ModelFactory.get_contract_negotiation_model(
             connector_version=self.connector_version,
@@ -100,10 +121,11 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
             asset_id=self.asset_id,
             provider_id=self.provider_id,
             offer_policy_model=policy_model,
-            offer_policy=self.offer_policy_data
+            offer_policy=another_policy_data
         )
 
-        self.assertNotEqual(self.offer_policy_data, model.offer_policy)
+        self.assertNotEqual(another_policy_data, model.offer_policy)
+        self.assertEqual(self.offer_policy_data, model.offer_policy)
 
     def test_get_contract_negotiation_model_without_defaults(self):
         model = ModelFactory.get_contract_negotiation_model(
