@@ -33,17 +33,17 @@ class Controller:
     @classmethod
     def builder(cls):
         """
-        This method is intended to return a builder for the model inheriting this class.
-        This means that such a model should implement its own `_Builder` inner class.
-        By default, the `BaseModel._Builder` class is used.
+        This method is intended to return a builder for the controller inheriting this class.
+        This means that such a controller should implement its own `_Builder` inner class.
+        By default, the `Controller._Builder` class is used.
 
-        :return: a builder for the model inheriting this class
+        :return: a builder for the controller inheriting this class
         """
         return cls._Builder(cls)
 
     class _Builder:
         """
-        Default _Builder class for the BaseModel.
+        Default _Builder class for the Controller.
         """
 
         def __init__(self, cls):
@@ -56,11 +56,11 @@ class Controller:
 
         def data(self, data: dict):
             """
-            This method is intended to set all the data of the model inheriting this class.
+            This method is intended to set all the data of the controller inheriting this class.
 
-            It can be used to set all the data of the model in a single call, without the need to declare
-            each builder method separately. This is useful for cases where a model may deviate from its base
-            model implementation, and the base model builder methods are not sufficient to set all the necessary data.
+            It can be used to set all the data of the controller in a single call, without the need to declare
+            each builder method separately. This is useful for cases where a controller may deviate from its base
+            controller implementation, and the base controller builder methods are not sufficient to set all the necessary data.
             """
 
             self._data.update(data)
@@ -68,6 +68,6 @@ class Controller:
 
         def build(self):
             """
-            :return: an instance of the class inheriting the base model
+            :return: an instance of the class inheriting the base controller
             """
             return self.cls(**self._data)
