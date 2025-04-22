@@ -49,12 +49,12 @@ class BaseContractDefinitionModel(BaseModel, ABC):
             self._data["context"] = context
             return self
 
-        def access_policy_id(self, oid: str):
-            self._data["access_policy_id"] = oid
+        def access_policy_id(self, access_policy_id: str):
+            self._data["access_policy_id"] = access_policy_id
             return self
 
-        def contract_policy_id(self, oid: str):
-            self._data["contract_policy_id"] = oid
+        def contract_policy_id(self, contract_policy_id: str):
+            self._data["contract_policy_id"] = contract_policy_id
             return self
 
         def assets_selector(self, assets_selector: list[dict]):
