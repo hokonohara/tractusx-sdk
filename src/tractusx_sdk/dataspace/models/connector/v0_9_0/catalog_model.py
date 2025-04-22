@@ -45,7 +45,7 @@ class CatalogModel(BaseCatalogModel):
             "counterPartyId": self.counter_party_id,
             "protocol": self.PROTOCOL,
             "additionalScopes": self.additional_scopes,
-            "querySpec": self.query_spec
+            "querySpec": self.queryspec
         }
 
         return jdumps(data)

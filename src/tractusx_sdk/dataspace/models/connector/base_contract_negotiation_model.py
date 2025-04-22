@@ -65,12 +65,12 @@ class BaseContractNegotiationModel(BaseModel, ABC):
             return self
 
         def offer_policy_from_policy_model(self, policy_model: BasePolicyModel):
-            # Remove unnecessary fields from policy model data
-            policy_model_data = policy_model.to_data()
-            policy_model_data.pop("oid", None)
-            policy_model_data.pop("type", None)
+            # Remove unnecessary fields from a policy model's policy data
+            policy_data = policy_model.to_data()["policy"]
+            policy_data.pop("@id", None)
+            policy_data.pop("@type", None)
 
-            return self.offer_policy(policy_model_data)
+            return self.offer_policy(policy_data)
 
         def offer_policy(self, offer_policy: dict):
             self._data["offer_policy"] = offer_policy

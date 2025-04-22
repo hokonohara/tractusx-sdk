@@ -38,7 +38,6 @@ class ContractNegotiationModel(BaseContractNegotiationModel):
 
         :return: a JSON representation of the model
         """
-        self.offer_policy["@type"] = self.OFFER_TYPE
 
         data = {
             "@context": self.context,
@@ -47,6 +46,7 @@ class ContractNegotiationModel(BaseContractNegotiationModel):
             "protocol": self.PROTOCOL,
             "policy": {
                 "@id": self.offer_id,
+                "@type": self.OFFER_TYPE,
                 "assigner": self.provider_id,
                 "target": self.asset_id,
                 **self.offer_policy
