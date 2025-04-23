@@ -20,7 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from src.tractusx_sdk.dataspace.services.service import BaseService
+from tractusx_sdk.dataspace.services.service import BaseService
 
 
 class TestService(BaseService):

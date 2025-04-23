@@ -26,14 +26,14 @@ logging.captureWarnings(True)
 import os
 
 from tractusx_sdk.dataspace.managers import AuthManager
-from tractusx_sdk.dataspace.services import EdcService
+from tractusx_sdk.dataspace.services import BaseEdcService
 from tractusx_sdk.dataspace.tools import op, get_arguments, get_log_config, get_app_config
 
 ## In memory authentication manager service
 auth_manager: AuthManager
 
 ## In memory storage/management services
-edc_service: EdcService
+edc_service: BaseEdcService
 
 app_configuration:dict
 
@@ -43,9 +43,6 @@ log_config:dict
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_LOG_PATH = os.path.join(BASE_DIR, "logging.yml")
 CONFIG_CONFIG_PATH = os.path.join(BASE_DIR, "configuration.yml")
-
-## Start storage and edc communication service
-edc_service = EdcService()
 
 ## Start the authentication manager
 auth_manager = AuthManager()
@@ -66,3 +63,9 @@ log_config = get_log_config(CONFIG_LOG_PATH, "dataspace-sdk")
 
 # Load the configuation for the application
 app_configuration = get_app_config(CONFIG_CONFIG_PATH)
+
+## Start storage and edc communication service
+edc_version = app_configuration["EdcService"]["version"]
+edc_base_url = app_configuration["EdcService"]["base_url"]
+edc_dma_path = app_configuration["EdcService"]["dma_path"]
+edc_service = BaseEdcService(edc_version, edc_base_url, edc_dma_path)

@@ -23,36 +23,19 @@
 import unittest
 from unittest.mock import patch, MagicMock, Mock
 
-from src.tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
-from src.tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
-from src.tractusx_sdk.dataspace.services.connector.base_edc_service import BaseEdcService
+from tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
+from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
+from tractusx_sdk.dataspace.services.connector.base_edc_service import BaseEdcService
 
 
 class TestBaseEdcService(unittest.TestCase):
     def setUp(self):
-        self.version = "v1"
+        self.version = "v0_9_0"
         self.base_url = "https://example.com"
         self.dma_path = "/dma"
         self.headers = {"Authorization": "Bearer token"}
 
-        # Setup adapter & controller mocks
-        self.adapter = Mock(BaseDmaAdapter)
-        self.controller = Mock(BaseDmaController)
-
-    @patch("src.tractusx_sdk.dataspace.controllers.connector.controller_factory.ControllerFactory")
-    @patch("src.tractusx_sdk.dataspace.adapters.connector.adapter_factory.AdapterFactory")
-    def test_initialization_creates_controllers(self, adapter_factory, controller_factory):
-        adapter_factory.get_dma_adapter = MagicMock(return_value=self.adapter)
-
-        controller_factory.get_asset_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_catalog_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_contract_agreement_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_contract_definition_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_contract_negotiation_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_edr_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_policy_controller = MagicMock(return_value=self.controller)
-        controller_factory.get_transfer_process_controller = MagicMock(return_value=self.controller)
-
+    def test_initialization_creates_controllers(self):
         service = BaseEdcService(
             version=self.version,
             base_url=self.base_url,
@@ -60,14 +43,29 @@ class TestBaseEdcService(unittest.TestCase):
             headers=self.headers,
         )
 
-        self.assertEqual(self.controller, service._asset_controller)
-        self.assertEqual(self.controller, service._catalog_controller)
-        self.assertEqual(self.controller, service._contract_agreement_controller)
-        self.assertEqual(self.controller, service._contract_definition_controller)
-        self.assertEqual(self.controller, service._contract_negotiation_controller)
-        self.assertEqual(self.controller, service._edr_controller)
-        self.assertEqual(self.controller, service._policy_controller)
-        self.assertEqual(self.controller, service._transfer_process_controller)
+        self.assertIsInstance(service._asset_controller, BaseDmaController)
+        self.assertIsNotNone(service._asset_controller)
+
+        self.assertIsInstance(service._catalog_controller, BaseDmaController)
+        self.assertIsNotNone(service._catalog_controller)
+
+        self.assertIsInstance(service._contract_agreement_controller, BaseDmaController)
+        self.assertIsNotNone(service._contract_agreement_controller)
+
+        self.assertIsInstance(service._contract_definition_controller, BaseDmaController)
+        self.assertIsNotNone(service._contract_definition_controller)
+
+        self.assertIsInstance(service._contract_negotiation_controller, BaseDmaController)
+        self.assertIsNotNone(service._contract_negotiation_controller)
+
+        self.assertIsInstance(service._edr_controller, BaseDmaController)
+        self.assertIsNotNone(service._edr_controller)
+
+        self.assertIsInstance(service._policy_controller, BaseDmaController)
+        self.assertIsNotNone(service._policy_controller)
+
+        self.assertIsInstance(service._transfer_process_controller, BaseDmaController)
+        self.assertIsNotNone(service._transfer_process_controller)
 
     def test_builder_sets_dma_path(self):
         builder = BaseEdcService.builder()
