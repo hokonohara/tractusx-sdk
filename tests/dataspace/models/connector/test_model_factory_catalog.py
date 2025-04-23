@@ -23,9 +23,9 @@
 import unittest
 from unittest.mock import Mock, MagicMock
 
-from src.tractusx_sdk.dataspace.models.connector.base_catalog_model import BaseCatalogModel
-from src.tractusx_sdk.dataspace.models.connector.base_queryspec_model import BaseQuerySpecModel
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.base_catalog_model import BaseCatalogModel
+from tractusx_sdk.dataspace.models.connector.base_queryspec_model import BaseQuerySpecModel
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryCatalog(unittest.TestCase):

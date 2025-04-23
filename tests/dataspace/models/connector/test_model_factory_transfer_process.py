@@ -22,8 +22,8 @@
 
 import unittest
 
-from src.tractusx_sdk.dataspace.models.connector.base_transfer_process_model import BaseTransferProcessModel
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.base_transfer_process_model import BaseTransferProcessModel
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryTransferProcess(unittest.TestCase):

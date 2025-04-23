@@ -23,7 +23,7 @@
 import unittest
 from enum import Enum
 from unittest.mock import patch
-from src.tractusx_sdk.dataspace.adapters.connector.adapter_factory import AdapterFactory, AdapterType
+from tractusx_sdk.dataspace.adapters.connector.adapter_factory import AdapterFactory, AdapterType
 
 
 class TestAdapterFactory(unittest.TestCase):

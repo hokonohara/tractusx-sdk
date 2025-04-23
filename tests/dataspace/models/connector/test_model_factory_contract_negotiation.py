@@ -26,9 +26,9 @@ from unittest.mock import MagicMock, Mock
 
 from pydantic import ValidationError
 
-from src.tractusx_sdk.dataspace.models.connector.base_contract_negotiation_model import BaseContractNegotiationModel
-from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.base_contract_negotiation_model import BaseContractNegotiationModel
+from tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryContractNegotiation(unittest.TestCase):
