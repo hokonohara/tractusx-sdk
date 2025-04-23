@@ -20,9 +20,9 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from src.tractusx_sdk.dataspace.adapters.adapter import Adapter
-from src.tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
-from src.tractusx_sdk.dataspace.controllers.controller import Controller
+from tractusx_sdk.dataspace.adapters.adapter import Adapter
+from tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
+from tractusx_sdk.dataspace.controllers.controller import Controller
 
 ENDPOINT_URL = "/some/endpoint"
 
