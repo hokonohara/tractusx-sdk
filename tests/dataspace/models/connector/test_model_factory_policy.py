@@ -22,8 +22,8 @@
 
 import unittest
 
-from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryPolicy(unittest.TestCase):

@@ -22,8 +22,8 @@
 
 from unittest import TestCase
 
-from src.tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
-from src.tractusx_sdk.dataspace.controllers.controller import Controller
+from tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
+from tractusx_sdk.dataspace.controllers.controller import Controller
 from tests.dataspace.controllers.connector.utils import (
     generic_controller_setup,
     ENDPOINT_URL,

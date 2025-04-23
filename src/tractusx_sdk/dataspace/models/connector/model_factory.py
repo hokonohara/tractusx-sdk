@@ -24,8 +24,8 @@ from enum import Enum
 from importlib import import_module
 from os import listdir, path
 
-from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
-from src.tractusx_sdk.dataspace.models.connector.base_queryspec_model import BaseQuerySpecModel
+from .base_policy_model import BasePolicyModel
+from .base_queryspec_model import BaseQuerySpecModel
 
 
 class ModelType(Enum):
