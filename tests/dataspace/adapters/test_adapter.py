@@ -24,7 +24,7 @@ import unittest
 import requests_mock
 from json import loads as jloads
 
-from src.tractusx_sdk.dataspace.adapters.adapter import Adapter
+from tractusx_sdk.dataspace.adapters.adapter import Adapter
 
 
 class TestAdapter(unittest.TestCase):

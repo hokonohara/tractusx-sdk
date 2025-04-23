@@ -23,7 +23,7 @@
 import unittest
 from pydantic import ValidationError
 
-from src.tractusx_sdk.dataspace.models.connector.base_asset_model import BaseAssetModel
+from tractusx_sdk.dataspace.models.connector.base_asset_model import BaseAssetModel
 
 
 class ConcreteAssetModel(BaseAssetModel):
