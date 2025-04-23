@@ -23,7 +23,7 @@
 import unittest
 from pydantic import ValidationError
 
-from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
+from tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
 
 
 class ConcretePolicyModel(BasePolicyModel):

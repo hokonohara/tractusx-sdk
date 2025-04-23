@@ -22,7 +22,7 @@
 
 import unittest
 
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryAsset(unittest.TestCase):

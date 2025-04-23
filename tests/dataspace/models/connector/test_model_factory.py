@@ -23,7 +23,7 @@
 import unittest
 from enum import Enum
 from unittest.mock import patch
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory, ModelType
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory, ModelType
 
 
 class TestModelFactory(unittest.TestCase):

@@ -23,7 +23,7 @@
 import unittest
 from pydantic import ValidationError
 
-from src.tractusx_sdk.dataspace.models.connector.base_contract_definition_model import BaseContractDefinitionModel
+from tractusx_sdk.dataspace.models.connector.base_contract_definition_model import BaseContractDefinitionModel
 
 
 class ConcreteContractDefinitionModel(BaseContractDefinitionModel):

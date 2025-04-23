@@ -24,9 +24,9 @@ import unittest
 from enum import Enum
 from unittest.mock import patch, Mock
 
-from src.tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
-from src.tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory, ControllerType
-from src.tractusx_sdk.dataspace.controllers.connector.v0_9_0 import (
+from tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory, ControllerType
+from tractusx_sdk.dataspace.controllers.connector.v0_9_0 import (
     AssetController,
     CatalogController,
     ContractAgreementController,
