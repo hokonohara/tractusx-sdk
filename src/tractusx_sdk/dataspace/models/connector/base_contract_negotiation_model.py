@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union, Any
 from pydantic import Field
 
 from .base_policy_model import BasePolicyModel
@@ -38,7 +38,7 @@ class BaseContractNegotiationModel(BaseModel, ABC):
     offer_policy: dict
     asset_id: str
     provider_id: str
-    context: Optional[dict] = Field(default={
+    context: Optional[Union[dict, list, str]] = Field(default={
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
     callback_addresses: Optional[list[dict]] = Field(default_factory=list)

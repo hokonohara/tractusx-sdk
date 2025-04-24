@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union
 from pydantic import Field
 
 from ..model import BaseModel
@@ -35,7 +35,7 @@ class BaseContractDefinitionModel(BaseModel, ABC):
     oid: str
     access_policy_id: str
     contract_policy_id: str
-    context: Optional[dict] = Field(default={
+    context: Optional[Union[dict, list, str]] = Field(default={
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
     assets_selector: Optional[list[dict]] = Field(default_factory=list)
