@@ -38,7 +38,7 @@ class SubmodelAdapterFactory:
     ):
         adapter_module = ".".join(__name__.split(".")[0:-1])
         module_name = f"{adapter_module}.submodel_adapters"
-        adapter_class_name = f"{adapter_type.value}Adapter"     
+        adapter_class_name = f"{adapter_type.value}Adapter"
 
         try:
             module = import_module(module_name)
