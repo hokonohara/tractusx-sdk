@@ -313,3 +313,48 @@ class op:
             source_object=source_object[part]
         tmp_ret=source_object
         return tmp_ret
+
+    @staticmethod
+    def join_paths(path_one: str, path_two: str) -> str:
+        """
+        Joins two file system paths into a single path.
+
+        Args:
+            path_one (str): The first path component.
+            path_two (str): The second path component.
+
+        Returns:
+            str: The combined file system path.
+        """
+        return os.path.join(path_one,path_two)
+    
+    @staticmethod
+    def list_directories(directory_path: str) -> list:
+        """
+        Lists all entries in the specified directory.
+
+        Args:
+            directory_path (str): The path to the directory whose entries are to be listed.
+
+        Returns:
+            list: A list of names of the entries in the directory.
+
+        Raises:
+            FileNotFoundError: If the specified directory does not exist.
+            NotADirectoryError: If the specified path is not a directory.
+            PermissionError: If the program does not have permission to access the directory.
+        """
+        return os.listdir(directory_path)
+    
+    @staticmethod
+    def is_link(path: str) -> bool:
+        """
+        Check if the given path is a symbolic link.
+
+        Args:
+            path (str): The file system path to check.
+
+        Returns:
+            bool: True if the path is a symbolic link, False otherwise.
+        """
+        return os.path.islink(path)
