@@ -76,17 +76,17 @@ class FileSystemAdapter(SubmodelAdapter):
         Check if a file exists
         """
         total_path = op.join_paths(self.root_path, path)
-        op.path_exists(total_path)
+        return op.path_exists(total_path)
 
     def list_contents(self, directory_path: str) -> List[dict]:
         """
         Return a list of files based in a directory
         """
         results = []
-        total_path = op.join_paths(self.root_path, path)
+        total_path = op.join_paths(self.root_path, directory_path)
         for entry_name in op.list_directories(total_path):
             entry_abs_path = op.join_paths(total_path, entry_name)
-            if op.path_exists(entry_abs_path) or op.is_link(entry_abs_path):
+            if op.is_file(entry_abs_path):
                 try:
                     results.append(entry_abs_path)
                 except FileNotFoundError:

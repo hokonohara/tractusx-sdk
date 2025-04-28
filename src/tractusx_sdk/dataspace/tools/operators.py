@@ -351,3 +351,14 @@ class op:
             bool: True if the path is a symbolic link, False otherwise.
         """
         return os.path.islink(path)
+
+    @staticmethod
+    def is_file(path: str) -> bool:
+        """
+        Check if the given path corresponds to an existing file.
+        Args:
+            path (str): The path to check.
+        Returns:
+            bool: True if the path corresponds to an existing file, False otherwise.
+        """
+        return os.path.isfile(path=path)
