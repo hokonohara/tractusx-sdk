@@ -21,7 +21,6 @@
 #################################################################################
 
 from abc import ABC, abstractmethod
-from typing import List
 
 class SubmodelAdapter(ABC):
     """
@@ -55,4 +54,3 @@ class SubmodelAdapter(ABC):
         Check if a file exists
         """
         raise NotImplementedError
-
