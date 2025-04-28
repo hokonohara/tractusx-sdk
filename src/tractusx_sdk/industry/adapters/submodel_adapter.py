@@ -56,23 +56,3 @@ class SubmodelAdapter(ABC):
         """
         raise NotImplementedError
 
-    @abstractmethod
-    def list_contents(self, directory_path: str) -> List[dict]:
-        """
-        Return a list of files based in a directory
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def create_directory(self, path: str) -> None:
-        """
-        Create a directory
-        """
-        raise NotImplementedError
-
-    @abstractmethod
-    def delete_directory(self, path: str) -> None:
-        """
-        Remove a directory
-        """
-        raise NotImplementedError
