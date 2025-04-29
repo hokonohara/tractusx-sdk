@@ -5,6 +5,28 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.3] - 2025-04-29
+
+### Added
+
+- Dataspace Connector Adapters [#77](https://github.com/eclipse-tractusx/tractusx-sdk/pull/77)
+- Dataspace Connector Models [#82](https://github.com/eclipse-tractusx/tractusx-sdk/pull/82)
+- Dataspace Connector Controllers [#84](https://github.com/eclipse-tractusx/tractusx-sdk/pull/84)
+- Submodel Server Adapter and FileSystemAdapter [#88](https://github.com/eclipse-tractusx/tractusx-sdk/pull/88)
+
+### Changed
+
+- Updated the pull request template [#81](https://github.com/eclipse-tractusx/tractusx-sdk/pull/81)
+
+### Fixed
+
+- Corrected incorrect test imports [#86](https://github.com/eclipse-tractusx/tractusx-sdk/pull/86)
+- Add a default `sortField` value to the `QuerySpec` Model [#90](https://github.com/eclipse-tractusx/tractusx-sdk/pull/90)
+
+### Removed
+
+- Removed unnecessary imports [#85](https://github.com/eclipse-tractusx/tractusx-sdk/pull/85)
+
 ## [0.0.2] - 2025-04-07
 
 ### Added
