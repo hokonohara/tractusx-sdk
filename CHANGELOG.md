@@ -9,9 +9,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Added
 
-- Dataspace Connector Adapters [#77](https://github.com/eclipse-tractusx/tractusx-sdk/pull/77)
-- Dataspace Connector Models [#82](https://github.com/eclipse-tractusx/tractusx-sdk/pull/82)
-- Dataspace Connector Controllers [#84](https://github.com/eclipse-tractusx/tractusx-sdk/pull/84)
+- Dataspace Connector 0.9.0 Adapters [#77](https://github.com/eclipse-tractusx/tractusx-sdk/pull/77)
+- Dataspace Connector 0.9.0 Models [#82](https://github.com/eclipse-tractusx/tractusx-sdk/pull/82)
+- Dataspace Connector 0.9.0 Controllers [#84](https://github.com/eclipse-tractusx/tractusx-sdk/pull/84)
+
 - Submodel Server Adapter and FileSystemAdapter [#88](https://github.com/eclipse-tractusx/tractusx-sdk/pull/88)
 
 ### Changed
