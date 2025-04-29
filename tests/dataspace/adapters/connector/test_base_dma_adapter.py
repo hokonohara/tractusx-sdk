@@ -21,7 +21,7 @@
 #################################################################################
 
 import unittest
-from src.tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
+from tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
 
 
 class TestBaseDmaAdapter(unittest.TestCase):

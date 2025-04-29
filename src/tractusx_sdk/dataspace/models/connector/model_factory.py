@@ -24,8 +24,8 @@ from enum import Enum
 from importlib import import_module
 from os import listdir, path
 
-from src.tractusx_sdk.dataspace.models.connector.base_policy_model import BasePolicyModel
-from src.tractusx_sdk.dataspace.models.connector.base_queryspec_model import BaseQuerySpecModel
+from .base_policy_model import BasePolicyModel
+from .base_queryspec_model import BaseQuerySpecModel
 
 
 class ModelType(Enum):
@@ -106,7 +106,7 @@ class ModelFactory:
             connector_version: str,
             oid: str,
             data_address: dict,
-            context: dict = None,
+            context: dict | list | str = None,
             properties: dict = None,
             private_properties: dict = None,
             **kwargs
@@ -149,7 +149,7 @@ class ModelFactory:
             connector_version: str,
             counter_party_address: str,
             counter_party_id: str,
-            context: dict = None,
+            context: dict | list | str = None,
             additional_scopes: list = None,
             queryspec_model: BaseQuerySpecModel = None,
             queryspec: dict = None,
@@ -199,7 +199,7 @@ class ModelFactory:
             oid: str,
             access_policy_id: str,
             contract_policy_id: str,
-            context: dict = None,
+            context: dict | list | str = None,
             assets_selector: list = None,
             **kwargs
     ):
@@ -243,7 +243,7 @@ class ModelFactory:
             provider_id: str,
             offer_policy_model: BasePolicyModel = None,
             offer_policy: dict = None,
-            context: dict = None,
+            context: dict | list | str = None,
             callback_addresses: list = None,
             **kwargs
     ):
@@ -295,10 +295,10 @@ class ModelFactory:
     def get_policy_model(
             connector_version: str,
             oid: str,
-            context: dict = None,
-            permissions: list[dict] = None,
-            prohibitions: list[dict] = None,
-            obligations: list[dict] = None,
+            context: dict | list | str = None,
+            permissions: dict | list[dict] = None,
+            prohibitions: dict | list[dict] = None,
+            obligations: dict | list[dict] = None,
             **kwargs
     ):
         """
@@ -340,7 +340,7 @@ class ModelFactory:
     @staticmethod
     def get_queryspec_model(
             connector_version: str,
-            context: dict = None,
+            context: dict | list | str = None,
             offset: int = 0,
             limit: int = 10,
             sort_order: str = "DESC",
@@ -389,7 +389,7 @@ class ModelFactory:
             data_destination: dict,
             private_properties: dict = None,
             callback_addresses: list[dict] = None,
-            context: dict = None,
+            context: dict | list | str = None,
             **kwargs
     ):
         """

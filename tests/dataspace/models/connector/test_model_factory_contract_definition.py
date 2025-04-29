@@ -22,8 +22,8 @@
 
 import unittest
 
-from src.tractusx_sdk.dataspace.models.connector.base_contract_definition_model import BaseContractDefinitionModel
-from src.tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+from tractusx_sdk.dataspace.models.connector.base_contract_definition_model import BaseContractDefinitionModel
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 
 class TestModelFactoryContractDefinition(unittest.TestCase):
