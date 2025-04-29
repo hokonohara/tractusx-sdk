@@ -40,7 +40,7 @@ class BaseService(ABC):
         :param base_url: The base URL of the service
         :param headers: The headers to be used for requests to the service
         """
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def builder(cls):

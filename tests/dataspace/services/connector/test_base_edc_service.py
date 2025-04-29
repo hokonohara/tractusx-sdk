@@ -21,9 +21,7 @@
 #################################################################################
 
 import unittest
-from unittest.mock import patch, MagicMock, Mock
 
-from tractusx_sdk.dataspace.adapters.connector.base_dma_adapter import BaseDmaAdapter
 from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
 from tractusx_sdk.dataspace.services.connector.base_edc_service import BaseEdcService
 
