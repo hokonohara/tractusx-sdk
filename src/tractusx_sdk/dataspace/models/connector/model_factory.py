@@ -296,9 +296,9 @@ class ModelFactory:
             connector_version: str,
             oid: str,
             context: dict | list | str = None,
-            permissions: list[dict] = None,
-            prohibitions: list[dict] = None,
-            obligations: list[dict] = None,
+            permissions: dict | list[dict] = None,
+            prohibitions: dict | list[dict] = None,
+            obligations: dict | list[dict] = None,
             **kwargs
     ):
         """
