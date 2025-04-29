@@ -34,7 +34,7 @@ class BaseService(ABC):
         A base init method for services inheriting this class.
 
         Each service should implement its own init method, with at least the version and base_url parameters,
-        both of which are needed to instantiate the controllers and adapters corresponding with that service's version.
+        both of which are needed to instantiate the controllers and services corresponding with that service's version.
 
         :param version: The version of the service
         :param base_url: The base URL of the service
@@ -76,11 +76,11 @@ class BaseService(ABC):
 
         def data(self, data: dict):
             """
-            This method is intended to set all the data of the adapters inheriting this class.
+            This method is intended to set all the data of the services inheriting this class.
 
-            It can be used to set all the data of the adapter in a single call, without the need to declare
-            each builder method separately. This is useful for cases where an adapter may deviate from its base
-            adapter implementation, and the base adapter builder methods are not sufficient to set all the necessary data.
+            It can be used to set all the data of the service in a single call, without the need to declare
+            each builder method separately. This is useful for cases where a service may deviate from its base
+            service implementation, and the base service builder methods are not sufficient to set all the necessary data.
             """
 
             self._data.update(data)
@@ -88,6 +88,6 @@ class BaseService(ABC):
 
         def build(self):
             """
-            :return: an instance of the class inheriting the base adapter
+            :return: an instance of the class inheriting the base service
             """
             return self.cls(**self._data)
