@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union
 from pydantic import Field
 
 from ..model import BaseModel
@@ -33,12 +33,12 @@ class BasePolicyModel(BaseModel, ABC):
     """
 
     oid: str
-    context: Optional[dict] = Field(default={
+    context: Optional[Union[dict, list, str]] = Field(default={
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
-    permissions: Optional[list[dict]] = Field(default_factory=list)
-    prohibitions: Optional[list[dict]] = Field(default_factory=list)
-    obligations: Optional[list[dict]] = Field(default_factory=list)
+    permissions: Optional[dict | list[dict]] = Field(default_factory=list)
+    prohibitions: Optional[dict | list[dict]] = Field(default_factory=list)
+    obligations: Optional[dict | list[dict]] = Field(default_factory=list)
 
     class _Builder(BaseModel._Builder):
         def id(self, oid: str):
@@ -49,14 +49,14 @@ class BasePolicyModel(BaseModel, ABC):
             self._data["context"] = context
             return self
 
-        def permissions(self, permissions: list):
+        def permissions(self, permissions: dict | list[dict]):
             self._data["permissions"] = permissions
             return self
 
-        def prohibitions(self, prohibitions: list):
+        def prohibitions(self, prohibitions: dict | list[dict]):
             self._data["prohibitions"] = prohibitions
             return self
 
-        def obligations(self, obligations: list):
+        def obligations(self, obligations: dict | list[dict]):
             self._data["obligations"] = obligations
             return self

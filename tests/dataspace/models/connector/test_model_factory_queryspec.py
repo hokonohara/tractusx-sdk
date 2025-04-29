@@ -45,7 +45,7 @@ class TestModelFactoryQuerySpec(unittest.TestCase):
         self.assertEqual(0, model.offset)
         self.assertEqual(10, model.limit)
         self.assertEqual("DESC", model.sort_order)
-        self.assertEqual("", model.sort_field)
+        self.assertEqual("createdAt", model.sort_field)
         self.assertEqual([], model.filter_expression)
         self.assertEqual({
             "@vocab": "https://w3id.org/edc/v0.0.1/ns/"

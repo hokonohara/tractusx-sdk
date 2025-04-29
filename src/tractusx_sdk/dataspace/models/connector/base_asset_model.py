@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union
 from pydantic import Field
 
 from ..model import BaseModel
@@ -34,7 +34,7 @@ class BaseAssetModel(BaseModel, ABC):
 
     oid: str
     data_address: dict
-    context: Optional[dict] = Field(default={
+    context: Optional[Union[dict, list, str]] = Field(default={
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
     properties: Optional[dict] = Field(default_factory=dict)

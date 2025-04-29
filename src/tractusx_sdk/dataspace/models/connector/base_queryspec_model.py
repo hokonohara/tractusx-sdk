@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union
 from pydantic import Field
 
 from ..model import BaseModel
@@ -32,11 +32,11 @@ class BaseQuerySpecModel(BaseModel, ABC):
     Base model class for representing a connector's query spec.
     """
 
-    context: Optional[dict] = Field(default={"@vocab": "https://w3id.org/edc/v0.0.1/ns/"})
+    context: Optional[Union[dict, list, str]] = Field(default={"@vocab": "https://w3id.org/edc/v0.0.1/ns/"})
     offset: Optional[int] = Field(default=0)
     limit: Optional[int] = Field(default=10)
     sort_order: Optional[str] = Field(default="DESC", pattern="^(ASC|DESC)$")
-    sort_field: Optional[str] = Field(default="")
+    sort_field: Optional[str] = Field(default="createdAt")
     filter_expression: Optional[list[dict]] = Field(default_factory=list)
 
     class _Builder(BaseModel._Builder):
