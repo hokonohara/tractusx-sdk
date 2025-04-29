@@ -36,7 +36,7 @@ class BaseQuerySpecModel(BaseModel, ABC):
     offset: Optional[int] = Field(default=0)
     limit: Optional[int] = Field(default=10)
     sort_order: Optional[str] = Field(default="DESC", pattern="^(ASC|DESC)$")
-    sort_field: Optional[str] = Field(default="")
+    sort_field: Optional[str] = Field(default="createdAt")
     filter_expression: Optional[list[dict]] = Field(default_factory=list)
 
     class _Builder(BaseModel._Builder):
