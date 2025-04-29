@@ -29,7 +29,7 @@ from ..base_policy_model import BasePolicyModel
 class PolicyModel(BasePolicyModel):
     TYPE: str = Field(default="PolicyDefinition", frozen=True)
     ODRL_TYPE: str = Field(default="odrl:Set", frozen=True)
-    ODRL_CONTEXT: str = Field(default="https://www.w3.org/ns/odrl.jsonld", frozen=True)
+    ODRL_CONTEXT: str = Field(default="http://www.w3.org/ns/odrl.jsonld", frozen=True)
 
     def to_data(self):
         """

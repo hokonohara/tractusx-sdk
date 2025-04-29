@@ -21,7 +21,7 @@
 #################################################################################
 
 from abc import ABC
-from typing import Optional
+from typing import Optional, Union
 from pydantic import Field
 
 from .base_queryspec_model import BaseQuerySpecModel
@@ -35,7 +35,7 @@ class BaseCatalogModel(BaseModel, ABC):
 
     counter_party_address: str
     counter_party_id: str
-    context: Optional[dict] = Field(default={
+    context: Optional[Union[dict, list, str]] = Field(default={
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
     additional_scopes: Optional[list[str]] = Field(default_factory=list)
