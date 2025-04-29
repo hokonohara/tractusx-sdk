@@ -57,3 +57,35 @@ class BaseEdcService(BaseService):
         def dma_path(self, dma_path: str):
             self._data["dma_path"] = dma_path
             return self
+
+    @property
+    def assets(self):
+        return self._asset_controller
+
+    @property
+    def catalogs(self):
+        return self._catalog_controller
+
+    @property
+    def contract_agreements(self):
+        return self._contract_agreement_controller
+
+    @property
+    def contract_definitions(self):
+        return self._contract_definition_controller
+
+    @property
+    def contract_negotiations(self):
+        return self._contract_negotiation_controller
+
+    @property
+    def edrs(self):
+        return self._edr_controller
+
+    @property
+    def policies(self):
+        return self._policy_controller
+
+    @property
+    def transfer_processes(self):
+        return self._transfer_process_controller

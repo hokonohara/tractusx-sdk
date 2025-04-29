@@ -35,39 +35,63 @@ class TestBaseEdcService(unittest.TestCase):
         self.dma_path = "/dma"
         self.headers = {"Authorization": "Bearer token"}
 
-    def test_initialization_creates_controllers(self):
-        service = BaseEdcService(
+        self.service = BaseEdcService(
             version=self.version,
             base_url=self.base_url,
             dma_path=self.dma_path,
             headers=self.headers,
         )
 
-        self.assertIsInstance(service._asset_controller, BaseDmaController)
-        self.assertIsNotNone(service._asset_controller)
+    def test_initialization_creates_controllers(self):
+        self.assertIsInstance(self.service._asset_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._asset_controller)
 
-        self.assertIsInstance(service._catalog_controller, BaseDmaController)
-        self.assertIsNotNone(service._catalog_controller)
+        self.assertIsInstance(self.service._catalog_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._catalog_controller)
 
-        self.assertIsInstance(service._contract_agreement_controller, BaseDmaController)
-        self.assertIsNotNone(service._contract_agreement_controller)
+        self.assertIsInstance(self.service._contract_agreement_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._contract_agreement_controller)
 
-        self.assertIsInstance(service._contract_definition_controller, BaseDmaController)
-        self.assertIsNotNone(service._contract_definition_controller)
+        self.assertIsInstance(self.service._contract_definition_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._contract_definition_controller)
 
-        self.assertIsInstance(service._contract_negotiation_controller, BaseDmaController)
-        self.assertIsNotNone(service._contract_negotiation_controller)
+        self.assertIsInstance(self.service._contract_negotiation_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._contract_negotiation_controller)
 
-        self.assertIsInstance(service._edr_controller, BaseDmaController)
-        self.assertIsNotNone(service._edr_controller)
+        self.assertIsInstance(self.service._edr_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._edr_controller)
 
-        self.assertIsInstance(service._policy_controller, BaseDmaController)
-        self.assertIsNotNone(service._policy_controller)
+        self.assertIsInstance(self.service._policy_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._policy_controller)
 
-        self.assertIsInstance(service._transfer_process_controller, BaseDmaController)
-        self.assertIsNotNone(service._transfer_process_controller)
+        self.assertIsInstance(self.service._transfer_process_controller, BaseDmaController)
+        self.assertIsNotNone(self.service._transfer_process_controller)
 
     def test_builder_sets_dma_path(self):
         builder = BaseEdcService.builder()
         builder.dma_path(self.dma_path)
         self.assertEqual(builder._data["dma_path"], self.dma_path)
+
+    def test_assets_property(self):
+        self.assertEqual(self.service._asset_controller, self.service.assets)
+
+    def test_catalogs_property(self):
+        self.assertEqual(self.service._catalog_controller, self.service.catalogs)
+
+    def test_contract_agreements_property(self):
+        self.assertEqual(self.service._contract_agreement_controller, self.service.contract_agreements)
+
+    def test_contract_definitions_property(self):
+        self.assertEqual(self.service._contract_definition_controller, self.service.contract_definitions)
+
+    def test_contract_negotiations_property(self):
+        self.assertEqual(self.service._contract_negotiation_controller, self.service.contract_negotiations)
+
+    def test_edrs_property(self):
+        self.assertEqual(self.service._edr_controller, self.service.edrs)
+
+    def test_policies_property(self):
+        self.assertEqual(self.service._policy_controller, self.service.policies)
+
+    def test_transfer_processes_property(self):
+        self.assertEqual(self.service._transfer_process_controller, self.service.transfer_processes)
