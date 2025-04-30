@@ -19,8 +19,8 @@ pypi/pypi/-/fastapi-cli/0.0.7, MIT, approved, clearlydefined
 pypi/pypi/-/fastapi-keycloak-middleware/1.1.0, MIT, approved, clearlydefined
 pypi/pypi/-/fastapi/0.115.7, MIT, approved, #19828
 pypi/pypi/-/greenlet/3.1.1, MIT AND PSF-2.0, approved, #19389
-pypi/pypi/-/h11/0.16.0, MIT, restricted, clearlydefined
-pypi/pypi/-/httpcore/1.0.9, BSD-2-Clause AND BSD-3-Clause, restricted, clearlydefined
+pypi/pypi/-/h11/0.16.0, MIT AND BSD-3-Clause, approved, #20895
+pypi/pypi/-/httpcore/1.0.9, BSD-3-Clause, approved, #20894
 pypi/pypi/-/httptools/0.6.4, MIT, approved, #14635
 pypi/pypi/-/httpx/0.28.1, BSD-3-Clause, approved, clearlydefined
 pypi/pypi/-/idna/3.3, BSD-3-Clause AND LicenseRef-scancode-unicode, approved, #4826
