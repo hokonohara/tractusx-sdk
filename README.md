@@ -46,8 +46,11 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
 - [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub):
   - [Backend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-backend): An example of how to use the SDK dataspace & industry libaries in your application.
   - [Frontend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-frontend): An example of how to use the SDK API interfaces from each microservice.
+  - The use case add-ons from the IC-Hub will also use this!
 
-- The use case add-ons from the IC-Hub will also use this!
+- [Tractus-X SDK Services](https://github.com/eclipse-tractusx/tractusx-sdk-services)
+  - [DT Pull Service](https://github.com/eclipse-tractusx/tractusx-sdk-services): Provides a service that pulls digital twins from data providers.
+  - [Test Orchestrator](https://github.com/eclipse-tractusx/tractusx-sdk-services): Provides a test agent service that can check if the configuration of your data provision services is compliant with the standard schemas & syntaxis.
 
 - Open for more collaboration!
 
