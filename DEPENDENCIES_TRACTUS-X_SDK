@@ -1,12 +1,12 @@
-pypi/pypi/-/Jinja2/3.1.4, BSD-3-Clause, approved, #7978
+pypi/pypi/-/Jinja2/3.1.6, BSD-3-Clause, approved, #7978
 pypi/pypi/-/MarkupSafe/2.0.1, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
 pypi/pypi/-/PyYAML/6.0.2, MIT, approved, clearlydefined
 pypi/pypi/-/Pygments/2.19.1, , approved, #19382
 pypi/pypi/-/SQLAlchemy/2.0.38, MIT AND LGPL-2.0-only AND BSD-3-Clause AND LGPL-2.0-or-later, approved, #19392
 pypi/pypi/-/annotated-types/0.7.0, MIT, approved, clearlydefined
-pypi/pypi/-/anyio/4.8.0, MIT, approved, #19384
+pypi/pypi/-/anyio/4.9.0, MIT, approved, #20553
 pypi/pypi/-/build/1.2.2.post1, MIT, approved, clearlydefined
-pypi/pypi/-/certifi/2023.7.22, MPL-2.0, approved, #19826
+pypi/pypi/-/certifi/2024.7.4, MPL-2.0, approved, clearlydefined
 pypi/pypi/-/cffi/1.17.1, MIT, approved, #19388
 pypi/pypi/-/charset-normalizer/3.4.1, MIT AND (LGPL-2.1-only AND MIT) AND LGPL-2.1-only AND CC-BY-SA-3.0, approved, #19391
 pypi/pypi/-/click/8.1.8, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
@@ -19,11 +19,11 @@ pypi/pypi/-/fastapi-cli/0.0.7, MIT, approved, clearlydefined
 pypi/pypi/-/fastapi-keycloak-middleware/1.1.0, MIT, approved, clearlydefined
 pypi/pypi/-/fastapi/0.115.7, MIT, approved, #19828
 pypi/pypi/-/greenlet/3.1.1, MIT AND PSF-2.0, approved, #19389
-pypi/pypi/-/h11/0.14.0, MIT AND BSD-3-Clause, approved, #13077
-pypi/pypi/-/httpcore/0.16.3, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
+pypi/pypi/-/h11/0.16.0, MIT AND BSD-3-Clause, approved, #20895
+pypi/pypi/-/httpcore/1.0.9, BSD-3-Clause, approved, #20894
 pypi/pypi/-/httptools/0.6.4, MIT, approved, #14635
-pypi/pypi/-/httpx/0.23.1, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
-pypi/pypi/-/idna/3.3, BSD-3-Clause AND LicenseRef-scancode-unicode, approved, #4826
+pypi/pypi/-/httpx/0.28.1, BSD-3-Clause, approved, clearlydefined
+pypi/pypi/-/idna/3.7, BSD-3-Clause AND Unicode-TOU, approved, #14864
 pypi/pypi/-/iniconfig/2.0.0, MIT, approved, clearlydefined
 pypi/pypi/-/jwcrypto/1.5.6, LGPL-3.0-only AND LGPL-3.0-or-later, approved, #15152
 pypi/pypi/-/markdown-it-py/3.0.0, MIT, approved, clearlydefined
