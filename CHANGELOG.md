@@ -5,6 +5,16 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.4] - 2025-05-06
+
+### Added
+
+- Documentation for TX-SDK Service [#94](https://github.com/eclipse-tractusx/tractusx-sdk/pull/94)
+
+### Changed
+
+- Updated dependencies [#93](https://github.com/eclipse-tractusx/tractusx-sdk/pull/93)
+
 ## [0.0.3] - 2025-04-29
 
 ### Added
