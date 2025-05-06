@@ -24,9 +24,7 @@
 from fastapi import FastAPI, Request
 
 ## Import FastAPI Router
-from tractusx_sdk.dataspace.controllers import (
-    checks_router
-)
+from tractusx_sdk.dataspace.controllers.checks import router as checks_router
 
 ## FAST API example for keycloak
 # from fastapi_keycloak_middleware import CheckPermissions

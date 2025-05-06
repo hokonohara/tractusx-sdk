@@ -20,11 +20,14 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+import logging
 from enum import Enum
 from importlib import import_module
 from os import listdir, path
 
 from ...adapters.connector.base_dma_adapter import BaseDmaAdapter
+
+logger = logging.getLogger(__name__)
 
 
 class ControllerType(Enum):
@@ -305,3 +308,35 @@ class ControllerFactory:
         # Include any additional parameters
         builder.data(kwargs)
         return builder.build()
+
+    @staticmethod
+    def get_dma_controllers_for_version(
+            connector_version: str,
+            adapter: BaseDmaAdapter,
+            **kwargs
+    ):
+        """
+        Create all DMA controllers for a specific connector version.
+
+        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param adapter: The DMA adapter to use for the controller
+        :param kwargs: Additional parameters to pass to the controller builder
+        :return: A dictionary of controller instances, keyed by controller type
+        """
+
+        controllers = {}
+        for controller_type in ControllerType:
+            # For each controller type in ControllerType, call the corresponding get_controller method
+            method_name = f"get_{controller_type.name.lower()}_controller"
+            if hasattr(ControllerFactory, method_name):
+                method = getattr(ControllerFactory, method_name)
+                try:
+                    controllers[controller_type] = method(
+                        connector_version=connector_version,
+                        adapter=adapter,
+                        **kwargs
+                    )
+                except AttributeError:
+                    logger.warning(f"A controller for {controller_type.name} does not exist for version {connector_version}")
+
+        return controllers
