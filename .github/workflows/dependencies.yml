@@ -24,13 +24,17 @@ on:
     branches: [main]
     paths:
       - poetry.lock
+      - pyproject.toml
       - DEPENDENCIES_TRACTUS-X_SDK
+      - DEPENDENCIES_TRACTUS-X_SDK_WINDOWS
       - .github/workflows/dependencies.yaml
   pull_request:
     branches: [main]
     paths:
       - poetry.lock
+      - pyproject.toml
       - DEPENDENCIES_TRACTUS-X_SDK
+      - DEPENDENCIES_TRACTUS-X_SDK_WINDOWS
       - .github/workflows/dependencies.yaml
   workflow_dispatch:
 
