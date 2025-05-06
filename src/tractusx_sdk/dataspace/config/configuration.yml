@@ -25,3 +25,8 @@ authorization:
   apiKey: 
     key: "X-Api-Key"
     value: <<example>>
+
+EdcService:
+  version: "v0_9_0"
+  base_url: "https://example.com"
+  dma_path: "/management"

@@ -26,13 +26,13 @@ logging.captureWarnings(True)
 import os
 
 from tractusx_sdk.dataspace.managers import AuthManager
-from tractusx_sdk.dataspace.services import EdcService
+from tractusx_sdk.dataspace.services import BaseEdcService
 from tractusx_sdk.dataspace.tools import op, get_arguments, get_app_config, get_log_config
 from tractusx_sdk.industry.services import AasService
 
 auth_manager: AuthManager
 
-edc_service: EdcService
+edc_service: BaseEdcService
 
 aas_service: AasService
 
@@ -44,9 +44,6 @@ log_config:dict
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CONFIG_LOG_PATH = os.path.join(BASE_DIR, "logging.yml")
 CONFIG_CONFIG_PATH = os.path.join(BASE_DIR, "configuration.yml")
-
-## Start storage and edc communication service
-edc_service = EdcService()
 
 ## Start the authentication manager
 auth_manager = AuthManager()
@@ -73,3 +70,9 @@ base_url = app_configuration["AasService"]["base_url"]
 base_lookup_url= app_configuration["AasService"]["base_lookup_url"]
 api_path = app_configuration["AasService"]["api_path"]
 aas_service = AasService(base_url, base_lookup_url, api_path)
+
+## Start storage and edc communication service
+edc_version = app_configuration["EdcService"]["version"]
+edc_base_url = app_configuration["EdcService"]["base_url"]
+edc_dma_path = app_configuration["EdcService"]["dma_path"]
+edc_service = BaseEdcService(edc_version, edc_base_url, edc_dma_path)
