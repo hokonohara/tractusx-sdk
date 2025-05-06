@@ -11,7 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Documentation for TX-SDK Service [#94](https://github.com/eclipse-tractusx/tractusx-sdk/pull/94)
 
-- Added tractus-x edc service sdk
+- Added tractus-x edc service sdk [#92](https://github.com/eclipse-tractusx/tractusx-sdk/pull/92)
 
 ### Changed
 
