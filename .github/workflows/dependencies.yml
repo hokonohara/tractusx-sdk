@@ -22,8 +22,20 @@ name: "Eclipse DASH IP Check"
 on:
   push:
     branches: [main]
+    paths:
+      - poetry.lock
+      - pyproject.toml
+      - DEPENDENCIES_TRACTUS-X_SDK
+      - DEPENDENCIES_TRACTUS-X_SDK_WINDOWS
+      - .github/workflows/dependencies.yaml
   pull_request:
     branches: [main]
+    paths:
+      - poetry.lock
+      - pyproject.toml
+      - DEPENDENCIES_TRACTUS-X_SDK
+      - DEPENDENCIES_TRACTUS-X_SDK_WINDOWS
+      - .github/workflows/dependencies.yaml
   workflow_dispatch:
 
 env:
@@ -68,7 +80,8 @@ jobs:
           if [ -f poetry.lock ]; then
             $POETRY_HOME_UNIX/bin/poetry sync --no-root
           else
-            $POETRY_HOME_UNIX/bin/poetry install --no-root
+            echo "The project must have a poetry.lock file"
+            exit 1
           fi
 
       - name: List packages
