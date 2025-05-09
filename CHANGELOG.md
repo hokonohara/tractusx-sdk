@@ -11,6 +11,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - Improve dependency flexibility and configure dev/test groups [#79](https://github.com/eclipse-tractusx/tractusx-sdk/pull/79)
 
+### Security
+
+- Bump h11 from 0.14.0 to 0.16.0 [#98](https://github.com/eclipse-tractusx/tractusx-sdk/pull/98)
+
 ## [0.0.4] - 2025-05-06
 
 ### Added
