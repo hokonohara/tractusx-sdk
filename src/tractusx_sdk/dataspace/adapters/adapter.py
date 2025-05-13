@@ -171,8 +171,4 @@ class Adapter:
             **kwargs
         )
 
-        return HttpTools.json_response(
-            data=response.json(),
-            status_code=response.status_code,
-            headers=dict(response.headers)
-        )
+        return response
