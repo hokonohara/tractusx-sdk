@@ -5,6 +5,14 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.6] - 2025-05-13
+
+### Fixed
+
+- Fixed bug related to the response type which always needed to be parsed [#99](https://github.com/eclipse-tractusx/tractusx-sdk/issues/99)
+  - PR [#102](https://github.com/eclipse-tractusx/tractusx-sdk/pull/102)
+
+
 ## [0.0.5] - 2025-05-07
 
 ### Fixed
