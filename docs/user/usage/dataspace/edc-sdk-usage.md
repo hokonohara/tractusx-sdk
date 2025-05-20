@@ -105,6 +105,8 @@ filter = [
 The Asset Model represents the metadata and configuration required to define an asset in the Eclipse Dataspace Connector (EDC). Assets are the core entities exchanged or managed in a dataspace, and they include details such as identifiers, data addresses, and associated properties
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 asset = ModelFactory.get_asset_model(
     connector_version=connector_version,
     oid=oid,
@@ -129,6 +131,8 @@ asset = ModelFactory.get_asset_model(
 The Catalog Model represents the metadata and configuration required to query and retrieve available assets from a counterparty in the Eclipse Dataspace Connector (EDC). It is used to interact with the catalog endpoint of a counterparty to discover assets that can be negotiated or exchanged.
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 catalog_model = ModelFactory.get_catalog_model(
     connector_version=connector_version,
     counter_party_address=counter_party_address,
@@ -147,6 +151,8 @@ catalog_model = ModelFactory.get_catalog_model(
 The Contract Definition Model represents the metadata and configuration required to define a contract in the Eclipse Dataspace Connector (EDC). Contracts are used to enforce policies and rules for data exchange between parties in the dataspace.
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 contract_definition = ModelFactory.get_contract_definition_model(
     connector_version=connector_version,
     oid=oid,
@@ -167,6 +173,8 @@ contract_definition = ModelFactory.get_contract_definition_model(
 The Contract Negotiation Model represents the metadata and configuration required to initiate and manage contract negotiations in the Eclipse Dataspace Connector (EDC). Contract negotiations are a key step in establishing agreements between parties for data exchange, ensuring that both access and usage policies are agreed upon before the transfer of data.
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 contract_negotiation_model = ModelFactory.get_contract_negotiation_model(
     connector_version=connector_version,
     counter_party_address=counter_party_address,
@@ -192,6 +200,8 @@ contract_negotiation_model = ModelFactory.get_contract_negotiation_model(
 The Policy Model represents the metadata and configuration required to define policies in the Eclipse Dataspace Connector (EDC). Policies are used to enforce rules and constraints for data access and usage, ensuring compliance with predefined terms during data exchange
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 policy = ModelFactory.get_policy_model(
     connector_version=connector_version,
     oid=oid,
@@ -210,6 +220,8 @@ policy = ModelFactory.get_policy_model(
 The QuerySpec Model represents the metadata and configuration required to define query specifications in the Eclipse Dataspace Connector (EDC). Query specifications are used to filter and retrieve specific assets or data from a catalog or other data sources in the dataspace.
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 queryspec_edr_model = ModelFactory.get_queryspec_model(
     connector_version=connector_version,
     filter_expression=filter
@@ -230,6 +242,8 @@ queryspec_edr_model = ModelFactory.get_queryspec_model(
 The Transfer Process Model represents the metadata and configuration required to initiate and manage data transfers in the Eclipse Dataspace Connector (EDC). The transfer process is a critical step in the dataspace, enabling the secure and compliant exchange of data between parties.
 
 ```python
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
 transfer_process_model = ModelFactory.get_transfer_process_model(
     connector_version=connector_version,
     counter_party_address=counter_party_address,
@@ -252,6 +266,39 @@ transfer_process_model = ModelFactory.get_transfer_process_model(
 
 ### EDC Service
 
+The EDC Service is a central component that provides access to various controllers in the Eclipse Dataspace Connector (EDC). These controllers allow you to manage assets, catalogs, contracts, policies, and data transfers in the dataspace. The BaseEdcService acts as a wrapper, providing a unified interface to interact with the EDC's Data Management API.
+
+```pyhton
+from tractusx_sdk.dataspace.services import BaseEdcService
+
+service = BaseEdcService(
+    version=self.version,
+    base_url=self.base_url,
+    dma_path=self.dma_path,
+    headers=self.headers,
+)
+
+service._asset_controller
+service._catalog_controller
+service._contract_agreement_controller
+service._contract_definition_controller
+service._contract_negotiation_controller
+service._edr_controller
+service._policy_controller
+service._transfer_process_controller
+```
+
+#### Available Controllers
+
+- [`service._asset_controller`](#asset-controller): Manages assets in the EDC. This includes creating, updating, retrieving, and deleting assets.
+- [`service._catalog_controller`](#catalog-controller): Interacts with the catalog of a counterparty to query and retrieve available assets.
+- [`service._contract_agreement_controller`](#contract-agreement-controller): Manages contract agreements established after successful negotiations.
+- [`service._contract_definition_controller`](#contract-definition-controller): Handles the creation, retrieval, updating, and deletion of contract definitions.
+- [`service._contract_negotiation_controller`](#contract-negotiation-controller): Facilitates the initiation, tracking, and management of contract negotiations.
+- [`service._edr_controller`](#edr-controller): Manages Endpoint Data References (EDRs) required for secure data transfers.
+- [`service._policy_controller`](#policy-controller): Manages policies that define rules, constraints, and permissions for data access and usage.
+- [`service._transfer_process_controller`](#transfer-process-controller): Handles the initiation, monitoring, and management of data transfer processes.
+
 ## Adapters
 
 ### DMA Adapter
@@ -259,9 +306,12 @@ transfer_process_model = ModelFactory.get_transfer_process_model(
 The DMA Adapter (Data Management API Adapter) is a utility class used to interact with the Data Management API (DMA) of the Eclipse Dataspace Connector (EDC). It provides a convenient way to send requests to the DMA endpoints, such as managing assets, policies, and contracts.
 
 ```python
-adapter = DmaAdapter(
-    base_url=edc_url, 
-    dma_path="management", 
+from tractusx_sdk.dataspace.adapters.connector.adapter_factory import AdapterFactory
+
+adapter = AdapterFactory.get_dma_adapter(
+    connector_version=connector_version,
+    base_url=edc_url,
+    dma_path="management",
     headers={"X-Api-Key": "TEST2", "Content-Type": "application/json"}
 )
 ```
@@ -279,6 +329,8 @@ adapter = DmaAdapter(
 The Asset Controller is a component used to manage assets in the Eclipse Dataspace Connector (EDC). It provides methods for creating, updating, retrieving, and deleting assets, enabling seamless interaction with the EDC's Data Management API.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 asset_controller = ControllerFactory.get_asset_controller(
     connector_version=connector_version,
     adapter=adapter
@@ -301,6 +353,8 @@ asset_controller = ControllerFactory.get_asset_controller(
 The Catalog Controller is a component used to interact with the catalog of a counterparty in the Eclipse Dataspace Connector (EDC). It provides methods for querying and retrieving available assets, enabling asset discovery and negotiation in the dataspace.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 catalog_controller = ControllerFactory.get_catalog_controller(
     connector_version=connector_version,
     adapter=consumer_adapter
@@ -318,6 +372,8 @@ catalog_controller = ControllerFactory.get_catalog_controller(
 The Contract Agreement Controller is a component used to manage contract agreements in the Eclipse Dataspace Connector (EDC). Contract agreements are established after successful contract negotiations and define the terms and conditions under which data can be exchanged between parties.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 contract_agreement_controller = ControllerFactory.get_contract_agreement_controller(
     connector_version=connector_version,
     adapter=consumer_adapter
@@ -338,6 +394,8 @@ contract_agreement_controller = ControllerFactory.get_contract_agreement_control
 The Contract Definition Controller is a component used to manage contract definitions in the Eclipse Dataspace Connector (EDC). Contract definitions specify the terms, policies, and conditions under which data can be accessed and exchanged.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 contract_definition_controller =  ControllerFactory.get_contract_definition_controller(
     connector_version=connector_version,
     adapter=adapter
@@ -360,6 +418,8 @@ contract_definition_controller =  ControllerFactory.get_contract_definition_cont
 The Contract Negotiation Controller is a component used to manage contract negotiations in the Eclipse Dataspace Connector (EDC). Contract negotiations are a critical step in establishing agreements between parties for data exchange. This controller facilitates the process of initiating, tracking, and managing contract negotiations.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 contract_negotiation_controller = ControllerFactory.get_contract_negotiation_controller(
     connector_version=connector_version,
     adapter=consumer_adapter
@@ -383,6 +443,8 @@ contract_negotiation_controller = ControllerFactory.get_contract_negotiation_con
 The EDR Controller (Endpoint Data Reference Controller) is a component used to manage Endpoint Data References (EDRs) in the Eclipse Dataspace Connector (EDC). EDRs are critical for enabling secure and efficient data transfers between parties in the dataspace. They provide the necessary information, such as endpoints and credentials, to access the data being shared.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 edr_controller = ControllerFactory.get_edr_controller(
     connector_version=connector_version,
     adapter=consumer_adapter
@@ -405,6 +467,8 @@ edr_controller = ControllerFactory.get_edr_controller(
 The Policy Controller is a component used to manage policies in the Eclipse Dataspace Connector (EDC). Policies define the rules, constraints, and permissions for accessing and using data in the dataspace.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 policy_controller = ControllerFactory.get_policy_controller(
     connector_version=connector_version,
     adapter=adapter
@@ -427,6 +491,8 @@ policy_controller = ControllerFactory.get_policy_controller(
 The Transfer Process Controller is a component used to manage data transfer processes in the Eclipse Dataspace Connector (EDC). It facilitates the initiation, monitoring, and management of data transfers between parties in the dataspace. This controller ensures that data transfers comply with the terms of the associated contract agreements.
 
 ```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
 transfer_process_controller = ControllerFactory.get_transfer_process_controller(
     connector_version=connector_version,
     adapter=consumer_adapter
@@ -446,3 +512,16 @@ transfer_process_controller = ControllerFactory.get_transfer_process_controller(
 | get_state_by_id       | Retrieves the current state of a specific transfer process by its unique identifier (OID).            | oid           |
 
 ### DMA Controller
+
+The DMA Controller (Data Management API Controller) is a component used to interact with the Data Management API (DMA) of the Eclipse Dataspace Connector (EDC). It provides access to various controllers for managing assets, policies, contracts, and other resources in the dataspace.
+
+```python
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
+
+controllers = ControllerFactory.get_dma_controllers_for_version(
+    connector_version=version,
+    adapter=dma_adapter
+)
+```
+
+This method retrieves a set of controllers compatible with the specified `connector_version`.
