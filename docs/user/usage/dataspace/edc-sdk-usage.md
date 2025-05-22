@@ -53,6 +53,7 @@ This section defines the configuration values, metadata, and policies required f
 ```python
 edc_url="http://dataprovider-controlplane.tx.test"
 connector_version = "v0_9_0"
+headers={"X-Api-Key": "TEST1", "Content-Type": "application/json"}
 oid = "201"
 data_address = {"type": "test_type", "value": "test_value"}
 context = {"odrl": "http://www.w3.org/ns/odrl/2/"}
