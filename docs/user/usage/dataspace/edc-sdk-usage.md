@@ -53,6 +53,7 @@ This section defines the configuration values, metadata, and policies required f
 ```python
 edc_url="http://dataprovider-controlplane.tx.test"
 connector_version = "v0_9_0"
+headers={"X-Api-Key": "TEST1", "Content-Type": "application/json"}
 oid = "201"
 data_address = {"type": "test_type", "value": "test_value"}
 context = {"odrl": "http://www.w3.org/ns/odrl/2/"}
@@ -269,23 +270,35 @@ transfer_process_model = ModelFactory.get_transfer_process_model(
 The EDC Service is a central component that provides access to various controllers in the Eclipse Dataspace Connector (EDC). These controllers allow you to manage assets, catalogs, contracts, policies, and data transfers in the dataspace. The BaseEdcService acts as a wrapper, providing a unified interface to interact with the EDC's Data Management API.
 
 ```pyhton
-from tractusx_sdk.dataspace.services import BaseEdcService
+from tractusx_sdk.dataspace.services.connector.v0_9_0.edc_service import EdcService
 
-service = BaseEdcService(
-    version=self.version,
-    base_url=self.base_url,
-    dma_path=self.dma_path,
-    headers=self.headers,
-)
+service = EdcService(base_url=self.base_url,
+                            dma_path=self.dma_path,
+                            headers=self.headers,)
 
-service._asset_controller
-service._catalog_controller
-service._contract_agreement_controller
-service._contract_definition_controller
-service._contract_negotiation_controller
-service._edr_controller
-service._policy_controller
-service._transfer_process_controller
+service._asset_controller # alternative
+service.assets()
+
+service._catalog_controller # alternative
+service.catalogs()
+
+service._contract_agreement_controller # alternative
+service.contract_agreements()
+
+service._contract_definition_controller # alternative
+service.contract_definitions()
+
+service._contract_negotiation_controller # alternative
+service.contract_negotiations()
+
+service._edr_controller # alternative
+service.edrs()
+
+service._policy_controller # alternative
+service.policies()
+
+service._transfer_process_controller # alternative
+service.transfer_processes()
 ```
 
 #### Available Controllers
