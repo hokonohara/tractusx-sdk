@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This Sofware is still in development. Please consult our [Roadmap](#roadmap)
+> This Software is still in development. Please consult our [Roadmap](#roadmap)
 
 # Tractus-X Software Development KIT
 
