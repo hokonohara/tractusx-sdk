@@ -20,6 +20,14 @@ No specific use case logic will be configured here, only the bare minimum for in
 
 An example of SDK that is already used in Tractus-X is the [Portal Shared Components](https://github.com/eclipse-tractusx/portal-shared-components), however this SDK shall aim to be generic for every application.
 
+## Installation
+
+Install the package directly from PyPI:
+
+```bash
+pip install tractusx-sdk
+```
+
 ## Roadmap
 
 The development roadmap is the same as the industry core hub.
