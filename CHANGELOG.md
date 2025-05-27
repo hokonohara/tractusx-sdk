@@ -5,6 +5,12 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.0.7] - 2025-05-27
+
+### Added
+
+- Added documentation with the usage of the SDK modules (dataspace, industry, extensions) [#105](https://github.com/eclipse-tractusx/tractusx-sdk/pull/105)
+
 ## [0.0.6] - 2025-05-13
 
 ### Fixed
