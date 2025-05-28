@@ -24,4 +24,6 @@
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .edc_service import EdcService
+from .connector.base_edc_service import BaseEdcService
+
+__all__ = ['BaseEdcService']

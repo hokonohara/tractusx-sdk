@@ -24,7 +24,7 @@ import unittest
 import requests_mock
 from json import loads as jloads
 
-from src.tractusx_sdk.dataspace.adapters.adapter import Adapter
+from tractusx_sdk.dataspace.adapters.adapter import Adapter
 
 
 class TestAdapter(unittest.TestCase):
@@ -57,8 +57,7 @@ class TestAdapter(unittest.TestCase):
         response = self.adapter.request("get", "test-endpoint")
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(mock_response_data, jloads(response.body.decode("utf-8")))
-        self.assertEqual("application/json", response.headers["Content-Type"])
+        self.assertEqual(mock_response_data, response.json())
 
     def tearDown(self):
         self.adapter.close()

@@ -24,3 +24,6 @@ repositories:
   - name: "tractusx-sdk"
     usage: "Eclipse Tractus-X Software Development KIT - The Dataspace & Industry Foundation Library"
     url: "https://github.com/eclipse-tractusx/tractusx-sdk"
+  - name: "tractusx-sdk-services"
+    usage: "Eclipse Tractus-X Software Development KIT Services - Microservices which build on top of the SDK"
+    url: "https://github.com/eclipse-tractusx/tractusx-sdk-services"

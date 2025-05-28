@@ -20,6 +20,41 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-class EdcService:
-    def __init__(self):
-        pass
+from ..base_dma_controller import BaseDmaController
+from .base_mixins import (
+    CreateControllerMixin,
+    GetControllerMixin,
+    UpdateControllerMixin,
+    DeleteControllerMixin,
+    GetAllControllerMixin,
+    GetStateControllerMixin,
+    TerminateControllerMixin
+)
+
+
+class BaseCrudDmaController(
+    CreateControllerMixin,
+    GetControllerMixin,
+    UpdateControllerMixin,
+    DeleteControllerMixin,
+    BaseDmaController
+):
+    pass
+
+
+class CrudDmaController(
+    GetAllControllerMixin,
+    BaseCrudDmaController
+):
+    pass
+
+
+class StatefulEntityDmaController(
+    CreateControllerMixin,
+    GetControllerMixin,
+    GetAllControllerMixin,
+    GetStateControllerMixin,
+    TerminateControllerMixin,
+    BaseDmaController
+):
+    pass

@@ -24,9 +24,7 @@
 from fastapi import FastAPI, Request
 
 ## Import FastAPI Router
-from tractusx_sdk.dataspace.controllers import (
-    checks_router
-)
+from tractusx_sdk.dataspace.controllers.checks import router as checks_router
 
 ## FAST API example for keycloak
 # from fastapi_keycloak_middleware import CheckPermissions
@@ -96,7 +94,7 @@ if __name__ == "__main__":
         " / /_/ / /_/ / /_/ /_/ (__  ) /_/ / /_/ / /__/  __/   ___/ / /_/ / /| |  \n"+
         "/_____/\\__,_/\\__/\\__,_/____/ .___/\\__,_/\\___/\\___/   /____/_____/_/ |_|  \n"+
         "                          /_/                                            \n"+
-        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.2")
+        "\n\n\t\t\t\t\t\t\t\t\t\tv0.0.6")
 
     print("Application starting, listening to requests...\n")
 
