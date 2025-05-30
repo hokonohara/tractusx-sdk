@@ -26,9 +26,8 @@
 
 import copy
 
-DATASET_KEY="dcat:dataset"
-import sys
-class DspUtils:
+from ..constants import DSP_DATASET_KEY
+class DspTools:
     """
     Class responsible for doing trivial dsp operations.
 
@@ -44,12 +43,10 @@ class DspUtils:
         
         """
 
-        global DATASET_KEY
-
         if catalog is None:
             raise Exception("It was not possible to get the policy, because the catalog is empty!")
         
-        dataset:list|dict = catalog.get(DATASET_KEY)
+        dataset:list|dict = catalog.get(DSP_DATASET_KEY)
 
         if(allowed_policies is None):
             print("It did not find a policy")
@@ -61,7 +58,7 @@ class DspUtils:
 
         ## If just one asset is there
         if isinstance(dataset, dict):
-            policy = DspUtils.get_dataset_policy(dataset=dataset, allowed_policies=allowed_policies)
+            policy = DspTools.get_dataset_policy(dataset=dataset, allowed_policies=allowed_policies)
             if policy is None:
                 raise ValueError("No valid asset and policy allowed at the DCAT Catalog dataset!")
 
@@ -74,7 +71,7 @@ class DspUtils:
 
         ## More than one asset, the prio is set by the allowed policies order
         for item in dataset:
-            policy = DspUtils.get_dataset_policy(dataset=item, allowed_policies=allowed_policies)
+            policy = DspTools.get_dataset_policy(dataset=item, allowed_policies=allowed_policies)
             if policy is not None:
                 valid_assets.append((item.get("@id"), policy)) ## Return the assetid and the policy
 
@@ -107,12 +104,12 @@ class DspUtils:
 
         ## One Policy
         if isinstance(policies, dict):
-            return policies if DspUtils.is_policy_valid(policy=policies, allowed_policies=allowed_policies) else None ## Return the policy object if is valid
+            return policies if DspTools.is_policy_valid(policy=policies, allowed_policies=allowed_policies) else None ## Return the policy object if is valid
 
         ## More than one policy
         for policy in policies:
             ## In case the policy is not valid, continue
-            if not DspUtils.is_policy_valid(policy=policy, allowed_policies=allowed_policies):
+            if not DspTools.is_policy_valid(policy=policy, allowed_policies=allowed_policies):
                continue
             return policy
         
