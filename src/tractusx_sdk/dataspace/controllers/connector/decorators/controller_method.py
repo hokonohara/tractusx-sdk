@@ -43,13 +43,11 @@ def controller_method(func):
             raise ValueError(
                 f"Please ensure that {class_name} inherits from Controller in order to use {func_name}."
             )
-            return None
 
         if not hasattr(self, "endpoint_url"):
             raise ValueError(
                 f"Please ensure that {class_name} defines an 'endpoint_url' attribute in order to use {func_name}."
             )
-            return None
 
         ret_val = func(*args, **kwargs)
         return ret_val
