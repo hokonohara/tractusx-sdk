@@ -19,26 +19,3 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
-
-from .dma_controller import DmaController
-from ..mixins import StatefulEntityDmaController
-from ....models.connector.v0_9_0 import TransferProcessModel
-
-
-class TransferProcessController(StatefulEntityDmaController, DmaController):
-    """
-    Concrete implementation of the TransferProcessController for the Connector v0.9.0 Data Management API.
-
-    This class overrides the create and terminate_by_id methods in order to ensure the correct class types are used, instead of the generic ones.
-    """
-
-    endpoint_url = "/v3/transferprocesses"
-
-    def create(self, obj: TransferProcessModel, **kwargs):
-        return super().create(obj, **kwargs)
-
-    def terminate_by_id(self, oid: str, obj: TransferProcessModel, **kwargs):
-        return super().terminate_by_id(oid, obj, **kwargs)
-
-    def deprovision_by_id(self, oid: str, **kwargs):
-        return self.adapter.post(url=f"{self.endpoint_url}/{oid}/deprovision", **kwargs)

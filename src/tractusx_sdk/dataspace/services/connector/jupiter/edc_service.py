@@ -25,7 +25,7 @@ from ....managers.connection.base_connection_manager import BaseConnectionManage
 class ConnectorService(BaseConnectorService):
     def __init__(self, base_url: str, dma_path: str, headers: dict = None, connection_manager:BaseConnectionManager=None):
         super().__init__(
-            version="v0_9_0",
+            version="jupiter",
             base_url=base_url,
             dma_path=dma_path,
             headers=headers,

@@ -21,22 +21,17 @@
 #################################################################################
 
 from .dma_controller import DmaController
-from ..mixins import CrudDmaController
-from ....models.connector.v0_9_0 import AssetModel
+from ....models.connector.jupiter import CatalogModel
 
 
-class AssetController(CrudDmaController, DmaController):
+class CatalogController(DmaController):
     """
-    Concrete implementation of the AssetController for the Connector v0.9.0 Data Management API.
-
-    This class overrides the create and update methods in order to ensure the correct class types are used,
-    instead of the generic ones.
+    Concrete implementation of the CatalogController for the Connector DMA v0.9.0.
     """
 
-    endpoint_url = "/v3/assets"
+    endpoint_url = "/v3/catalog"
 
-    def create(self, obj: AssetModel, **kwargs):
-        return super().create(obj, **kwargs)
+    def get_catalog(self, obj: CatalogModel, **kwargs):
+        kwargs["data"] = obj.to_data()
+        return self.adapter.post(url=f"{self.endpoint_url}/request", **kwargs)
 
-    def update(self, obj: AssetModel, **kwargs):
-        return super().update(obj, **kwargs)

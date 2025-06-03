@@ -21,7 +21,7 @@
 #################################################################################
 
 from ..base_dma_controller import BaseDmaController
-from ....adapters.connector.v0_9_0 import DmaAdapter
+from ....adapters.connector.jupiter import DmaAdapter
 
 
 class DmaController(BaseDmaController):

@@ -20,41 +20,22 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from ..base_dma_controller import BaseDmaController
-from .base_mixins import (
-    CreateControllerMixin,
-    GetControllerMixin,
-    UpdateControllerMixin,
-    DeleteControllerMixin,
-    GetAllControllerMixin,
-    GetStateControllerMixin,
-    TerminateControllerMixin
-)
+from .dma_controller import DmaController
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
+from ....models.connector.jupiter import ContractDefinitionModel
 
 
-class BaseCrudDmaController(
-    CreateControllerMixin,
-    GetControllerMixin,
-    UpdateControllerMixin,
-    DeleteControllerMixin,
-    BaseDmaController
-):
-    pass
+class ContractDefinitionController(CrudDmaController, DmaController):
+    """
+    Concrete implementation of the ContractDefinitionController for the Connector v0.9.0 Data Management API.
 
+    This class overrides the create and update methods in order to ensure the correct class types are used, instead of the generic ones.
+    """
 
-class CrudDmaController(
-    GetAllControllerMixin,
-    BaseCrudDmaController
-):
-    pass
+    endpoint_url = "/v3/contractdefinitions"
 
+    def create(self, obj: ContractDefinitionModel, **kwargs):
+        return super().create(obj, **kwargs)
 
-class StatefulEntityDmaController(
-    CreateControllerMixin,
-    GetControllerMixin,
-    GetAllControllerMixin,
-    GetStateControllerMixin,
-    TerminateControllerMixin,
-    BaseDmaController
-):
-    pass
+    def update(self, obj: ContractDefinitionModel, **kwargs):
+        return super().update(obj, **kwargs)

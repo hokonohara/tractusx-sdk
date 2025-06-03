@@ -20,9 +20,23 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from .dma_controller import DmaController
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
+from ....models.connector.jupiter import AssetModel
 
-from .discovery_services import DiscoveryFinderService
-from .discovery_services import ConnectorDiscoveryService
+
+class AssetController(CrudDmaController, DmaController):
+    """
+    Concrete implementation of the AssetController for the Connector v0.9.0 Data Management API.
+
+    This class overrides the create and update methods in order to ensure the correct class types are used,
+    instead of the generic ones.
+    """
+
+    endpoint_url = "/v3/assets"
+
+    def create(self, obj: AssetModel, **kwargs):
+        return super().create(obj, **kwargs)
+
+    def update(self, obj: AssetModel, **kwargs):
+        return super().update(obj, **kwargs)

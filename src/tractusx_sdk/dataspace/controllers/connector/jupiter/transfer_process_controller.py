@@ -21,15 +21,24 @@
 #################################################################################
 
 from .dma_controller import DmaController
-from ..mixins import GetControllerMixin, GetAllControllerMixin
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import StatefulEntityDmaController
+from ....models.connector.jupiter import TransferProcessModel
 
 
-class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, DmaController):
+class TransferProcessController(StatefulEntityDmaController, DmaController):
     """
-    Concrete implementation of the ContractAgreementController for the Connector v0.9.0 Data Management API.
+    Concrete implementation of the TransferProcessController for the Connector v0.9.0 Data Management API.
+
+    This class overrides the create and terminate_by_id methods in order to ensure the correct class types are used, instead of the generic ones.
     """
 
-    endpoint_url = "/v3/contractagreements"
+    endpoint_url = "/v3/transferprocesses"
 
-    def get_negotiation_by_id(self, oid: str, **kwargs):
-        return self.adapter.get(url=f"{self.endpoint_url}/{oid}/negotiation", **kwargs)
+    def create(self, obj: TransferProcessModel, **kwargs):
+        return super().create(obj, **kwargs)
+
+    def terminate_by_id(self, oid: str, obj: TransferProcessModel, **kwargs):
+        return super().terminate_by_id(oid, obj, **kwargs)
+
+    def deprovision_by_id(self, oid: str, **kwargs):
+        return self.adapter.post(url=f"{self.endpoint_url}/{oid}/deprovision", **kwargs)
