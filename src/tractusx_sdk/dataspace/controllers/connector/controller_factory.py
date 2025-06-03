@@ -56,7 +56,7 @@ class ControllerFactory:
     SUPPORTED_VERSIONS = []
     for module in listdir(_controllers_base_path):
         module_path = path.join(_controllers_base_path, module)
-        if path.isdir(module_path) and module.startswith("v"):
+        if path.isdir(module_path) and module != "__pycache__" and module != "utils":
             SUPPORTED_VERSIONS.append(module)
 
     @staticmethod
@@ -72,7 +72,7 @@ class ControllerFactory:
         controller class, and returns it, with whatever parameters necessary for its initialization.
 
         :param controller_type: The type of controller to create, as per the AdapterType enum
-        :param connector_version: The version of the Connector (e.g., "v0_9_0")
+        :param connector_version: The version of the Connector (e.g., "jupiter")
         :return: An instance of the specified Adapter subclass
         """
 
@@ -110,7 +110,7 @@ class ControllerFactory:
         """
         Create an asset controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -136,7 +136,7 @@ class ControllerFactory:
         """
         Create a catalog controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -162,7 +162,7 @@ class ControllerFactory:
         """
         Create a contract_agreement controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -188,7 +188,7 @@ class ControllerFactory:
         """
         Create a contract_definition controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -214,7 +214,7 @@ class ControllerFactory:
         """
         Create a contract_negotiation controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -240,7 +240,7 @@ class ControllerFactory:
         """
         Create an EDR controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -266,7 +266,7 @@ class ControllerFactory:
         """
         Create a policy controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -292,7 +292,7 @@ class ControllerFactory:
         """
         Create a transfer_process controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -318,7 +318,7 @@ class ControllerFactory:
         """
         Create all DMA controllers for a specific connector version.
 
-        :param connector_version: The version of the Connector (i.e: "v0_9_0")
+        :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
         :param kwargs: Additional parameters to pass to the controller builder
         :return: A dictionary of controller instances, keyed by controller type

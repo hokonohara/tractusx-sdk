@@ -27,6 +27,6 @@ authorization:
     value: <<example>>
 
 EdcService:
-  version: "v0_9_0"
+  version: "jupiter"
   base_url: "https://example.com"
   dma_path: "/management"

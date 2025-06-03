@@ -20,23 +20,14 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_controller import DmaController
-from ..mixins import CrudDmaController
-from ....models.connector.v0_9_0 import AssetModel
+from ..base_edc_service import BaseEdcService
 
 
-class AssetController(CrudDmaController, DmaController):
-    """
-    Concrete implementation of the AssetController for the Connector v0.9.0 Data Management API.
-
-    This class overrides the create and update methods in order to ensure the correct class types are used,
-    instead of the generic ones.
-    """
-
-    endpoint_url = "/v3/assets"
-
-    def create(self, obj: AssetModel, **kwargs):
-        return super().create(obj, **kwargs)
-
-    def update(self, obj: AssetModel, **kwargs):
-        return super().update(obj, **kwargs)
+class EdcService(BaseEdcService):
+    def __init__(self, base_url: str, dma_path: str, headers: dict = None):
+        super().__init__(
+            version="jupiter",
+            base_url=base_url,
+            dma_path=dma_path,
+            headers=headers
+        )

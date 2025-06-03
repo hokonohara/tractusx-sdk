@@ -20,14 +20,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from ..base_edc_service import BaseEdcService
+from ..base_dma_controller import BaseDmaController
+from ....adapters.connector.jupiter import DmaAdapter
 
 
-class EdcService(BaseEdcService):
-    def __init__(self, base_url: str, dma_path: str, headers: dict = None):
-        super().__init__(
-            version="v0_9_0",
-            base_url=base_url,
-            dma_path=dma_path,
-            headers=headers
-        )
+class DmaController(BaseDmaController):
+    """
+    Implementation of a base DmaController for the Connector v0.9.0 Data Management API.
+
+    This class overrides the adapter method of the parent's _Builder class in order
+    to ensure the correct Adapter class types are used, instead of the generic ones.
+    """
+
+    class _Builder(BaseDmaController._Builder):
+        def adapter(self, adapter: DmaAdapter):
+            return super().adapter(adapter)

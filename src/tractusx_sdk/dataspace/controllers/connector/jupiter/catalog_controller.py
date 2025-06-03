@@ -20,18 +20,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from ..base_dma_controller import BaseDmaController
-from ....adapters.connector.v0_9_0 import DmaAdapter
+from .dma_controller import DmaController
+from ....models.connector.jupiter import CatalogModel
 
 
-class DmaController(BaseDmaController):
+class CatalogController(DmaController):
     """
-    Implementation of a base DmaController for the Connector v0.9.0 Data Management API.
-
-    This class overrides the adapter method of the parent's _Builder class in order
-    to ensure the correct Adapter class types are used, instead of the generic ones.
+    Concrete implementation of the CatalogController for the Connector DMA v0.9.0.
     """
 
-    class _Builder(BaseDmaController._Builder):
-        def adapter(self, adapter: DmaAdapter):
-            return super().adapter(adapter)
+    endpoint_url = "/v3/catalog"
+
+    def get_catalog(self, obj: CatalogModel, **kwargs):
+        kwargs["data"] = obj.to_data()
+        return self.adapter.post(url=f"{self.endpoint_url}/request", **kwargs)
+

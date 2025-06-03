@@ -21,24 +21,24 @@
 #################################################################################
 
 from .dma_controller import DmaController
-from ..mixins import StatefulEntityDmaController
-from ....models.connector.v0_9_0 import ContractNegotiationModel
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CreateControllerMixin, GetAllControllerMixin, DeleteControllerMixin
+from ....models.connector.jupiter import ContractNegotiationModel
 
 
-class ContractNegotiationController(StatefulEntityDmaController, DmaController):
+class EdrController(CreateControllerMixin, GetAllControllerMixin, DeleteControllerMixin, DmaController):
     """
-    Concrete implementation of the ContractNegotiationController for the Connector v0.9.0 Data Management API.
+    Concrete implementation of the EdrController for the Connector v0.9.0 Data Management API.
 
-    This class overrides the create and terminate_by_id methods in order to ensure the correct class types are used, instead of the generic ones.
+    This class overrides the create method in order to ensure the correct class types are used, instead of the generic ones.
     """
 
-    endpoint_url = "/v3/contractnegotiations"
+    endpoint_url = "/v3/edrs"
+
+    def get_data_address(self, oid: str, **kwargs):
+        return self.adapter.get(url=f"{self.endpoint_url}/{oid}/dataaddress", **kwargs)
+
+    def refresh(self, oid: str, **kwargs):
+        return self.adapter.post(url=f"{self.endpoint_url}/{oid}/refresh", **kwargs)
 
     def create(self, obj: ContractNegotiationModel, **kwargs):
         return super().create(obj, **kwargs)
-
-    def terminate_by_id(self, oid: str, obj: ContractNegotiationModel, **kwargs):
-        return super().terminate_by_id(oid, obj, **kwargs)
-
-    def get_agreement_by_negotiation_id(self, oid: str, **kwargs):
-        return self.adapter.get(url=f"{self.endpoint_url}/{oid}/agreement", **kwargs)

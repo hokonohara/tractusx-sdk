@@ -20,18 +20,23 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-authorization:
-  enabled: true
-  apiKey:
-    key: "X-Api-Key"
-    value: <<example>>
+from .dma_controller import DmaController
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
+from ....models.connector.jupiter import AssetModel
 
-AasService:
-  base_url: "https://example.com"
-  base_lookup_url: "https://lookup.example.com"
-  api_path: "/api/v3"
 
-EdcService:
-  version: "jupiter"
-  base_url: "https://example.com"
-  dma_path: "/management"
+class AssetController(CrudDmaController, DmaController):
+    """
+    Concrete implementation of the AssetController for the Connector v0.9.0 Data Management API.
+
+    This class overrides the create and update methods in order to ensure the correct class types are used,
+    instead of the generic ones.
+    """
+
+    endpoint_url = "/v3/assets"
+
+    def create(self, obj: AssetModel, **kwargs):
+        return super().create(obj, **kwargs)
+
+    def update(self, obj: AssetModel, **kwargs):
+        return super().update(obj, **kwargs)

@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.services.connector.base_edc_service import BaseEdcSe
 
 class TestBaseEdcService(unittest.TestCase):
     def setUp(self):
-        self.version = "v0_9_0"
+        self.version = "jupiter"
         self.base_url = "https://example.com"
         self.dma_path = "/dma"
         self.headers = {"Authorization": "Bearer token"}

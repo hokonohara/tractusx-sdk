@@ -36,7 +36,7 @@ pip install --upgrade tractusx-sdk
 Here's a quick example of how to use the SDK:
 
 ```python
-from tractusx_sdk.dataspace.services.connector.v0_9_0.edc_service import EdcService
+from tractusx_sdk.dataspace.services.connector.jupiter.edc_service import EdcService
 
 edc_service = EdcService(
     base_url="https://control.plane.url", 
@@ -66,7 +66,7 @@ properties:dict = {
     }
 
 asset = ModelFactory.get_asset_model(
-    connector_version="v0_9_0",
+    connector_version="jupiter",
     context=context,
     oid="<<your-asset-id>>",
     properties=properties,

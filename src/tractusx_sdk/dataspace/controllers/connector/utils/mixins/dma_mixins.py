@@ -20,16 +20,41 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_controller import DmaController
-from ..mixins import GetControllerMixin, GetAllControllerMixin
+from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
+from .base_mixins import (
+    CreateControllerMixin,
+    GetControllerMixin,
+    UpdateControllerMixin,
+    DeleteControllerMixin,
+    GetAllControllerMixin,
+    GetStateControllerMixin,
+    TerminateControllerMixin
+)
 
 
-class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, DmaController):
-    """
-    Concrete implementation of the ContractAgreementController for the Connector v0.9.0 Data Management API.
-    """
+class BaseCrudDmaController(
+    CreateControllerMixin,
+    GetControllerMixin,
+    UpdateControllerMixin,
+    DeleteControllerMixin,
+    BaseDmaController
+):
+    pass
 
-    endpoint_url = "/v3/contractagreements"
 
-    def get_negotiation_by_id(self, oid: str, **kwargs):
-        return self.adapter.get(url=f"{self.endpoint_url}/{oid}/negotiation", **kwargs)
+class CrudDmaController(
+    GetAllControllerMixin,
+    BaseCrudDmaController
+):
+    pass
+
+
+class StatefulEntityDmaController(
+    CreateControllerMixin,
+    GetControllerMixin,
+    GetAllControllerMixin,
+    GetStateControllerMixin,
+    TerminateControllerMixin,
+    BaseDmaController
+):
+    pass
