@@ -21,7 +21,7 @@
 #################################################################################
 
 from tractusx_sdk.dataspace.adapters.adapter import Adapter
-from tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
+from tractusx_sdk.dataspace.controllers.connector.utils.decorators import controller_method
 from tractusx_sdk.dataspace.controllers.controller import Controller
 
 ENDPOINT_URL = "/some/endpoint"
