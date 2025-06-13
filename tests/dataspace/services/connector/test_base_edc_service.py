@@ -23,7 +23,7 @@
 import unittest
 
 from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
-from tractusx_sdk.dataspace.services.connector.base_connector_services import BaseConnectorService
+from tractusx_sdk.dataspace.services.connector.base_connector_consumer import BaseConnectorService
 
 
 class TestBaseConnectorService(unittest.TestCase):

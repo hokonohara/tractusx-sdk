@@ -1,3 +1,4 @@
+
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
@@ -20,71 +21,28 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+
 from ..service import BaseService
 from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from ...controllers.connector.controller_factory import ControllerFactory, ControllerType
+from .base_connector_consumer import BaseConnectorConsumerService
+from .base_connector_provider import BaseConnectorProviderService
+from fastapi.responses import Response
 
-
-class BaseConnectorProviderService(BaseService):
-    _asset_controller: BaseDmaController
-    _contract_definition_controller: BaseDmaController
-    _policy_controller: BaseDmaController
-
-    def __init__(self, controllers: dict):
-        self._asset_controller = controllers.get(ControllerType.ASSET)
-        self._contract_definition_controller = controllers.get(ControllerType.CONTRACT_DEFINITION)
-        self._policy_controller = controllers.get(ControllerType.POLICY)
-
-    @property
-    def assets(self):
-        return self._asset_controller
-
-    @property
-    def contract_definitions(self):
-        return self._contract_definition_controller
-
-    @property
-    def policies(self):
-        return self._policy_controller
-
-
-class BaseConnectorConsumerService(BaseService):
-    _catalog_controller: BaseDmaController
-    _edr_controller: BaseDmaController
-    _contract_negotiation_controller: BaseDmaController
-    _transfer_process_controller: BaseDmaController
-    
-    def __init__(self, controllers: dict):
-        self._catalog_controller = controllers.get(ControllerType.CATALOG)
-        self._edr_controller = controllers.get(ControllerType.EDR)
-        self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
-        self._transfer_process_controller = controllers.get(ControllerType.TRANSFER_PROCESS)
-    
-    @property
-    def catalogs(self):
-        return self._catalog_controller
-    
-    @property
-    def edrs(self):
-        return self._edr_controller
-    
-    @property
-    def contract_negotiations(self):
-        return self._contract_negotiation_controller
-    
-    @property
-    def transfer_processes(self):
-        return self._transfer_process_controller
-    
-    
 class BaseConnectorService(BaseService):
     _contract_agreement_controller: BaseDmaController
     _consumer: BaseConnectorConsumerService
     _provider: BaseConnectorProviderService
+    base_url: str
+    dma_path: str
+    version: str
     
     
     def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None):
+        self.base_url = base_url
+        self.dma_path = dma_path
+        self.version = version
         dma_adapter = AdapterFactory.get_dma_adapter(
             connector_version=version,
             base_url=base_url,

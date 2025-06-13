@@ -20,10 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+"""
+This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
+
+:copyright: (c) 2025 Eclipse Foundation
+:license: Apache License, Version 2.0, see LICENSE for more details.
+"""
+
 # Package-level variables
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .connector.base_connector_consumer import BaseConnectorService
-
-__all__ = ['BaseConnectorService']
+from .memory_connection_manager import MemoryConnectionManager
