@@ -30,8 +30,6 @@ from .base_connector_consumer import BaseConnectorConsumerService
 from ...managers.connection.base_connection_manager import BaseConnectionManager
 from ...managers.connection.memory import MemoryConnectionManager
 from .base_connector_provider import BaseConnectorProviderService
-from fastapi.responses import Response
-
 class BaseConnectorService(BaseService):
     _contract_agreement_controller: BaseDmaController
     _consumer: BaseConnectorConsumerService

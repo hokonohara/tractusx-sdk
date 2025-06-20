@@ -20,14 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from ..base_connector_consumer import BaseConnectorService
+from ..base_connector_service import BaseConnectorService
+from ....managers.connection.base_connection_manager import BaseConnectionManager
 class ConnectorService(BaseConnectorService):
-    def __init__(self, base_url: str, dma_path: str, headers: dict = None):
+    def __init__(self, base_url: str, dma_path: str, headers: dict = None, connection_manager:BaseConnectionManager=None):
         super().__init__(
             version="v0_9_0",
             base_url=base_url,
             dma_path=dma_path,
-            headers=headers
+            headers=headers,
+            connection_manager=connection_manager
         )
-        
-    
+
