@@ -27,6 +27,8 @@ from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from ...controllers.connector.controller_factory import ControllerFactory, ControllerType
 from .base_connector_consumer import BaseConnectorConsumerService
+from ...managers.connection.base_connection_manager import BaseConnectionManager
+from ...managers.connection.memory import MemoryConnectionManager
 from .base_connector_provider import BaseConnectorProviderService
 from fastapi.responses import Response
 
@@ -39,7 +41,7 @@ class BaseConnectorService(BaseService):
     version: str
     
     
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None):
+    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None, connection_manager:BaseConnectionManager=None):
         self.base_url = base_url
         self.dma_path = dma_path
         self.version = version
@@ -54,10 +56,14 @@ class BaseConnectorService(BaseService):
             connector_version=version,
             adapter=dma_adapter
         )
-
+    
+            
         self._contract_agreement_controller = controllers.get(ControllerType.CONTRACT_AGREEMENT)
         
-        self._consumer = BaseConnectorConsumerService(controllers)
+        if connection_manager is None:
+            connection_manager = MemoryConnectionManager()
+        
+        self._consumer = BaseConnectorConsumerService(controllers, connection_manager=connection_manager)
         self._provider = BaseConnectorProviderService(controllers)
     
     class _Builder(BaseService._Builder):
