@@ -28,7 +28,6 @@ import hashlib
 from ...controllers.connector.controller_factory import ControllerType
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from requests import Response
-from .base_connector_service import BaseConnectorService
 from ...managers.connection.base_connection_manager import BaseConnectionManager
 from ...managers.connection.memory import MemoryConnectionManager
 from ...tools import HttpTools, DspTools, op
