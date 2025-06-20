@@ -44,7 +44,7 @@ class BaseConnectorConsumerService(BaseService):
     
     def __init__(self, controllers: dict, connection_manager:BaseConnectionManager = None):
         if connection_manager is None:
-            connection_manager = MemoryConnectionManager()
+            self.connection_manager = MemoryConnectionManager()
         self._catalog_controller = controllers.get(ControllerType.CATALOG)
         self._edr_controller = controllers.get(ControllerType.EDR)
         self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
