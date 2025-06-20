@@ -24,46 +24,58 @@ from abc import ABC, abstractmethod
 
 class BaseConnectionManager(ABC):
     TRANSFER_ID_KEY = "transferProcessId"
-    NEGOTATION_ID_KEY = "contractNegotiationId"
     
     @abstractmethod
     def __init__(self):
         raise NotImplementedError
     
     @abstractmethod
-    def add_connection(self, counter_party_id: str, counter_party_address: str, oid: str, policy_checksum: str, connection_entry:dict):
+    def add_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str, connection_entry:dict) -> str | None:
         """
         Adds a connection to the open connections dictionary.
 
         :param counter_party_id: The ID of the counter party.
         :param counter_party_address: The address of the counter party.
-        :param oid: The dct_type or assetid of the connection.
+        :param query_checksum: The checksum of the filter expression query.
         :param policy_checksum: The checksum of the policy.
         :param transfer_id: The ID of the transfer.
         """
         raise NotImplementedError("This method should be implemented by subclasses.")
         
     @abstractmethod
-    def get_connection(self, counter_party_id: str, counter_party_address: str, oid: str, policy_checksum: str):
+    def get_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str) -> dict | None:
         """
         Gets a connection to the open connections dictionary.
 
         :param counter_party_id: The ID of the counter party.
         :param counter_party_address: The address of the counter party.
-        :param oid: The dct_type or assetid of the connection.
+        :param query_checksum: The checksum of the filter expression query.
         :param policy_checksum: The checksum of the policy.
         :param transfer_id: The ID of the transfer.
         """
         raise NotImplementedError("This method should be implemented by subclasses.")
 
     @abstractmethod
-    def delete_connection(self, counter_party_id: str, counter_party_address: str, oid: str, policy_checksum: str):
+    def get_connection_transfer_id(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str) -> str | None:
+        """
+        Gets a connection transfer ID from the open connections dictionary.
+
+        :param counter_party_id: The ID of the counter party.
+        :param counter_party_address: The address of the counter party.
+        :param query_checksum: The checksum of the filter expression query.
+        :param policy_checksum: The checksum of the policy.
+        :param transfer_id: The ID of the transfer.
+        """
+        raise NotImplementedError("This method should be implemented by subclasses.")
+    
+    @abstractmethod
+    def delete_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str):
         """
         Gets a connection to the open connections dictionary.
 
         :param counter_party_id: The ID of the counter party.
         :param counter_party_address: The address of the counter party.
-        :param oid: The dct_type or assetid of the connection.
+        :param query_checksum: The checksum of the filter expression query.
         :param policy_checksum: The checksum of the policy.
         :param transfer_id: The ID of the transfer.
         """
