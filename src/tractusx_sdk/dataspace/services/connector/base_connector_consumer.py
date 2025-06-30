@@ -120,7 +120,7 @@ class BaseConnectorConsumerService(BaseService):
 
         return edr["endpoint"], edr["authorization"]
         
-    def get_catalog(self, counter_party_id: str, counter_party_address: str, request: BaseCatalogModel = None, timeout=60) -> dict | None:
+    def get_catalog(self, counter_party_id: str=None, counter_party_address: str=None, request: BaseCatalogModel = None, timeout=60) -> dict | None:
         """
         Retrieves the EDC DCAT catalog. Allows to get the catalog without specifying the request, which can be overridden
         
@@ -132,7 +132,9 @@ class BaseConnectorConsumerService(BaseService):
         dict | None: The EDC catalog as a dictionary, or None if the request fails.
         """
         ## Get EDC DCAT catalog
-        if (request is None):
+        if request is None:
+            if counter_party_id is None or counter_party_address is None:
+                raise Exception("[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
         ## Get catalog with configurable timeout
