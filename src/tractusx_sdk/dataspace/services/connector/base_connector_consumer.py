@@ -361,9 +361,7 @@ class BaseConnectorConsumerService(BaseService):
         Returns:
         dict: The catalog entries that match the specified filter.
         """
-        return self.get_catalog(counter_party_id=counter_party_id,
-                                counter_party_address=counter_party_address,
-                                request=self.get_catalog_request_with_filter(counter_party_id=counter_party_id,
+        return self.get_catalog(request=self.get_catalog_request_with_filter(counter_party_id=counter_party_id,
                                                                              counter_party_address=counter_party_address,
                                                                              filter_expression=filter_expression),
                                 timeout=timeout)
