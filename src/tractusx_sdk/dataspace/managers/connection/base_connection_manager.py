@@ -69,7 +69,7 @@ class BaseConnectionManager(ABC):
         raise NotImplementedError("This method should be implemented by subclasses.")
     
     @abstractmethod
-    def delete_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str):
+    def delete_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str) -> bool:
         """
         Gets a connection to the open connections dictionary.
 

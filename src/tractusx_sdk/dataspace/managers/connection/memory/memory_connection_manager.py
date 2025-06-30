@@ -68,7 +68,8 @@ class MemoryConnectionManager(BaseConnectionManager):
             self.open_connections["edrs"] = 0
 
         self.open_connections["edrs"] += 1
-        
+        print(
+            f"[Memory Connection Manager] A new EDR entry was saved in the memory cache! [{self.open_connections['edrs']}] EDRs Available")
         return transfer_process_id
     
     def get_connection(self, counter_party_id, counter_party_address, query_checksum, policy_checksum):
@@ -80,7 +81,22 @@ class MemoryConnectionManager(BaseConnectionManager):
         cached_entry: dict = oid_data.get(policy_checksum, {})
         return cached_entry
     
-    def get_connection_transfer_id(self, counter_party_id, counter_party_address, oid, policy_checksum):
-        cached_entry: dict = self.get_connection(counter_party_id, counter_party_address, oid, policy_checksum)
+    def get_connection_transfer_id(self, counter_party_id, counter_party_address, query_checksum, policy_checksum):
+        cached_entry: dict = self.get_connection(counter_party_id, counter_party_address, query_checksum, policy_checksum)
         transfer_id: str | None = cached_entry.get(self.TRANSFER_ID_KEY, None)
         return transfer_id
+    
+    
+    def delete_connection(self, counter_party_id: str, counter_party_address: str, query_checksum: str, policy_checksum: str) -> bool:
+        try:
+            cached_details = self.open_connections[counter_party_id][counter_party_address][query_checksum]
+            if policy_checksum in cached_details:
+                del cached_details[policy_checksum]
+                if "edrs" in self.open_connections:
+                    self.open_connections["edrs"] -= 1
+                print(f"[Memory Connection Manager] Deleted EDR entry for policy checksum '{policy_checksum}'.")
+                return True
+            return False
+        except KeyError:
+            print(f"[Memory Connection Manager] No EDR found to delete for the provided keys.")
+            return False
