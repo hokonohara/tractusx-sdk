@@ -103,7 +103,7 @@ class BaseConnectorConsumerService(BaseService):
         Exception: If the EDC response is not successful (status code is not 200).
         """
         ## Build edr transfer url
-        response:Response = self.edrs.get_data_address_with_token_refresh(oid=transfer_id)
+        response:Response = self.edrs.get_data_address(oid=transfer_id, params={"auto_refresh": True})
         if (response is None or response.status_code != 200):
             raise Exception(
                 "[EDC Service] It was not possible to get the edr because the EDC response was not successful!")
@@ -122,6 +122,8 @@ class BaseConnectorConsumerService(BaseService):
         
     def get_catalog(self, counter_party_id: str, counter_party_address: str, request: BaseCatalogModel = None, timeout=60) -> dict | None:
         """
+        Retrieves the EDC DCAT catalog. Allows to get the catalog without specifying the request, which can be overridden
+        
         Parameters:
         counter_party_address (str): The URL of the EDC provider.
         request (BaseCatalogModel, optional): The request payload for the catalog API. If not provided, a default request will be used.
