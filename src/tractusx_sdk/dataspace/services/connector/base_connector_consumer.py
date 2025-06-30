@@ -21,6 +21,7 @@
 #################################################################################
 
 from ..service import BaseService
+from ...models.connector.model_factory import ModelFactory
 from ...models.connector.base_catalog_model import BaseCatalogModel
 from ...models.connector.base_contract_negotiation_model import BaseContractNegotiationModel
 from ...models.connector.base_queryspec_model import BaseQuerySpecModel
@@ -32,6 +33,8 @@ from ...managers.connection.base_connection_manager import BaseConnectionManager
 from ...managers.connection.memory import MemoryConnectionManager
 from ...tools import HttpTools, DspTools, op
 import threading
+from typing import Optional
+
 class BaseConnectorConsumerService(BaseService):
     _catalog_controller: BaseDmaController
     _edr_controller: BaseDmaController
@@ -40,15 +43,20 @@ class BaseConnectorConsumerService(BaseService):
     connection_manager: BaseConnectionManager
     
     NEGOTIATION_ID_KEY = "contractNegotiationId"
-    dsp_api = "/api/v1/dsp"
+    dsp_api: str
+    version: str 
     
-    def __init__(self, controllers: dict, connection_manager:BaseConnectionManager = None):
-        if connection_manager is None:
-            self.connection_manager = MemoryConnectionManager()
+    def __init__(self, controllers: dict, dsp_api:str, version:str, connection_manager:Optional[BaseConnectionManager] = None):
+        tmp_connection_manager = connection_manager
+        if tmp_connection_manager is None:
+            tmp_connection_manager = MemoryConnectionManager()
+        self.connection_manager = tmp_connection_manager
         self._catalog_controller = controllers.get(ControllerType.CATALOG)
         self._edr_controller = controllers.get(ControllerType.EDR)
         self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
         self._transfer_process_controller = controllers.get(ControllerType.TRANSFER_PROCESS)
+        self.version = version
+        self.dsp_api = dsp_api
     
     @property
     def catalogs(self):
@@ -111,12 +119,9 @@ class BaseConnectorConsumerService(BaseService):
             raise Exception("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
 
         return edr["endpoint"], edr["authorization"]
-        ## Allows to get the catalog without specifying the request, which can be overridden
-
-    def get_catalog(self, counter_party_id: str, counter_party_address: str, request: BaseCatalogModel = None, timeout=10) -> dict | None:
+        
+    def get_catalog(self, counter_party_id: str, counter_party_address: str, request: BaseCatalogModel = None, timeout=60) -> dict | None:
         """
-        Retrieves the EDC DCAT catalog.
-
         Parameters:
         counter_party_address (str): The URL of the EDC provider.
         request (BaseCatalogModel, optional): The request payload for the catalog API. If not provided, a default request will be used.
@@ -128,9 +133,8 @@ class BaseConnectorConsumerService(BaseService):
         if (request is None):
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
-    
         ## Get catalog with configurable timeout
-        response: Response = self.catalogs.get_catalog(request=request, timeout=timeout)
+        response: Response = self.catalogs.get_catalog(obj=request, timeout=timeout)
         ## In case the response code is not successfull or the response is null
         if response is None or response.status_code != 200:
             raise Exception(
@@ -167,7 +171,7 @@ class BaseConnectorConsumerService(BaseService):
         }
     
     
-    def get_catalog_request_with_filter(self, counter_party_id: str, counter_party_address: str, filter_expression:list[dict]) -> dict:
+    def get_catalog_request_with_filter(self, counter_party_id: str, counter_party_address: str, filter_expression:list[dict]) -> BaseCatalogModel:
         """
         Prepares a catalog request with a filter for a specific key-value pair.
 
@@ -183,6 +187,7 @@ class BaseConnectorConsumerService(BaseService):
         """
         catalog_request: BaseCatalogModel = self.get_catalog_request(counter_party_id=counter_party_id,
                                                          counter_party_address=counter_party_address)
+        
         
         catalog_request.queryspec = self.get_query_spec(filter_expression=filter_expression)
         
@@ -222,23 +227,30 @@ class BaseConnectorConsumerService(BaseService):
         Returns:
         dict: The EDR negotiation request in the form of a dictionary.
         """
-        return BaseContractNegotiationModel(context=[
-                "https://w3id.org/tractusx/policy/v1.0.0",
-                "http://www.w3.org/ns/odrl.jsonld",
-                {
-                    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
-                }
-            ],
-            counter_party_address=self.build_dsp_endpoint(url=counter_party_address),
-            asset_id=target,
-            provider_id=counter_party_id,
-            policy=policy,
-            callback_addresses=[]
-        )
+        offer_id = policy.get("@id", None)
+        if(offer_id is None):
+            raise Exception("[EDC Service] Policy offer id is not available!")
+        
+        return ModelFactory.get_contract_negotiation_model(  
+            connector_version=self.version,  # version is to be included in the BaseService class  
+            context = [  
+                "https://w3id.org/tractusx/policy/v1.0.0",  
+                "http://www.w3.org/ns/odrl.jsonld",  
+                {  
+                    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"  
+                }  
+            ],  
+            counter_party_address=self.build_dsp_endpoint(url=counter_party_address),  
+            offer_id=offer_id,
+            asset_id=target,  
+            provider_id=counter_party_id,  
+            offer_policy=policy  
+        )  
 
     ## Simple catalog request without filter
     def get_catalog_request(self, counter_party_id: str, counter_party_address: str) -> BaseCatalogModel:
-        return BaseCatalogModel(
+        return ModelFactory.get_catalog_model(
+            connector_version=self.version, 
             context={
                 "edc": "https://w3id.org/edc/v0.0.1/ns/",
                 "odrl": "http://www.w3.org/ns/odrl/2/",
@@ -247,7 +259,6 @@ class BaseConnectorConsumerService(BaseService):
             counter_party_id=counter_party_id,  ## bpn of the provider
             counter_party_address=self.build_dsp_endpoint(url=counter_party_address),  ## dsp url from the provider
         )
-        
 
     def start_edr_negotiation(self, counter_party_id: str, counter_party_address: str, target: str,
                               policy: dict) -> str | None:
@@ -283,12 +294,13 @@ class BaseConnectorConsumerService(BaseService):
     
     def get_edr_negotiation_filter(self, negotiation_id: str) -> BaseQuerySpecModel:
 
-        return BaseQuerySpecModel(
+        return ModelFactory.get_queryspec_model(
+            connector_version=self.version,
             filter_expression=[self.get_filter_expression(key=self.NEGOTIATION_ID_KEY, operator="=", value=negotiation_id)]
         )
 
-    def get_catalogs_by_dct_type(self, counter_party_id: str, edcs: list, dct_type: str, timeout: int = None):
-        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, key=self.DCT_TYPE_KEY,
+    def get_catalogs_by_dct_type(self, counter_party_id: str, edcs: list, dct_type: str,dct_type_key:str="'http://purl.org/dc/terms/type'.'@id'",  timeout: int = None):
+        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, key=dct_type_key,
                                              value=dct_type, operator="=", timeout=timeout)
 
     def get_catalogs_with_filter(self, counter_party_id: str, edcs: list, key: str, value: str, operator: str = "=",
@@ -345,7 +357,8 @@ class BaseConnectorConsumerService(BaseService):
         Returns:
         dict: The catalog entries that match the specified filter.
         """
-        return self.get_catalog(counter_party_address=counter_party_address,
+        return self.get_catalog(counter_party_id=counter_party_id,
+                                counter_party_address=counter_party_address,
                                 request=self.get_catalog_request_with_filter(counter_party_id=counter_party_id,
                                                                              counter_party_address=counter_party_address,
                                                                              filter_expression=filter_expression),
@@ -384,11 +397,10 @@ class BaseConnectorConsumerService(BaseService):
         request: BaseQuerySpecModel = self.get_edr_negotiation_filter(negotiation_id=negotiation_id)
 
         ## Build catalog api url
-        response: Response = self.edr.query(request)
+        response: Response = self.edrs.query(request)
         ## In case the response code is not successfull or the response is null
         if (response is None or response.status_code != 200):
             raise Exception(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
-            return None
 
         ## The response is a list
         data = response.json()
@@ -419,9 +431,6 @@ class BaseConnectorConsumerService(BaseService):
                 f"[EDC Service] [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
 
         ## Select Policy and Assetid
-        asset_id: str | None = None
-        policy: dict | None = None
-
         try:
             valid_assets_policies = DspTools.filter_assets_and_policies(catalog=catalog_response,
                                                                         allowed_policies=policies)
@@ -462,7 +471,7 @@ class BaseConnectorConsumerService(BaseService):
                 break
             ## Wait until the timeout has reached to retry again
             print(
-                f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {self.edr_waiting_timeout} seconds and retrying...")
+                f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
             op.wait(seconds=timeout)
             retries += 1
 
@@ -502,7 +511,14 @@ class BaseConnectorConsumerService(BaseService):
 
         ## If is there return the cached one, if the selection is the same the transfer id can be reused!
         if (transfer_process_id is not None):
+            print(
+                "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
+                counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
+        
+        print(
+            "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
+            self.build_dsp_endpoint(url=counter_party_address), counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
         edr_entry: dict = self.negotiate_and_transfer(counter_party_id=counter_party_id,
@@ -513,6 +529,8 @@ class BaseConnectorConsumerService(BaseService):
         if (edr_entry is None):
             raise Exception("[EDC Service] Failed to get edr entry! Response was none!")
 
+        print(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
+        
         ## Check if the transfer id is available and return the transfer process id
         return self.connection_manager.add_connection(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address,
