@@ -24,6 +24,6 @@
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .connector.base_connector_consumer import BaseConnectorService
+from .connector.base_connector_service import BaseConnectorService
 
 __all__ = ['BaseConnectorService']

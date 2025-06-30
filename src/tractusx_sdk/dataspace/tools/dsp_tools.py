@@ -82,7 +82,7 @@ class DspTools:
     
     @staticmethod
     def is_catalog_empty(catalog:dict) -> bool:
-        dataset:list|dict = catalog.get(DATASET_KEY)
+        dataset:list|dict = catalog.get(DSP_DATASET_KEY)
         if(dataset is None):
             return False
         

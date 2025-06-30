@@ -23,6 +23,7 @@
 
 
 from ..service import BaseService
+from typing import Optional
 from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from ...controllers.connector.controller_factory import ControllerFactory, ControllerType
@@ -37,12 +38,13 @@ class BaseConnectorService(BaseService):
     base_url: str
     dma_path: str
     version: str
+    dsp_api: str
     
-    
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None, connection_manager:BaseConnectionManager=None):
+    def __init__(self, version: str, base_url: str, dma_path: str, dsp_api:str, headers: dict = None, connection_manager:Optional[BaseConnectionManager]=None):
         self.base_url = base_url
         self.dma_path = dma_path
         self.version = version
+        self.dsp_api = dsp_api
         dma_adapter = AdapterFactory.get_dma_adapter(
             connector_version=version,
             base_url=base_url,
@@ -55,13 +57,12 @@ class BaseConnectorService(BaseService):
             adapter=dma_adapter
         )
     
-            
         self._contract_agreement_controller = controllers.get(ControllerType.CONTRACT_AGREEMENT)
         
         if connection_manager is None:
             connection_manager = MemoryConnectionManager()
         
-        self._consumer = BaseConnectorConsumerService(controllers, connection_manager=connection_manager)
+        self._consumer = BaseConnectorConsumerService(controllers, dsp_api=self.dsp_api, connection_manager=connection_manager, version=self.version)
         self._provider = BaseConnectorProviderService(controllers)
     
     class _Builder(BaseService._Builder):
