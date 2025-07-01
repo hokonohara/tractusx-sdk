@@ -30,6 +30,12 @@ from ..memory import MemoryConnectionManager
 
 class FileSystemConnectionManager(MemoryConnectionManager):
     
+    file_path: str
+    lock: FileLock
+    persist_interval: int
+    _last_modified_time: int
+    _stop_event: threading.Event
+    
     def __init__(self, path: str = "/data/connection_cache.json", persist_interval: int = 5):
         super().__init__()
         self.file_path = path
