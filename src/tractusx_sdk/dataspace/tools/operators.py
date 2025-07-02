@@ -364,7 +364,7 @@ class op:
         return os.path.isfile(path=path)
     
     @staticmethod
-    def search_element_by_field(array, id, field="id"):
+    def search_element_by_field(array, id, field="id") -> dict | None:
         """
         Searches for an element in a list of dictionaries by a specific field value.
         Args:
