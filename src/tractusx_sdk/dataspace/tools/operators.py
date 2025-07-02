@@ -377,7 +377,7 @@ class op:
         return next((x for x in array if x[field] == id), None)
 
     @staticmethod
-    def get_future_timestamp(minutes=0, zone=timezone.utc):
+    def get_future_timestamp(minutes=0, zone=timezone.utc) -> float:
         """
         Calculates a future timestamp by adding minutes to the current time.
         Args:
@@ -403,7 +403,7 @@ class op:
         return end_timestamp <= current_timestamp
 
     @staticmethod
-    def timestamp_to_datetime(timestamp: int, zone=timezone.utc, format: str = "%d.%m.%Y %H:%M:%S.%f"):
+    def timestamp_to_datetime(timestamp: int, zone=timezone.utc, format: str = "%d.%m.%Y %H:%M:%S.%f") -> str:
         """
         Converts a timestamp into a formatted datetime string.
         Args:
