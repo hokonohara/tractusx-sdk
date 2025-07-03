@@ -26,7 +26,7 @@
 
 import copy
 
-from ..constants import DSP_DATASET_KEY
+from ..constants import DSP_DATASET_KEY, DSP_POLICY_KEY
 class DspTools:
     """
     Class responsible for doing trivial dsp operations.
@@ -100,7 +100,7 @@ class DspTools:
         @returns: dict: the selected policy or None if no valid policy was found
         """
         ### Policy Evaluation
-        policies:dict|list = dataset.get("odrl:hasPolicy")    
+        policies:dict|list = dataset.get(DSP_POLICY_KEY, None)    
 
         ## One Policy
         if isinstance(policies, dict):

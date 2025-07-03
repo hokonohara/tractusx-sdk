@@ -22,3 +22,4 @@
 
 
 DSP_DATASET_KEY:str="dcat:dataset"
+DSP_POLICY_KEY:str="odrl:hasPolicy"
