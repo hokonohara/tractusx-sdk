@@ -46,7 +46,7 @@ class BaseConnectorConsumerService(BaseService):
     dsp_api: str
     version: str 
     
-    def __init__(self, controllers: dict, dsp_api:str, version:str, connection_manager:Optional[BaseConnectionManager] = None):
+    def __init__(self, controllers: dict, version:str, connection_manager:Optional[BaseConnectionManager] = None):
         tmp_connection_manager = connection_manager
         if tmp_connection_manager is None:
             tmp_connection_manager = MemoryConnectionManager()
@@ -56,7 +56,6 @@ class BaseConnectorConsumerService(BaseService):
         self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
         self._transfer_process_controller = controllers.get(ControllerType.TRANSFER_PROCESS)
         self.version = version
-        self.dsp_api = dsp_api
     
     @property
     def catalogs(self):
