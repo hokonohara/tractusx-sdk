@@ -197,25 +197,6 @@ class BaseConnectorConsumerService(BaseService):
         
         return catalog_request
     
-    def build_dsp_endpoint(self, url: str) -> dict:
-        """
-        Builds the DSP (Data Space Protocol) endpoint URL by appending the DSP endpoint path to the given URL.
-
-        Parameters:
-        url (str): The original URL of the EDC provider.
-
-        Returns:
-        dict: The DSP endpoint URL.
-
-        Raises:
-        Exception: If the given URL does not end with the DSP endpoint path.
-        """
-        ## If the url has already the dsp endpoint
-        if url.endswith(self.dsp_api):
-            return url  ## Return the url
-
-        ## Add dsp endpoint
-        return HttpTools.join_path(url=url, path=self.dsp_api)
     
     def get_edr_negotiation_request(self, counter_party_id: str, counter_party_address: str, target: str,
                                     policy: dict) -> BaseContractNegotiationModel:
@@ -244,7 +225,7 @@ class BaseConnectorConsumerService(BaseService):
                     "@vocab": "https://w3id.org/edc/v0.0.1/ns/"  
                 }  
             ],  
-            counter_party_address=self.build_dsp_endpoint(url=counter_party_address),  
+            counter_party_address=counter_party_address,  
             offer_id=offer_id,
             asset_id=target,  
             provider_id=counter_party_id,  
@@ -261,7 +242,7 @@ class BaseConnectorConsumerService(BaseService):
                 "dct": "https://purl.org/dc/terms/"
             },
             counter_party_id=counter_party_id,  ## bpn of the provider
-            counter_party_address=self.build_dsp_endpoint(url=counter_party_address),  ## dsp url from the provider
+            counter_party_address=counter_party_address,  ## dsp url from the provider
         )
 
     def start_edr_negotiation(self, counter_party_id: str, counter_party_address: str, target: str,
@@ -520,7 +501,7 @@ class BaseConnectorConsumerService(BaseService):
         
         print(
             "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
-            self.build_dsp_endpoint(url=counter_party_address), counter_party_id, filter_expression)
+            counter_party_address, counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
         edr_entry: dict = self.negotiate_and_transfer(counter_party_id=counter_party_id,
