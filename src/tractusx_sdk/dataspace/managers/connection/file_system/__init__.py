@@ -20,13 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-authorization:
-  enabled: true
-  apiKey: 
-    key: "X-Api-Key"
-    value: <<example>>
+"""
+This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
 
-EdcService:
-  version: "v0_9_0"
-  base_url: "https://example.com"
-  dma_path: "/management"
+:copyright: (c) 2025 Eclipse Foundation
+:license: Apache License, Version 2.0, see LICENSE for more details.
+"""
+
+# Package-level variables
+__author__ = 'Eclipse Tractus-X Contributors'
+__license__ = "Apache License, Version 2.0"
+
+from .file_system_connection_manager import FileSystemConnectionManager

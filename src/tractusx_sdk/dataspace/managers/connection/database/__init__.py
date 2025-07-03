@@ -20,13 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from pydantic import BaseModel,  Field
+"""
+This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
 
-class ParentExample(BaseModel):
-    attr1:str
-    complex_attr1:list = Field(default=[{"odrl:permission":[],"odrl:prohibition":[],"odrl:obligation":[]}] )
-    complex_attr2:dict = Field(default={})
+:copyright: (c) 2025 Eclipse Foundation
+:license: Apache License, Version 2.0, see LICENSE for more details.
+"""
 
-class ChildExample(ParentExample):
-    attr2:dict|str|int|list|None
-    attr3:str = Field(default="application/json")
+# Package-level variables
+__author__ = 'Eclipse Tractus-X Contributors'
+__license__ = "Apache License, Version 2.0"
+
+from .postgres_connection_manager import PostgresConnectionManager
