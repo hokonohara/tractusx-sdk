@@ -24,7 +24,6 @@
 from requests import Response
 
 from ...tools.http_tools import HttpTools
-from ...tools.operators import op
 from ...managers import OAuth2Manager
 
 class DiscoveryFinderService:
