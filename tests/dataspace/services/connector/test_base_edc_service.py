@@ -23,73 +23,74 @@
 import unittest
 
 from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
-from tractusx_sdk.dataspace.services.connector.base_edc_service import BaseEdcService
+from tractusx_sdk.dataspace.services.connector.base_connector_service import BaseConnectorService
 
 
-class TestBaseEdcService(unittest.TestCase):
+class TestBaseConnectorService(unittest.TestCase):
     def setUp(self):
         self.version = "jupiter"
         self.base_url = "https://example.com"
         self.dma_path = "/dma"
-        self.headers = {"Authorization": "Bearer token"}
+        self.headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
 
-        self.service = BaseEdcService(
+        self.service = BaseConnectorService(
             version=self.version,
             base_url=self.base_url,
             dma_path=self.dma_path,
-            headers=self.headers,
+            headers=self.headers
         )
 
     def test_initialization_creates_controllers(self):
-        self.assertIsInstance(self.service._asset_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._asset_controller)
+        self.assertIsInstance(self.service.provider._asset_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.provider._asset_controller)
 
-        self.assertIsInstance(self.service._catalog_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._catalog_controller)
+        self.assertIsInstance(self.service.consumer._catalog_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.consumer._catalog_controller)
 
         self.assertIsInstance(self.service._contract_agreement_controller, BaseDmaController)
         self.assertIsNotNone(self.service._contract_agreement_controller)
 
-        self.assertIsInstance(self.service._contract_definition_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._contract_definition_controller)
+        self.assertIsInstance(self.service.provider._contract_definition_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.provider._contract_definition_controller)
 
-        self.assertIsInstance(self.service._contract_negotiation_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._contract_negotiation_controller)
+        self.assertIsInstance(self.service.consumer._contract_negotiation_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.consumer._contract_negotiation_controller)
 
-        self.assertIsInstance(self.service._edr_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._edr_controller)
+        self.assertIsInstance(self.service.consumer._edr_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.consumer._edr_controller)
 
-        self.assertIsInstance(self.service._policy_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._policy_controller)
+        self.assertIsInstance(self.service.provider._policy_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.provider._policy_controller)
 
-        self.assertIsInstance(self.service._transfer_process_controller, BaseDmaController)
-        self.assertIsNotNone(self.service._transfer_process_controller)
+        self.assertIsInstance(self.service.consumer._transfer_process_controller, BaseDmaController)
+        self.assertIsNotNone(self.service.consumer._transfer_process_controller)
 
     def test_builder_sets_dma_path(self):
-        builder = BaseEdcService.builder()
+        builder = BaseConnectorService.builder()
         builder.dma_path(self.dma_path)
         self.assertEqual(builder._data["dma_path"], self.dma_path)
 
     def test_assets_property(self):
-        self.assertEqual(self.service._asset_controller, self.service.assets)
+        self.assertEqual(self.service.provider._asset_controller, self.service.provider.assets)
 
     def test_catalogs_property(self):
-        self.assertEqual(self.service._catalog_controller, self.service.catalogs)
+        self.assertEqual(self.service.consumer._catalog_controller, self.service.consumer.catalogs)
 
     def test_contract_agreements_property(self):
         self.assertEqual(self.service._contract_agreement_controller, self.service.contract_agreements)
 
     def test_contract_definitions_property(self):
-        self.assertEqual(self.service._contract_definition_controller, self.service.contract_definitions)
+        self.assertEqual(self.service.provider._contract_definition_controller, self.service.provider.contract_definitions)
 
     def test_contract_negotiations_property(self):
-        self.assertEqual(self.service._contract_negotiation_controller, self.service.contract_negotiations)
+        self.assertEqual(self.service.consumer._contract_negotiation_controller, self.service.consumer.contract_negotiations)
 
     def test_edrs_property(self):
-        self.assertEqual(self.service._edr_controller, self.service.edrs)
+        self.assertEqual(self.service.consumer._edr_controller, self.service.consumer.edrs)
 
     def test_policies_property(self):
-        self.assertEqual(self.service._policy_controller, self.service.policies)
+        self.assertEqual(self.service.provider._policy_controller, self.service.provider.policies)
 
     def test_transfer_processes_property(self):
-        self.assertEqual(self.service._transfer_process_controller, self.service.transfer_processes)
+        self.assertEqual(self.service.consumer._transfer_process_controller, self.service.consumer.transfer_processes)
+        

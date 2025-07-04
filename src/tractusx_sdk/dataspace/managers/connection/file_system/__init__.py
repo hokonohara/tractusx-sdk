@@ -20,18 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from fastapi import APIRouter 
-from tractusx_sdk.dataspace.config import logger
-from tractusx_sdk.dataspace.tools import op
+"""
+This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
 
-router = APIRouter()
+:copyright: (c) 2025 Eclipse Foundation
+:license: Apache License, Version 2.0, see LICENSE for more details.
+"""
 
-@router.get("/health")
-def health_check():
-    health_status = {
-        "status": "OK",
-        "timestamp": op.get_filedatetime(),
-        "service": "DATASPACE-SDK"
-    }
-    logger.debug(f"Health check: {health_status}")
-    return health_status
+# Package-level variables
+__author__ = 'Eclipse Tractus-X Contributors'
+__license__ = "Apache License, Version 2.0"
+
+from .file_system_connection_manager import FileSystemConnectionManager

@@ -1,3 +1,4 @@
+
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
@@ -20,23 +21,28 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+
 from ..service import BaseService
+from typing import Optional
 from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
-from ...controllers.connector.controller_factory import ControllerFactory
-
-
-class BaseEdcService(BaseService):
-    _asset_controller: BaseDmaController
-    _catalog_controller: BaseDmaController
+from ...controllers.connector.controller_factory import ControllerFactory, ControllerType
+from .base_connector_consumer import BaseConnectorConsumerService
+from ...managers.connection.base_connection_manager import BaseConnectionManager
+from ...managers.connection.memory import MemoryConnectionManager
+from .base_connector_provider import BaseConnectorProviderService
+class BaseConnectorService(BaseService):
     _contract_agreement_controller: BaseDmaController
-    _contract_definition_controller: BaseDmaController
-    _contract_negotiation_controller: BaseDmaController
-    _edr_controller: BaseDmaController
-    _policy_controller: BaseDmaController
-    _transfer_process_controller: BaseDmaController
-
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None):
+    _consumer: BaseConnectorConsumerService
+    _provider: BaseConnectorProviderService
+    base_url: str
+    dma_path: str
+    version: str
+    
+    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None, connection_manager:Optional[BaseConnectionManager]=None):
+        self.base_url = base_url
+        self.dma_path = dma_path
+        self.version = version
         dma_adapter = AdapterFactory.get_dma_adapter(
             connector_version=version,
             base_url=base_url,
@@ -48,44 +54,28 @@ class BaseEdcService(BaseService):
             connector_version=version,
             adapter=dma_adapter
         )
-
-        for controller_type in controllers:
-            controller = controllers[controller_type]
-            setattr(self, f"_{controller_type.name.lower()}_controller", controller)
-
+    
+        self._contract_agreement_controller = controllers.get(ControllerType.CONTRACT_AGREEMENT)
+        
+        if connection_manager is None:
+            connection_manager = MemoryConnectionManager()
+        
+        self._consumer = BaseConnectorConsumerService(controllers, connection_manager=connection_manager, version=self.version)
+        self._provider = BaseConnectorProviderService(controllers)
+    
     class _Builder(BaseService._Builder):
         def dma_path(self, dma_path: str):
             self._data["dma_path"] = dma_path
             return self
 
     @property
-    def assets(self):
-        return self._asset_controller
-
-    @property
-    def catalogs(self):
-        return self._catalog_controller
-
-    @property
     def contract_agreements(self):
         return self._contract_agreement_controller
+    
+    @property
+    def consumer(self):
+        return self._consumer
 
     @property
-    def contract_definitions(self):
-        return self._contract_definition_controller
-
-    @property
-    def contract_negotiations(self):
-        return self._contract_negotiation_controller
-
-    @property
-    def edrs(self):
-        return self._edr_controller
-
-    @property
-    def policies(self):
-        return self._policy_controller
-
-    @property
-    def transfer_processes(self):
-        return self._transfer_process_controller
+    def provider(self):
+        return self._provider

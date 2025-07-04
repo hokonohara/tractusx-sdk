@@ -20,32 +20,32 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-import pytest
-from fastapi.testclient import TestClient
-from tractusx_sdk.dataspace import main
+from ..service import BaseService
+from ...controllers.connector.base_dma_controller import BaseDmaController
+from ...controllers.connector.controller_factory import ControllerType
 
-# Set test_mode to True before running tests to skip uvicorn.run
-def set_test_mode():
-    import sys
-    sys.argv = sys.argv + ['--test-mode'] 
+class BaseConnectorProviderService(BaseService):
+    _asset_controller: BaseDmaController
+    _contract_definition_controller: BaseDmaController
+    _policy_controller: BaseDmaController
+    
+    def __init__(self, controllers: dict):
+        self._asset_controller = controllers.get(ControllerType.ASSET)
+        self._contract_definition_controller = controllers.get(ControllerType.CONTRACT_DEFINITION)
+        self._policy_controller = controllers.get(ControllerType.POLICY)
 
-@pytest.fixture
-def client():
-    set_test_mode()
-    main.start()
-    return TestClient(main.app)
+    @property
+    def assets(self):
+        return self._asset_controller
 
-def test_api_call_success(client):
-    """
-    Test API call with successful authentication.
+    @property
+    def contract_definitions(self):
+        return self._contract_definition_controller
 
-    Args:
-        client: A test client instance used to simulate HTTP requests.
+    @property
+    def policies(self):
+        return self._policy_controller
 
-    Assertions:
-        - The response status code must be 200.
-        - The response JSON must be None.
-    """
-    response = client.get("/example")
-    assert (200 == response.status_code)
-    assert response.json() is None
+
+
+    
