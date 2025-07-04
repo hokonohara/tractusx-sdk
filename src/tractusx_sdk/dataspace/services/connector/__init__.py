@@ -28,5 +28,4 @@ from .base_connector_consumer_service import BaseConnectorConsumerService
 __all__ = [
     'BaseConnectorConsumerService',
     'BaseConnectorProviderService',
-    'BaseConnectorService',
 ]
