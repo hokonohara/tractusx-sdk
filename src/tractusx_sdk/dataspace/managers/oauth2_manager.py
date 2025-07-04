@@ -77,10 +77,13 @@ class OAuth2Manager:
         self.token = token
         return self.token["access_token"]
     
-    def add_auth_header(self, headers={}):
+    def add_auth_header(self, headers=None):
         ## Check if connected
         if(not self.connected):
             raise Exception("Not connected, please execute the connect() method again before requesting a authorization header!")
+        ## Initialize headers if None
+        if headers is None:
+            headers = {}
         ## Build token header
         headers["Authorization"] = "Bearer " + self.get_token()
         return headers
