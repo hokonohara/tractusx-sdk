@@ -22,12 +22,12 @@
 
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
-from ....models.connector.jupiter import AssetModel
+from tractusx_sdk.dataspace.models.connector.jupiter import AssetModel
 
 
 class AssetController(CrudDmaController, DmaController):
     """
-    Concrete implementation of the AssetController for the Connector v0.9.0 Data Management API.
+    Concrete implementation of the AssetController for the Connector jupiter Data Management API.
 
     This class overrides the create and update methods in order to ensure the correct class types are used,
     instead of the generic ones.

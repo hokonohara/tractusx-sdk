@@ -22,12 +22,12 @@
 
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import StatefulEntityDmaController
-from ....models.connector.jupiter import TransferProcessModel
+from tractusx_sdk.dataspace.models.connector.jupiter import TransferProcessModel
 
 
 class TransferProcessController(StatefulEntityDmaController, DmaController):
     """
-    Concrete implementation of the TransferProcessController for the Connector v0.9.0 Data Management API.
+    Concrete implementation of the TransferProcessController for the Connector jupiter Data Management API.
 
     This class overrides the create and terminate_by_id methods in order to ensure the correct class types are used, instead of the generic ones.
     """

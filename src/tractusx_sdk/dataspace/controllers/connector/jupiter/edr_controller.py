@@ -22,12 +22,12 @@
 
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CreateControllerMixin, GetAllControllerMixin, DeleteControllerMixin
-from ....models.connector.jupiter import ContractNegotiationModel
+from tractusx_sdk.dataspace.models.connector.jupiter import ContractNegotiationModel
 
 
 class EdrController(CreateControllerMixin, GetAllControllerMixin, DeleteControllerMixin, DmaController):
     """
-    Concrete implementation of the EdrController for the Connector v0.9.0 Data Management API.
+    Concrete implementation of the EdrController for the Connector jupiter Data Management API.
 
     This class overrides the create method in order to ensure the correct class types are used, instead of the generic ones.
     """
