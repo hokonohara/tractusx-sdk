@@ -33,7 +33,7 @@ class CatalogModel(BaseCatalogModel):
     def to_data(self):
         """
         Converts the model to a JSON representing the data that will
-        be sent to a v0.9.0 connector when using a catalog model.
+        be sent to a jupiter connector when using a catalog model.
 
         :return: a JSON representation of the model
         """

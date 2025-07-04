@@ -21,12 +21,12 @@
 #################################################################################
 
 from ..base_dma_controller import BaseDmaController
-from ....adapters.connector.jupiter import DmaAdapter
+from tractusx_sdk.dataspace.adapters.connector.jupiter import DmaAdapter
 
 
 class DmaController(BaseDmaController):
     """
-    Implementation of a base DmaController for the Connector v0.9.0 Data Management API.
+    Implementation of a base DmaController for the Connector jupiter Data Management API.
 
     This class overrides the adapter method of the parent's _Builder class in order
     to ensure the correct Adapter class types are used, instead of the generic ones.

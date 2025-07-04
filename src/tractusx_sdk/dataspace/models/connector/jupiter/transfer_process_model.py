@@ -33,7 +33,7 @@ class TransferProcessModel(BaseTransferProcessModel):
     def to_data(self):
         """
         Converts the model to a JSON representing the data that will
-        be sent to a v0.9.0 connector when using a transfer process model.
+        be sent to a jupiter connector when using a transfer process model.
 
         :return: a JSON representation of the model
         """

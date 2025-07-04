@@ -21,12 +21,12 @@
 #################################################################################
 
 from .dma_controller import DmaController
-from ....models.connector.jupiter import CatalogModel
+from tractusx_sdk.dataspace.models.connector.jupiter import CatalogModel
 
 
 class CatalogController(DmaController):
     """
-    Concrete implementation of the CatalogController for the Connector DMA v0.9.0.
+    Concrete implementation of the CatalogController for the Connector DMA jupiter.
     """
 
     endpoint_url = "/v3/catalog"
