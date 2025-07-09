@@ -28,6 +28,8 @@ class BaseService(ABC):
     Base service class
     """
 
+    version: str
+
     @abstractmethod
     def __init__(self, version: str, base_url: str, headers: dict = None):
         """

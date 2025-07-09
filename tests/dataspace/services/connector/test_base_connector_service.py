@@ -25,6 +25,8 @@ import unittest
 from tractusx_sdk.dataspace.controllers.connector.base_dma_controller import BaseDmaController
 from tractusx_sdk.dataspace.services.connector.base_connector_service import BaseConnectorService
 
+from tractusx_sdk.dataspace.services.connector.service_factory import ServiceFactory
+
 
 class TestBaseConnectorService(unittest.TestCase):
     def setUp(self):
@@ -33,8 +35,8 @@ class TestBaseConnectorService(unittest.TestCase):
         self.dma_path = "/dma"
         self.headers = {"Authorization": "Bearer token", "Content-Type": "application/json"}
 
-        self.service = BaseConnectorService(
-            version=self.version,
+        self.service = ServiceFactory.get_connector_service(
+            connector_version=self.version,
             base_url=self.base_url,
             dma_path=self.dma_path,
             headers=self.headers
@@ -80,10 +82,12 @@ class TestBaseConnectorService(unittest.TestCase):
         self.assertEqual(self.service._contract_agreement_controller, self.service.contract_agreements)
 
     def test_contract_definitions_property(self):
-        self.assertEqual(self.service.provider._contract_definition_controller, self.service.provider.contract_definitions)
+        self.assertEqual(self.service.provider._contract_definition_controller,
+                         self.service.provider.contract_definitions)
 
     def test_contract_negotiations_property(self):
-        self.assertEqual(self.service.consumer._contract_negotiation_controller, self.service.consumer.contract_negotiations)
+        self.assertEqual(self.service.consumer._contract_negotiation_controller,
+                         self.service.consumer.contract_negotiations)
 
     def test_edrs_property(self):
         self.assertEqual(self.service.consumer._edr_controller, self.service.consumer.edrs)
@@ -93,4 +97,3 @@ class TestBaseConnectorService(unittest.TestCase):
 
     def test_transfer_processes_property(self):
         self.assertEqual(self.service.consumer._transfer_process_controller, self.service.consumer.transfer_processes)
-        

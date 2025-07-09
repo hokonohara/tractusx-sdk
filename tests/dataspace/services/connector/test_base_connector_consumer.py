@@ -22,28 +22,30 @@
 
 import unittest
 
-from tractusx_sdk.dataspace.services.connector.jupiter.edc_service import ConnectorService
+from tractusx_sdk.dataspace.services.connector.service_factory import ServiceFactory
 
 
 class TestBaseConsumerConnectorService(unittest.TestCase):
     def setUp(self):
+        self.version = "jupiter"
         self.base_url = "http://consumer-control.plane.url"
         self.dma_path = "/management"
         self.headers = {"X-Api-Key": "api-key-secret", "Content-Type": "application/json"}
 
-        self.service = ConnectorService(
+        self.service = ServiceFactory.get_connector_consumer_service(
+            connector_version=self.version,
             base_url=self.base_url,
             dma_path=self.dma_path,
             headers=self.headers
         )
-        
+
     def test_do_get_to_dtr(self):
         """Test the do_get method."""
-        response = self.service.consumer.do_get(
-            counter_party_address="http://provider-control.plane.url", 
+        response = self.service.do_get(
+            counter_party_address="http://provider-control.plane.url",
             counter_party_id="<provider-bpn>",
             filter_expression=[
-                self.service.consumer.get_filter_expression(
+                self.service.get_filter_expression(
                     key="'http://purl.org/dc/terms/type'.'@id'",
                     operator="=",
                     value="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry"

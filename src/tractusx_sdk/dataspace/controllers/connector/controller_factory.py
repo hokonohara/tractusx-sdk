@@ -310,19 +310,21 @@ class ControllerFactory:
     def get_dma_controllers_for_version(
             connector_version: str,
             adapter: BaseDmaAdapter,
+            controller_types: list[ControllerType],
             **kwargs
     ):
         """
-        Create all DMA controllers for a specific connector version.
+        Create controllers of a specific connector version, for a list of controller types.
 
         :param connector_version: The version of the Connector (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
+        :param controller_types: The controller types to instantiate, as a list of ControllerTypes
         :param kwargs: Additional parameters to pass to the controller builder
         :return: A dictionary of controller instances, keyed by controller type
         """
 
         controllers = {}
-        for controller_type in ControllerType:
+        for controller_type in controller_types:
             # For each controller type in ControllerType, call the corresponding get_controller method
             method_name = f"get_{controller_type.name.lower()}_controller"
             if hasattr(ControllerFactory, method_name):
@@ -334,6 +336,29 @@ class ControllerFactory:
                         **kwargs
                     )
                 except AttributeError:
-                    raise ValueError(f"A controller for {controller_type.name} does not exist for version {connector_version}")
+                    raise ValueError(
+                        f"A controller for {controller_type.name} does not exist for version {connector_version}")
 
         return controllers
+
+    @staticmethod
+    def get_all_dma_controllers_for_version(
+            connector_version: str,
+            adapter: BaseDmaAdapter,
+            **kwargs
+    ):
+        """
+        Create all DMA controllers for a specific connector version.
+
+        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param adapter: The DMA adapter to use for the controller
+        :param kwargs: Additional parameters to pass to the controller builder
+        :return: A dictionary of controller instances, keyed by controller type
+        """
+
+        return ControllerFactory.get_dma_controllers_for_version(
+            connector_version=connector_version,
+            adapter=adapter,
+            controller_types=[controller_type for controller_type in ControllerType],
+            **kwargs
+        )
