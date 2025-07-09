@@ -21,14 +21,7 @@
 #################################################################################
 
 from ..base_connector_service import BaseConnectorService
-from ....managers.connection.base_connection_manager import BaseConnectionManager
-class ConnectorService(BaseConnectorService):
-    def __init__(self, base_url: str, dma_path: str, headers: dict = None, connection_manager:BaseConnectionManager=None):
-        super().__init__(
-            version="jupiter",
-            base_url=base_url,
-            dma_path=dma_path,
-            headers=headers,
-            connection_manager=connection_manager
-        )
 
+
+class ConnectorService(BaseConnectorService):
+    pass  # Nothing in this version differs from the base class
