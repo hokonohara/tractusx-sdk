@@ -22,7 +22,7 @@
 
 import unittest
 
-from tractusx_sdk.dataspace.services.connector.v0_9_0.edc_service import ConnectorService
+from tractusx_sdk.dataspace.services.connector.jupiter.edc_service import ConnectorService
 
 
 class TestBaseConsumerConnectorService(unittest.TestCase):
