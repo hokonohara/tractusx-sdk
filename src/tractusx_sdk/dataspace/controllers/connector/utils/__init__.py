@@ -19,9 +19,3 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
-
-from .edc_service import ConnectorService
-
-__all__ = [
-    'ConnectorService',
-]
