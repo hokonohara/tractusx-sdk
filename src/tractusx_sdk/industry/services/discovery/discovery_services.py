@@ -23,7 +23,6 @@
 
 import time
 
-from requests import Response
 
 from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 from tractusx_sdk.dataspace.managers import OAuth2Manager
