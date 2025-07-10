@@ -20,8 +20,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .edc_service import ConnectorService
+from ..base_connector_provider import BaseConnectorProviderService
 
-__all__ = [
-    'ConnectorService',
-]
+
+class ConnectorProviderService(BaseConnectorProviderService):
+    pass  # Nothing in this version differs from the base class

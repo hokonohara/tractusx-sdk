@@ -20,41 +20,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from ..base_dma_controller import BaseDmaController
-from .base_mixins import (
-    CreateControllerMixin,
-    GetControllerMixin,
-    UpdateControllerMixin,
-    DeleteControllerMixin,
-    GetAllControllerMixin,
-    GetStateControllerMixin,
-    TerminateControllerMixin
-)
+from ..base_connector_service import BaseConnectorService
 
 
-class BaseCrudDmaController(
-    CreateControllerMixin,
-    GetControllerMixin,
-    UpdateControllerMixin,
-    DeleteControllerMixin,
-    BaseDmaController
-):
-    pass
-
-
-class CrudDmaController(
-    GetAllControllerMixin,
-    BaseCrudDmaController
-):
-    pass
-
-
-class StatefulEntityDmaController(
-    CreateControllerMixin,
-    GetControllerMixin,
-    GetAllControllerMixin,
-    GetStateControllerMixin,
-    TerminateControllerMixin,
-    BaseDmaController
-):
-    pass
+class ConnectorService(BaseConnectorService):
+    pass  # Nothing in this version differs from the base class

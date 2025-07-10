@@ -20,18 +20,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_controller import DmaController
-from ....models.connector.v0_9_0 import CatalogModel
+from .connector_service import ConnectorService
+from .connector_provider_service import ConnectorProviderService
+from .connector_consumer_service import ConnectorConsumerService
 
-
-class CatalogController(DmaController):
-    """
-    Concrete implementation of the CatalogController for the Connector DMA v0.9.0.
-    """
-
-    endpoint_url = "/v3/catalog"
-
-    def get_catalog(self, obj: CatalogModel, **kwargs):
-        kwargs["data"] = obj.to_data()
-        return self.adapter.post(url=f"{self.endpoint_url}/request", **kwargs)
-
+__all__ = ['ConnectorService', 'ConnectorProviderService', 'ConnectorConsumerService']

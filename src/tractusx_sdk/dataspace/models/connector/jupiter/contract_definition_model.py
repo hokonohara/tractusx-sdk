@@ -20,25 +20,30 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_controller import DmaController
-from ..mixins import StatefulEntityDmaController
-from ....models.connector.v0_9_0 import TransferProcessModel
+from json import dumps as jdumps
+from pydantic import Field
+
+from ..base_contract_definition_model import BaseContractDefinitionModel
 
 
-class TransferProcessController(StatefulEntityDmaController, DmaController):
-    """
-    Concrete implementation of the TransferProcessController for the Connector v0.9.0 Data Management API.
+class ContractDefinitionModel(BaseContractDefinitionModel):
+    TYPE: str = Field(default="ContractDefinition", frozen=True)
 
-    This class overrides the create and terminate_by_id methods in order to ensure the correct class types are used, instead of the generic ones.
-    """
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a jupiter connector when using a contract definition model.
 
-    endpoint_url = "/v3/transferprocesses"
+        :return: a JSON representation of the model
+        """
 
-    def create(self, obj: TransferProcessModel, **kwargs):
-        return super().create(obj, **kwargs)
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "@id": self.oid,
+            "accessPolicyId": self.access_policy_id,
+            "contractPolicyId": self.contract_policy_id,
+            "assetsSelector": self.assets_selector
+        }
 
-    def terminate_by_id(self, oid: str, obj: TransferProcessModel, **kwargs):
-        return super().terminate_by_id(oid, obj, **kwargs)
-
-    def deprovision_by_id(self, oid: str, **kwargs):
-        return self.adapter.post(url=f"{self.endpoint_url}/{oid}/deprovision", **kwargs)
+        return jdumps(data)

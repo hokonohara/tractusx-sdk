@@ -20,23 +20,30 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_controller import DmaController
-from ..mixins import CrudDmaController
-from ....models.connector.v0_9_0 import PolicyModel
+from json import dumps as jdumps
+from pydantic import Field
+
+from ..base_asset_model import BaseAssetModel
 
 
-class PolicyController(CrudDmaController, DmaController):
-    """
-    Concrete implementation of the PolicyController for the Connector v0.9.0 Data Management API.
+class AssetModel(BaseAssetModel):
+    TYPE: str = Field(default="Asset", frozen=True)
 
-    This class overrides the create and update methods in order to ensure the correct class types are used,
-    instead of the generic ones.
-    """
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a jupiter connector when using an asset model.
 
-    endpoint_url = "/v3/policydefinitions"
+        :return: a JSON representation of the model
+        """
 
-    def create(self, obj: PolicyModel, **kwargs):
-        return super().create(obj, **kwargs)
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "@id": self.oid,
+            "properties": self.properties,
+            "privateProperties": self.private_properties,
+            "dataAddress": self.data_address
+        }
 
-    def update(self, obj: PolicyModel, **kwargs):
-        return super().update(obj, **kwargs)
+        return jdumps(data)

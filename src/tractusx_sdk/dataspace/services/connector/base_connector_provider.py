@@ -21,18 +21,44 @@
 #################################################################################
 
 from ..service import BaseService
+from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
-from ...controllers.connector.controller_factory import ControllerType
+from ...controllers.connector.controller_factory import ControllerType, ControllerFactory
+
 
 class BaseConnectorProviderService(BaseService):
     _asset_controller: BaseDmaController
     _contract_definition_controller: BaseDmaController
     _policy_controller: BaseDmaController
-    
-    def __init__(self, controllers: dict):
+
+    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None):
+        self.version = version
+
+        dma_adapter = AdapterFactory.get_dma_adapter(
+            connector_version=version,
+            base_url=base_url,
+            dma_path=dma_path,
+            headers=headers
+        )
+
+        controllers = ControllerFactory.get_dma_controllers_for_version(
+            connector_version=version,
+            adapter=dma_adapter,
+            controller_types=[
+                ControllerType.ASSET,
+                ControllerType.CONTRACT_DEFINITION,
+                ControllerType.POLICY
+            ]
+        )
+
         self._asset_controller = controllers.get(ControllerType.ASSET)
         self._contract_definition_controller = controllers.get(ControllerType.CONTRACT_DEFINITION)
         self._policy_controller = controllers.get(ControllerType.POLICY)
+
+    class _Builder(BaseService._Builder):
+        def dma_path(self, dma_path: str):
+            self._data["dma_path"] = dma_path
+            return self
 
     @property
     def assets(self):
@@ -45,7 +71,3 @@ class BaseConnectorProviderService(BaseService):
     @property
     def policies(self):
         return self._policy_controller
-
-
-
-    
