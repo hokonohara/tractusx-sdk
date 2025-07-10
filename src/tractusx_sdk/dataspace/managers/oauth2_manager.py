@@ -32,7 +32,7 @@ class OAuth2Manager:
     ## Declare variables
     keycloak_session:KeycloakOpenID
     connected:bool = False
-    token:str
+    token:dict
 
     clientid:str
     clientsecret:str
@@ -70,7 +70,7 @@ class OAuth2Manager:
             raise Exception("Not connected, please execute the connect() method again before requesting a token!")
 
         ## Get the token from the keycloak instance
-        token=self.keycloak_openid.token(self.clientid, self.clientsecret, grant_type=["client_credentials"], scope="openid profile email")
+        token:dict=self.keycloak_openid.token(self.clientid, self.clientsecret, grant_type=["client_credentials"], scope="openid profile email")
         if(token is None):
             raise Exception("It was not possible to get the token from the iam instance!")
         ## Store the token

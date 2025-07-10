@@ -24,8 +24,6 @@
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .base_connector_consumer_service import BaseConnectorConsumerService
-__all__ = [
-    'BaseConnectorConsumerService',
-    'BaseConnectorProviderService',
-]
+from .base_connector_service import BaseConnectorService
+from .base_connector_consumer import BaseConnectorConsumerService
+from .base_connector_provider import BaseConnectorProviderService
