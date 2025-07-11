@@ -52,7 +52,7 @@ This section defines the configuration values, metadata, and policies required f
 
 ```python
 edc_url="http://dataprovider-controlplane.tx.test"
-dataspace_version = "v0_9_0"
+dataspace_version = "jupiter"
 headers={"X-Api-Key": "TEST1", "Content-Type": "application/json"}
 oid = "201"
 data_address = {"type": "test_type", "value": "test_value"}
