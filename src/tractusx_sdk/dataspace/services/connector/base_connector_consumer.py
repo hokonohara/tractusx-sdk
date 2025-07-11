@@ -134,7 +134,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Build edr transfer url
         response: Response = self.edrs.get_data_address(oid=transfer_id, params={"auto_refresh": True})
         if (response is None or response.status_code != 200):
-            raise Exception(
+            raise ConnectionError(
                 "[EDC Service] It was not possible to get the edr because the EDC response was not successful!")
         return response.json()
 
@@ -145,7 +145,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get authorization key from the edr
         edr: dict = self.get_edr(transfer_id=transfer_id)
         if (edr is None):
-            raise Exception("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
+            raise RuntimeError("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
 
         return edr["endpoint"], edr["authorization"]
 
@@ -164,7 +164,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get EDC DCAT catalog
         if request is None:
             if counter_party_id is None or counter_party_address is None:
-                raise Exception(
+                raise ValueError(
                     "[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
@@ -172,7 +172,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.catalogs.get_catalog(obj=request, timeout=timeout)
         ## In case the response code is not successfull or the response is null
         if response is None or response.status_code != 200:
-            raise Exception(
+            raise ConnectionError(
                 f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
         return response.json()
 
@@ -243,7 +243,7 @@ class BaseConnectorConsumerService(BaseService):
         """
         offer_id = policy.get("@id", None)
         if (offer_id is None):
-            raise Exception("[EDC Service] Policy offer id is not available!")
+            raise ValueError("[EDC Service] Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
             connector_version=self.version,  # version is to be included in the BaseService class  
@@ -420,7 +420,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.query(request)
         ## In case the response code is not successfull or the response is null
         if (response is None or response.status_code != 200):
-            raise Exception(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
+            raise ConnectionError(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
 
         ## The response is a list
         data = response.json()
@@ -447,7 +447,7 @@ class BaseConnectorConsumerService(BaseService):
                                                         counter_party_address=counter_party_address,
                                                         filter_expression=filter_expression)
         if (catalog_response is None):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
 
         ## Select Policy and Assetid
@@ -455,11 +455,11 @@ class BaseConnectorConsumerService(BaseService):
             valid_assets_policies = DspTools.filter_assets_and_policies(catalog=catalog_response,
                                                                         allowed_policies=policies)
         except Exception as e:
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
 
         if (len(valid_assets_policies) == 0):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
 
         negotiation_id: str | None = None
@@ -478,7 +478,7 @@ class BaseConnectorConsumerService(BaseService):
                 break
 
         if (negotiation_id is None):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
 
         ##### 3. Get EDC Entry (details)
@@ -496,7 +496,7 @@ class BaseConnectorConsumerService(BaseService):
             retries += 1
 
         if edr_entry is None:
-            raise Exception(
+            raise TimeoutError(
                 f"[EDC Service] [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
 
         return edr_entry
@@ -547,7 +547,7 @@ class BaseConnectorConsumerService(BaseService):
 
         ## Check if the edr entry is not none
         if (edr_entry is None):
-            raise Exception("[EDC Service] Failed to get edr entry! Response was none!")
+            raise RuntimeError("[EDC Service] Failed to get edr entry! Response was none!")
 
         print(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
 
@@ -642,7 +642,7 @@ class BaseConnectorConsumerService(BaseService):
                                                    counter_party_address=counter_party_address,
                                                    filter_expression=filter_expression, timeout=timeout)
         except Exception as e:
-            raise Exception(
+            raise ConnectionError(
                 f"[EDC Service] Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
 
         if catalog is None:
@@ -674,7 +674,7 @@ class BaseConnectorConsumerService(BaseService):
                                                   filter_expression=filter_expression)
 
         if dataplane_url is None or access_token is None:
-            raise Exception("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -716,7 +716,7 @@ class BaseConnectorConsumerService(BaseService):
                                                   filter_expression=filter_expression)
 
         if dataplane_url is None or access_token is None:
-            raise Exception("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
