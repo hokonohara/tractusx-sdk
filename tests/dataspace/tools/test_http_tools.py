@@ -35,21 +35,31 @@ class TestHttpTools(unittest.TestCase):
         self.headers = {"Content-Type": "application/json"}
         self.payload = {"key": "value"}
 
-    @patch("requests.Session.get")
-    def test_do_get_success(self, mock_get):
+    @patch("tractusx_sdk.dataspace.tools.http_tools.requests.Session")
+    def test_do_get_success(self, mock_session_class):
         """Test a successful GET request."""
-        mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
-        
-        response = HttpTools.do_get(self.test_url)
+        session = Mock()
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"message": "success"}
+        session.get.return_value = mock_response
+        mock_session_class.return_value.__enter__.return_value = session
+
+        response = HttpTools.do_get(self.test_url, session=session)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "success"})
 
-    @patch("requests.Session.get")
-    def test_do_get_failure(self, mock_get):
+    @patch("tractusx_sdk.dataspace.tools.http_tools.requests.Session")
+    def test_do_get_failure(self, mock_session_class):
         """Test GET request when server returns an error."""
-        mock_get.return_value = Mock(status_code=500, json=lambda: {"error": "Internal Server Error"})
-        
-        response = HttpTools.do_get(self.test_url)
+        session = Mock()
+        mock_response = Mock()
+        mock_response.status_code = 500
+        mock_response.json.return_value = {"error": "Internal Server Error"}
+        session.get.return_value = mock_response
+        mock_session_class.return_value.__enter__.return_value = session
+
+        response = HttpTools.do_get(self.test_url, session=session)
         self.assertEqual(response.status_code, 500)
         self.assertEqual(response.json(), {"error": "Internal Server Error"})
 
