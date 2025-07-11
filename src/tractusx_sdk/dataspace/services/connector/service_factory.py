@@ -121,7 +121,7 @@ class ServiceFactory:
             dataspace_version=dataspace_version,
         )
 
-        builder.version(dataspace_version)
+        builder.dataspace_version(dataspace_version)
         builder.base_url(base_url)
         builder.dma_path(dma_path)
         builder.headers(headers)

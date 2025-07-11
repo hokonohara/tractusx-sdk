@@ -50,9 +50,9 @@ class BaseConnectorConsumerService(BaseService):
 
     NEGOTIATION_ID_KEY = "contractNegotiationId"
 
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None,
+    def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None,
                  connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
-        self.dataspace_version = version
+        self.dataspace_version = dataspace_version
         self.verbose = verbose
         self.logger = logger
         # Backwards compatibility: if verbose is True and no logger provided, use default logger
@@ -60,14 +60,14 @@ class BaseConnectorConsumerService(BaseService):
             self.logger = logging.getLogger(__name__)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
-            dataspace_version=version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         controllers = ControllerFactory.get_dma_controllers_for_version(
-            dataspace_version=version,
+            dataspace_version=dataspace_version,
             adapter=dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
@@ -567,64 +567,146 @@ class BaseConnectorConsumerService(BaseService):
                                                       policy_checksum=current_policies_checksum,
                                                       connection_entry=edr_entry)
 
-    def do_dsp_by_dct_type(self, counter_party_id: str, counter_party_address: str, dct_type: str,
-                           policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=") -> \
-            tuple[str, str]:
-        return self.do_dsp(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                           policies=policies)
+    def do_dsp_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+    ) -> tuple[str, str]:
+        return self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+        )
 
-    def do_dsp_by_asset_id(self, counter_party_id: str, counter_party_address: str, asset_id: str,
-                           policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=") -> \
-            tuple[str, str]:
-        return self.do_dsp(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                           policies=policies)
+    def do_dsp_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+    ) -> tuple[str, str]:
+        return self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+        )
 
-    def do_get_by_dct_type(self, counter_party_id: str, counter_party_address: str, dct_type: str,
-                           policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=") -> \
-            tuple[str, str]:
-        return self.do_get(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                           policies=policies)
+    def do_get_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+        **kwargs,
+    ):
+        return self.do_get(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_get_by_asset_id(self, counter_party_id: str, counter_party_address: str, asset_id: str,
-                           policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=", ):
-        return self.do_get(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                           policies=policies)
+    def do_get_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+        **kwargs,
+    ):
+        return self.do_get(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_post_by_dct_type(self, counter_party_id: str, counter_party_address: str, body, dct_type: str,
-                            policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
-                            operator="=") -> tuple[str, str]:
-        return self.do_post(counter_party_id=counter_party_id,
-                            counter_party_address=counter_party_address,
-                            body=body,
-                            filter_expression=[
-                                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                            policies=policies)
+    def do_post_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+        **kwargs,
+    ) -> tuple[str, str]:
+        return self.do_post(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            body=body,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_post_by_asset_id(self, counter_party_id: str, counter_party_address: str, body, asset_id: str,
-                            policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=") -> \
-            tuple[str, str]:
-        return self.do_post(counter_party_id=counter_party_id,
-                            counter_party_address=counter_party_address,
-                            body=body,
-                            filter_expression=[
-                                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                            policies=policies)
+    def do_post_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+        **kwargs,
+    ) -> tuple[str, str]:
+        return self.do_post(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            body=body,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_dsp(self, counter_party_id: str, counter_party_address: str, filter_expression: list[dict],
-               policies: list) -> tuple[
-        str, str]:
+    def do_dsp(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        policies: list,
+        session=None,
+    ) -> tuple[str, str]:
         """
         Does all the dsp necessary operations until getting the edr.
         Giving you all the necessary data to request data to the edc dataplane.
@@ -637,9 +719,12 @@ class BaseConnectorConsumerService(BaseService):
         """
 
         ## Get the transfer id 
-        transfer_id = self.get_transfer_id(counter_party_id=counter_party_id,
-                                           counter_party_address=counter_party_address, policies=policies,
-                                           filter_expression=filter_expression)
+        transfer_id = self.get_transfer_id(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+        )
         ## Get the endpoint and the token
         return self.get_endpoint_with_token(transfer_id=transfer_id)
 
@@ -659,9 +744,20 @@ class BaseConnectorConsumerService(BaseService):
 
         return not DspTools.is_catalog_empty(catalog=catalog)
 
-    def do_get(self, counter_party_id: str, counter_party_address: str, filter_expression: list[dict], path: str = "/",
-               policies: list = None, verify: bool = False, headers: dict = {}, timeout: int = None,
-               params: dict = None, allow_redirects: bool = False) -> Response:
+    def do_get(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = {},
+        timeout: int = None,
+        params: dict = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
         """
         Executes a HTTP GET request to a asset behind an EDC!
         Abstracts everything for you doing the dsp exchange.
@@ -678,9 +774,13 @@ class BaseConnectorConsumerService(BaseService):
         """
         ## If policies are empty use default policies
 
-        dataplane_url, access_token = self.do_dsp(counter_party_id=counter_party_id,
-                                                  counter_party_address=counter_party_address, policies=policies,
-                                                  filter_expression=filter_expression)
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            session=session,
+        )
 
         if dataplane_url is None or access_token is None:
             raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
@@ -691,14 +791,32 @@ class BaseConnectorConsumerService(BaseService):
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token)
 
         ## Do get request to get a response!
-        return HttpTools.do_get(url=url, headers=(headers | dataplane_headers), verify=verify, timeout=timeout,
-                                params=params, allow_redirects=allow_redirects)
+        return HttpTools.do_get(
+            url=url,
+            headers=(headers | dataplane_headers),
+            verify=verify,
+            timeout=timeout,
+            params=params,
+            allow_redirects=allow_redirects,
+            session=session,
+        )
 
-    def do_post(self, counter_party_id: str, counter_party_address: str, body, filter_expression: list[dict],
-                path: str = "/",
-                content_type: str = "application/json", policies: list = None, verify: bool = False,
-                headers: dict = None,
-                timeout: int = None, params: dict = None, allow_redirects: bool = False) -> Response:
+    def do_post(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        params: dict = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
         """
         Performs a HTTP POST request to a specific asset behind an EDC.
 
@@ -720,9 +838,13 @@ class BaseConnectorConsumerService(BaseService):
         """
         ## If policies are empty use default policies
 
-        dataplane_url, access_token = self.do_dsp(counter_party_id=counter_party_id,
-                                                  counter_party_address=counter_party_address, policies=policies,
-                                                  filter_expression=filter_expression)
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            session=session,
+        )
 
         if dataplane_url is None or access_token is None:
             raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
@@ -733,5 +855,12 @@ class BaseConnectorConsumerService(BaseService):
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
 
         ## Do get request to get a response!
-        return HttpTools.do_post(url=url, json=body, headers=(headers | dataplane_headers), verify=verify,
-                                 timeout=timeout, allow_redirects=allow_redirects)
+        return HttpTools.do_post(
+            url=url,
+            json=body,
+            headers=(headers | dataplane_headers),
+            verify=verify,
+            timeout=timeout,
+            allow_redirects=allow_redirects,
+            session=session,
+        )
