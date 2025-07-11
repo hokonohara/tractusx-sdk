@@ -24,7 +24,7 @@ import unittest
 
 from tractusx_sdk.dataspace.services.connector.service_factory import ServiceFactory
 from unittest import mock
-from tractusx_sdk.dataspace.services.connector.base_connector_consumer import BaseConnectorConsumerService
+import tractusx_sdk.dataspace.services.connector.base_connector_consumer as bcc
 
 
 class TestBaseConsumerConnectorService(unittest.TestCase):
@@ -34,7 +34,7 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
         self.dma_path = "/management"
         self.headers = {"X-Api-Key": "api-key-secret", "Content-Type": "application/json"}
 
-        self.service = ServiceFactory.get_connector_consumer_service(
+        self.service = bcc.BaseConnectorConsumerService(
             dataspace_version=self.dataspace_version,
             base_url=self.base_url,
             dma_path=self.dma_path,
