@@ -21,7 +21,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from keycloak import KeycloakOpenID
+from keycloak.keycloak_openid import KeycloakOpenID
 
 class OAuth2Manager:
     
