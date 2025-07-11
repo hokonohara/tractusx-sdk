@@ -252,7 +252,6 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
             mock_resp.status_code = 200
             return mock_resp
 
-        
         bcc.HttpTools.do_get = fake_do_get
         service.do_get(
             counter_party_id="bpn",
