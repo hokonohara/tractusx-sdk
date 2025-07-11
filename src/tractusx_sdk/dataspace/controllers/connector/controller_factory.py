@@ -59,7 +59,7 @@ class ControllerFactory:
     @staticmethod
     def _get_controller_builder(
             controller_type: ControllerType,
-            connector_version: str,
+            dataspace_version: str,
     ):
         """
         Create a controller, based on the specified controller type and version.
@@ -69,17 +69,17 @@ class ControllerFactory:
         controller class, and returns it, with whatever parameters necessary for its initialization.
 
         :param controller_type: The type of controller to create, as per the AdapterType enum
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :return: An instance of the specified Adapter subclass
         """
 
         # Check if the requested version is supported for the given controller type
-        if connector_version not in ControllerFactory.SUPPORTED_VERSIONS:
-            raise ValueError(f"Unsupported version {connector_version}")
+        if dataspace_version not in ControllerFactory.SUPPORTED_VERSIONS:
+            raise ValueError(f"Unsupported version {dataspace_version}")
 
         # Compute the controller module path dynamically, depending on the connector version
         connector_module = ".".join(__name__.split(".")[0:-1])
-        module_name = f"{connector_module}.{connector_version}"
+        module_name = f"{connector_module}.{dataspace_version}"
 
         # Compute the controller class name based on the controller type
         controller_class_name = f"{controller_type.value}Controller"
@@ -100,14 +100,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_asset_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create an asset controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -115,7 +115,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.ASSET,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -126,14 +126,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_catalog_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a catalog controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -141,7 +141,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.CATALOG,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -152,14 +152,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_contract_agreement_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a contract_agreement controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -167,7 +167,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.CONTRACT_AGREEMENT,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -178,14 +178,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_contract_definition_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a contract_definition controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -193,7 +193,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.CONTRACT_DEFINITION,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -204,14 +204,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_contract_negotiation_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a contract_negotiation controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -219,7 +219,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.CONTRACT_NEGOTIATION,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -230,14 +230,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_edr_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create an EDR controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -245,7 +245,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.EDR,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -256,14 +256,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_policy_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a policy controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -271,7 +271,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.POLICY,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -282,14 +282,14 @@ class ControllerFactory:
 
     @staticmethod
     def get_transfer_process_controller(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create a transfer_process controller instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
 
         :return: An instance of the specified Controller subclass
@@ -297,7 +297,7 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.TRANSFER_PROCESS,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.adapter(adapter)
@@ -308,7 +308,7 @@ class ControllerFactory:
 
     @staticmethod
     def get_dma_controllers_for_version(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             controller_types: list[ControllerType],
             **kwargs
@@ -316,7 +316,7 @@ class ControllerFactory:
         """
         Create controllers of a specific connector version, for a list of controller types.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
         :param controller_types: The controller types to instantiate, as a list of ControllerTypes
         :param kwargs: Additional parameters to pass to the controller builder
@@ -331,33 +331,33 @@ class ControllerFactory:
                 method = getattr(ControllerFactory, method_name)
                 try:
                     controllers[controller_type] = method(
-                        connector_version=connector_version,
+                        dataspace_version=dataspace_version,
                         adapter=adapter,
                         **kwargs
                     )
                 except AttributeError:
                     raise ValueError(
-                        f"A controller for {controller_type.name} does not exist for version {connector_version}")
+                        f"A controller for {controller_type.name} does not exist for version {dataspace_version}")
 
         return controllers
 
     @staticmethod
     def get_all_dma_controllers_for_version(
-            connector_version: str,
+            dataspace_version: str,
             adapter: BaseDmaAdapter,
             **kwargs
     ):
         """
         Create all DMA controllers for a specific connector version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param adapter: The DMA adapter to use for the controller
         :param kwargs: Additional parameters to pass to the controller builder
         :return: A dictionary of controller instances, keyed by controller type
         """
 
         return ControllerFactory.get_dma_controllers_for_version(
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
             adapter=adapter,
             controller_types=[controller_type for controller_type in ControllerType],
             **kwargs

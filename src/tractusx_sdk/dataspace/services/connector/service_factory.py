@@ -23,6 +23,7 @@
 from enum import Enum
 from importlib import import_module
 from os import listdir, path
+import logging
 
 from tractusx_sdk.dataspace.managers.connection.base_connection_manager import BaseConnectionManager
 
@@ -53,7 +54,7 @@ class ServiceFactory:
     @staticmethod
     def _get_service_builder(
             service_type: ServiceType,
-            connector_version: str,
+            dataspace_version: str,
     ):
         """
         Create a service, based on the specified service type and version.
@@ -63,17 +64,17 @@ class ServiceFactory:
         service class, and returns it, with whatever parameters necessary for its initialization.
 
         :param service_type: The type of service to create, as per the AdapterType enum
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :return: An instance of the specified Adapter subclass
         """
 
         # Check if the requested version is supported for the given service type
-        if connector_version not in ServiceFactory.SUPPORTED_VERSIONS:
-            raise ValueError(f"Unsupported version {connector_version}")
+        if dataspace_version not in ServiceFactory.SUPPORTED_VERSIONS:
+            raise ValueError(f"Unsupported version {dataspace_version}")
 
         # Compute the service module path dynamically, depending on the connector version
         connector_module = ".".join(__name__.split(".")[0:-1])
-        module_name = f"{connector_module}.{connector_version}"
+        module_name = f"{connector_module}.{dataspace_version}"
 
         # Compute the service class name based on the service type
         service_class_name = f"{service_type.value}Service"
@@ -94,42 +95,45 @@ class ServiceFactory:
 
     @staticmethod
     def get_connector_consumer_service(
-            connector_version: str,
+            dataspace_version: str,
             base_url: str,
             dma_path: str,
             headers: dict = None,
             connection_manager: BaseConnectionManager = None,
+            verbose: bool = True,
+            logger: logging.Logger = None,
             **kwargs
     ):
         """
         Create a Connector consumer service instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param base_url: The base URL of the Connector service
         :param dma_path: The DMA path of the Connector service
         :param headers: The extra headers to be used for requests to the service
         :param connection_manager: The connection manager to use for the service
+        :param verbose: Verbose flag for the service
         :return: An instance of the specified Service subclass
         """
 
         builder = ServiceFactory._get_service_builder(
             service_type=ServiceType.CONNECTOR_CONSUMER,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
-        builder.version(connector_version)
+        builder.dataspace_version(dataspace_version)
         builder.base_url(base_url)
         builder.dma_path(dma_path)
         builder.headers(headers)
         builder.connector_manager(connection_manager)
 
         # Include any additional parameters
-        builder.data(kwargs)
+        builder.data({**kwargs, "verbose": verbose, "logger": logger})
         return builder.build()
 
     @staticmethod
     def get_connector_provider_service(
-            connector_version: str,
+            dataspace_version: str,
             base_url: str,
             dma_path: str,
             headers: dict = None,
@@ -138,7 +142,7 @@ class ServiceFactory:
         """
         Create a Connector provider service instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param base_url: The base URL of the Connector service
         :param dma_path: The DMA path of the Connector service
         :param headers: The extra headers to be used for requests to the service
@@ -147,10 +151,10 @@ class ServiceFactory:
 
         builder = ServiceFactory._get_service_builder(
             service_type=ServiceType.CONNECTOR_PROVIDER,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
-        builder.version(connector_version)
+        builder.dataspace_version(dataspace_version)
         builder.base_url(base_url)
         builder.dma_path(dma_path)
         builder.headers(headers)
@@ -161,17 +165,19 @@ class ServiceFactory:
 
     @staticmethod
     def get_connector_service(
-            connector_version: str,
+            dataspace_version: str,
             base_url: str,
             dma_path: str,
             headers: dict = None,
             connection_manager: BaseConnectionManager = None,
+            logger: logging.Logger = None,
+            verbose: bool = True,
             **kwargs
     ):
         """
         Create a complete Connector service instance, based a specific version.
 
-        :param connector_version: The version of the Connector (i.e: "jupiter")
+        :param dataspace_version: The version of the Dataspace (i.e: "jupiter")
         :param base_url: The base URL of the Connector service
         :param dma_path: The DMA path of the Connector service
         :param headers: The extra headers to be used for requests to the service
@@ -180,15 +186,17 @@ class ServiceFactory:
         """
 
         consumer = ServiceFactory.get_connector_consumer_service(
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers,
-            connection_manager=connection_manager
+            connection_manager=connection_manager,
+            verbose=verbose,
+            logger=logger
         )
 
         provider = ServiceFactory.get_connector_provider_service(
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers,
@@ -196,10 +204,10 @@ class ServiceFactory:
 
         builder = ServiceFactory._get_service_builder(
             service_type=ServiceType.CONNECTOR,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
-        builder.version(connector_version)
+        builder.dataspace_version(dataspace_version)
         builder.base_url(base_url)
         builder.dma_path(dma_path)
         builder.headers(headers)

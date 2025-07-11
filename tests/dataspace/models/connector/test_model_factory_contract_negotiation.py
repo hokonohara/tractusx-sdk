@@ -33,7 +33,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryContractNegotiation(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.context = { "key": "value" }
         self.counter_party_address = "https://counterparty.com"
         self.asset_id = "asset-id"
@@ -57,7 +57,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
     def test_get_contract_negotiation_model_with_no_offer(self):
         with self.assertRaises(ValidationError):
             ModelFactory.get_contract_negotiation_model(
-                connector_version=self.connector_version,
+                dataspace_version=self.dataspace_version,
                 counter_party_address=self.counter_party_address,
                 offer_id=self.offer_id,
                 asset_id=self.asset_id,
@@ -69,7 +69,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         policy_model.to_data = MagicMock(return_value=deepcopy(self.policy_data))
 
         model = ModelFactory.get_contract_negotiation_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,
@@ -86,7 +86,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
 
     def test_get_contract_negotiation_model_with_offer_policy_data_only(self):
         model = ModelFactory.get_contract_negotiation_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,
@@ -115,7 +115,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
         policy_model.to_data = MagicMock(return_value=deepcopy(self.policy_data))
 
         model = ModelFactory.get_contract_negotiation_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,
@@ -129,7 +129,7 @@ class TestModelFactoryContractNegotiation(unittest.TestCase):
 
     def test_get_contract_negotiation_model_without_defaults(self):
         model = ModelFactory.get_contract_negotiation_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             offer_id=self.offer_id,
             asset_id=self.asset_id,

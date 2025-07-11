@@ -22,6 +22,7 @@
 
 import hashlib
 import threading
+import logging
 
 from requests import Response
 
@@ -45,23 +46,28 @@ class BaseConnectorConsumerService(BaseService):
     _transfer_process_controller: BaseDmaController
 
     connection_manager: BaseConnectionManager
-    version: str
+    dataspace_version: str
 
     NEGOTIATION_ID_KEY = "contractNegotiationId"
 
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None,
-                 connection_manager: BaseConnectionManager = None):
-        self.version = version
+    def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None,
+                 connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
+        self.dataspace_version = dataspace_version
+        self.verbose = verbose
+        self.logger = logger
+        # Backwards compatibility: if verbose is True and no logger provided, use default logger
+        if self.verbose and self.logger is None:
+            self.logger = logging.getLogger(__name__)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         controllers = ControllerFactory.get_dma_controllers_for_version(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             adapter=dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
@@ -134,7 +140,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Build edr transfer url
         response: Response = self.edrs.get_data_address(oid=transfer_id, params={"auto_refresh": True})
         if (response is None or response.status_code != 200):
-            raise Exception(
+            raise ConnectionError(
                 "[EDC Service] It was not possible to get the edr because the EDC response was not successful!")
         return response.json()
 
@@ -145,7 +151,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get authorization key from the edr
         edr: dict = self.get_edr(transfer_id=transfer_id)
         if (edr is None):
-            raise Exception("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
+            raise RuntimeError("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
 
         return edr["endpoint"], edr["authorization"]
 
@@ -164,7 +170,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get EDC DCAT catalog
         if request is None:
             if counter_party_id is None or counter_party_address is None:
-                raise Exception(
+                raise ValueError(
                     "[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
@@ -172,7 +178,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.catalogs.get_catalog(obj=request, timeout=timeout)
         ## In case the response code is not successfull or the response is null
         if response is None or response.status_code != 200:
-            raise Exception(
+            raise ConnectionError(
                 f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
         return response.json()
 
@@ -243,10 +249,10 @@ class BaseConnectorConsumerService(BaseService):
         """
         offer_id = policy.get("@id", None)
         if (offer_id is None):
-            raise Exception("[EDC Service] Policy offer id is not available!")
+            raise ValueError("[EDC Service] Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
-            connector_version=self.version,  # version is to be included in the BaseService class  
+            dataspace_version=self.dataspace_version,  # version is to be included in the BaseService class  
             context=[
                 "https://w3id.org/tractusx/policy/v1.0.0",
                 "http://www.w3.org/ns/odrl.jsonld",
@@ -265,7 +271,7 @@ class BaseConnectorConsumerService(BaseService):
 
     def get_catalog_request(self, counter_party_id: str, counter_party_address: str) -> BaseCatalogModel:
         return ModelFactory.get_catalog_model(
-            connector_version=self.version,
+            dataspace_version=self.dataspace_version,
             context={
                 "edc": "https://w3id.org/edc/v0.0.1/ns/",
                 "odrl": "http://www.w3.org/ns/odrl/2/",
@@ -309,7 +315,7 @@ class BaseConnectorConsumerService(BaseService):
     def get_edr_negotiation_filter(self, negotiation_id: str) -> BaseQuerySpecModel:
 
         return ModelFactory.get_queryspec_model(
-            connector_version=self.version,
+            dataspace_version=self.dataspace_version,
             filter_expression=[
                 self.get_filter_expression(key=self.NEGOTIATION_ID_KEY, operator="=", value=negotiation_id)]
         )
@@ -420,7 +426,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.query(request)
         ## In case the response code is not successfull or the response is null
         if (response is None or response.status_code != 200):
-            raise Exception(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
+            raise ConnectionError(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
 
         ## The response is a list
         data = response.json()
@@ -447,7 +453,7 @@ class BaseConnectorConsumerService(BaseService):
                                                         counter_party_address=counter_party_address,
                                                         filter_expression=filter_expression)
         if (catalog_response is None):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
 
         ## Select Policy and Assetid
@@ -455,11 +461,11 @@ class BaseConnectorConsumerService(BaseService):
             valid_assets_policies = DspTools.filter_assets_and_policies(catalog=catalog_response,
                                                                         allowed_policies=policies)
         except Exception as e:
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
 
         if (len(valid_assets_policies) == 0):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
 
         negotiation_id: str | None = None
@@ -478,7 +484,7 @@ class BaseConnectorConsumerService(BaseService):
                 break
 
         if (negotiation_id is None):
-            raise Exception(
+            raise RuntimeError(
                 f"[EDC Service] [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
 
         ##### 3. Get EDC Entry (details)
@@ -490,13 +496,14 @@ class BaseConnectorConsumerService(BaseService):
             if edr_entry is not None:  ## If edr is found skip retry
                 break
             ## Wait until the timeout has reached to retry again
-            print(
-                f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
+            if self.logger:
+                self.logger.info(
+                    f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
             op.wait(seconds=timeout)
             retries += 1
 
         if edr_entry is None:
-            raise Exception(
+            raise TimeoutError(
                 f"[EDC Service] [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
 
         return edr_entry
@@ -528,17 +535,18 @@ class BaseConnectorConsumerService(BaseService):
                                                                                       counter_party_address=counter_party_address,
                                                                                       query_checksum=filter_expression_checksum,
                                                                                       policy_checksum=current_policies_checksum)
-
         ## If is there return the cached one, if the selection is the same the transfer id can be reused!
         if (transfer_process_id is not None):
-            print(
-                "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
-                counter_party_address, transfer_process_id, counter_party_id, filter_expression)
+            if self.logger:
+                self.logger.info(
+                    "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
+                    counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
 
-        print(
-            "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
-            counter_party_address, counter_party_id, filter_expression)
+        if self.logger:
+            self.logger.info(
+                "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
+                counter_party_address, counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
         edr_entry: dict = self.negotiate_and_transfer(counter_party_id=counter_party_id,
@@ -547,9 +555,10 @@ class BaseConnectorConsumerService(BaseService):
 
         ## Check if the edr entry is not none
         if (edr_entry is None):
-            raise Exception("[EDC Service] Failed to get edr entry! Response was none!")
+            raise RuntimeError("[EDC Service] Failed to get edr entry! Response was none!")
 
-        print(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
+        if self.logger:
+            self.logger.info(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
 
         ## Check if the transfer id is available and return the transfer process id
         return self.connection_manager.add_connection(counter_party_id=counter_party_id,
@@ -558,64 +567,146 @@ class BaseConnectorConsumerService(BaseService):
                                                       policy_checksum=current_policies_checksum,
                                                       connection_entry=edr_entry)
 
-    def do_dsp_by_dct_type(self, counter_party_id: str, counter_party_address: str, dct_type: str,
-                           policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=") -> \
-            tuple[str, str]:
-        return self.do_dsp(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                           policies=policies)
+    def do_dsp_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+    ) -> tuple[str, str]:
+        return self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+        )
 
-    def do_dsp_by_asset_id(self, counter_party_id: str, counter_party_address: str, asset_id: str,
-                           policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=") -> \
-            tuple[str, str]:
-        return self.do_dsp(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                           policies=policies)
+    def do_dsp_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+    ) -> tuple[str, str]:
+        return self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+        )
 
-    def do_get_by_dct_type(self, counter_party_id: str, counter_party_address: str, dct_type: str,
-                           policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=") -> \
-            tuple[str, str]:
-        return self.do_get(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                           policies=policies)
+    def do_get_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+        **kwargs,
+    ):
+        return self.do_get(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_get_by_asset_id(self, counter_party_id: str, counter_party_address: str, asset_id: str,
-                           policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=", ):
-        return self.do_get(counter_party_id=counter_party_id,
-                           counter_party_address=counter_party_address,
-                           filter_expression=[
-                               self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                           policies=policies)
+    def do_get_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+        **kwargs,
+    ):
+        return self.do_get(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_post_by_dct_type(self, counter_party_id: str, counter_party_address: str, body, dct_type: str,
-                            policies: list = None, dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
-                            operator="=") -> tuple[str, str]:
-        return self.do_post(counter_party_id=counter_party_id,
-                            counter_party_address=counter_party_address,
-                            body=body,
-                            filter_expression=[
-                                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)],
-                            policies=policies)
+    def do_post_by_dct_type(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        dct_type: str,
+        policies: list = None,
+        dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
+        operator="=",
+        session=None,
+        **kwargs,
+    ) -> tuple[str, str]:
+        return self.do_post(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            body=body,
+            filter_expression=[
+                self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_post_by_asset_id(self, counter_party_id: str, counter_party_address: str, body, asset_id: str,
-                            policies: list = None, asset_id_key="https://w3id.org/edc/v0.0.1/ns/id", operator="=") -> \
-            tuple[str, str]:
-        return self.do_post(counter_party_id=counter_party_id,
-                            counter_party_address=counter_party_address,
-                            body=body,
-                            filter_expression=[
-                                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)],
-                            policies=policies)
+    def do_post_by_asset_id(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        asset_id: str,
+        policies: list = None,
+        asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
+        operator="=",
+        session=None,
+        **kwargs,
+    ) -> tuple[str, str]:
+        return self.do_post(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            body=body,
+            filter_expression=[
+                self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
+            ],
+            policies=policies,
+            session=session,
+            **kwargs,
+        )
 
-    def do_dsp(self, counter_party_id: str, counter_party_address: str, filter_expression: list[dict],
-               policies: list) -> tuple[
-        str, str]:
+    def do_dsp(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        policies: list,
+        session=None,
+    ) -> tuple[str, str]:
         """
         Does all the dsp necessary operations until getting the edr.
         Giving you all the necessary data to request data to the edc dataplane.
@@ -628,9 +719,12 @@ class BaseConnectorConsumerService(BaseService):
         """
 
         ## Get the transfer id 
-        transfer_id = self.get_transfer_id(counter_party_id=counter_party_id,
-                                           counter_party_address=counter_party_address, policies=policies,
-                                           filter_expression=filter_expression)
+        transfer_id = self.get_transfer_id(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+        )
         ## Get the endpoint and the token
         return self.get_endpoint_with_token(transfer_id=transfer_id)
 
@@ -642,7 +736,7 @@ class BaseConnectorConsumerService(BaseService):
                                                    counter_party_address=counter_party_address,
                                                    filter_expression=filter_expression, timeout=timeout)
         except Exception as e:
-            raise Exception(
+            raise ConnectionError(
                 f"[EDC Service] Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
 
         if catalog is None:
@@ -650,9 +744,20 @@ class BaseConnectorConsumerService(BaseService):
 
         return not DspTools.is_catalog_empty(catalog=catalog)
 
-    def do_get(self, counter_party_id: str, counter_party_address: str, filter_expression: list[dict], path: str = "/",
-               policies: list = None, verify: bool = False, headers: dict = {}, timeout: int = None,
-               params: dict = None, allow_redirects: bool = False) -> Response:
+    def do_get(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = {},
+        timeout: int = None,
+        params: dict = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
         """
         Executes a HTTP GET request to a asset behind an EDC!
         Abstracts everything for you doing the dsp exchange.
@@ -669,12 +774,16 @@ class BaseConnectorConsumerService(BaseService):
         """
         ## If policies are empty use default policies
 
-        dataplane_url, access_token = self.do_dsp(counter_party_id=counter_party_id,
-                                                  counter_party_address=counter_party_address, policies=policies,
-                                                  filter_expression=filter_expression)
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            session=session,
+        )
 
         if dataplane_url is None or access_token is None:
-            raise Exception("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -682,14 +791,32 @@ class BaseConnectorConsumerService(BaseService):
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token)
 
         ## Do get request to get a response!
-        return HttpTools.do_get(url=url, headers=(headers | dataplane_headers), verify=verify, timeout=timeout,
-                                params=params, allow_redirects=allow_redirects)
+        return HttpTools.do_get(
+            url=url,
+            headers=(headers | dataplane_headers),
+            verify=verify,
+            timeout=timeout,
+            params=params,
+            allow_redirects=allow_redirects,
+            session=session,
+        )
 
-    def do_post(self, counter_party_id: str, counter_party_address: str, body, filter_expression: list[dict],
-                path: str = "/",
-                content_type: str = "application/json", policies: list = None, verify: bool = False,
-                headers: dict = None,
-                timeout: int = None, params: dict = None, allow_redirects: bool = False) -> Response:
+    def do_post(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        body,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        params: dict = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
         """
         Performs a HTTP POST request to a specific asset behind an EDC.
 
@@ -711,12 +838,16 @@ class BaseConnectorConsumerService(BaseService):
         """
         ## If policies are empty use default policies
 
-        dataplane_url, access_token = self.do_dsp(counter_party_id=counter_party_id,
-                                                  counter_party_address=counter_party_address, policies=policies,
-                                                  filter_expression=filter_expression)
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            session=session,
+        )
 
         if dataplane_url is None or access_token is None:
-            raise Exception("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -724,5 +855,12 @@ class BaseConnectorConsumerService(BaseService):
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
 
         ## Do get request to get a response!
-        return HttpTools.do_post(url=url, json=body, headers=(headers | dataplane_headers), verify=verify,
-                                 timeout=timeout, allow_redirects=allow_redirects)
+        return HttpTools.do_post(
+            url=url,
+            json=body,
+            headers=(headers | dataplane_headers),
+            verify=verify,
+            timeout=timeout,
+            allow_redirects=allow_redirects,
+            session=session,
+        )

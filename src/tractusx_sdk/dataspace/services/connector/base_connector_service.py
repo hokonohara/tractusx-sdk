@@ -33,21 +33,21 @@ class BaseConnectorService(BaseService):
     _consumer_service: BaseConnectorConsumerService
     _provider_service: BaseConnectorProviderService
 
-    def __init__(self, version: str, base_url: str, dma_path: str,
+    def __init__(self, dataspace_version: str, base_url: str, dma_path: str,
                  consumer_service: BaseConnectorConsumerService,
                  provider_service: BaseConnectorProviderService,
                  headers: dict = None):
-        self.version = version
+        self.dataspace_version = dataspace_version
 
         dma_adapter = AdapterFactory.get_dma_adapter(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         self._contract_agreement_controller = ControllerFactory.get_contract_agreement_controller(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             adapter=dma_adapter
         )
 
