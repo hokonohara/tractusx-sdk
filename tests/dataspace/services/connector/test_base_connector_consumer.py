@@ -113,7 +113,7 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
         mock_contract_negotiation = mock.Mock()
         mock_transfer_process = mock.Mock()
 
-        service = BaseConnectorConsumerService(
+        service = bcc.BaseConnectorConsumerService(
             dataspace_version="jupiter",
             base_url="http://test",
             dma_path="/test",
@@ -209,7 +209,6 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
         service, *_ = self.create_mock_service()
         service.do_dsp = mock.Mock(return_value=("http://dataplane", "token123"))
         service.get_data_plane_headers = mock.Mock(return_value={"Authorization": "token123"})
-        # Removed redundant import of tractusx_sdk.dataspace.services.connector.base_connector_consumer
         import requests
         session = requests.Session()
         mock_response = mock.Mock()
@@ -253,7 +252,7 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
             mock_resp.status_code = 200
             return mock_resp
 
-        # Removed redundant import of tractusx_sdk.dataspace.services.connector.base_connector_consumer
+        
         bcc.HttpTools.do_get = fake_do_get
         service.do_get(
             counter_party_id="bpn",
