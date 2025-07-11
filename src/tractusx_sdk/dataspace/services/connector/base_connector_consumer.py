@@ -22,6 +22,7 @@
 
 import hashlib
 import threading
+import logging
 
 from requests import Response
 
@@ -45,23 +46,28 @@ class BaseConnectorConsumerService(BaseService):
     _transfer_process_controller: BaseDmaController
 
     connection_manager: BaseConnectionManager
-    version: str
+    dataspace_version: str
 
     NEGOTIATION_ID_KEY = "contractNegotiationId"
 
     def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None,
-                 connection_manager: BaseConnectionManager = None):
-        self.version = version
+                 connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
+        self.dataspace_version = version
+        self.verbose = verbose
+        self.logger = logger
+        # Backwards compatibility: if verbose is True and no logger provided, use default logger
+        if self.verbose and self.logger is None:
+            self.logger = logging.getLogger(__name__)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
-            connector_version=version,
+            dataspace_version=version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         controllers = ControllerFactory.get_dma_controllers_for_version(
-            connector_version=version,
+            dataspace_version=version,
             adapter=dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
@@ -246,7 +252,7 @@ class BaseConnectorConsumerService(BaseService):
             raise ValueError("[EDC Service] Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
-            connector_version=self.version,  # version is to be included in the BaseService class  
+            dataspace_version=self.dataspace_version,  # version is to be included in the BaseService class  
             context=[
                 "https://w3id.org/tractusx/policy/v1.0.0",
                 "http://www.w3.org/ns/odrl.jsonld",
@@ -265,7 +271,7 @@ class BaseConnectorConsumerService(BaseService):
 
     def get_catalog_request(self, counter_party_id: str, counter_party_address: str) -> BaseCatalogModel:
         return ModelFactory.get_catalog_model(
-            connector_version=self.version,
+            dataspace_version=self.dataspace_version,
             context={
                 "edc": "https://w3id.org/edc/v0.0.1/ns/",
                 "odrl": "http://www.w3.org/ns/odrl/2/",
@@ -309,7 +315,7 @@ class BaseConnectorConsumerService(BaseService):
     def get_edr_negotiation_filter(self, negotiation_id: str) -> BaseQuerySpecModel:
 
         return ModelFactory.get_queryspec_model(
-            connector_version=self.version,
+            dataspace_version=self.dataspace_version,
             filter_expression=[
                 self.get_filter_expression(key=self.NEGOTIATION_ID_KEY, operator="=", value=negotiation_id)]
         )
@@ -490,8 +496,9 @@ class BaseConnectorConsumerService(BaseService):
             if edr_entry is not None:  ## If edr is found skip retry
                 break
             ## Wait until the timeout has reached to retry again
-            print(
-                f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
+            if self.logger:
+                self.logger.info(
+                    f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
             op.wait(seconds=timeout)
             retries += 1
 
@@ -528,17 +535,18 @@ class BaseConnectorConsumerService(BaseService):
                                                                                       counter_party_address=counter_party_address,
                                                                                       query_checksum=filter_expression_checksum,
                                                                                       policy_checksum=current_policies_checksum)
-
         ## If is there return the cached one, if the selection is the same the transfer id can be reused!
         if (transfer_process_id is not None):
-            print(
-                "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
-                counter_party_address, transfer_process_id, counter_party_id, filter_expression)
+            if self.logger:
+                self.logger.info(
+                    "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
+                    counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
 
-        print(
-            "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
-            counter_party_address, counter_party_id, filter_expression)
+        if self.logger:
+            self.logger.info(
+                "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
+                counter_party_address, counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
         edr_entry: dict = self.negotiate_and_transfer(counter_party_id=counter_party_id,
@@ -549,7 +557,8 @@ class BaseConnectorConsumerService(BaseService):
         if (edr_entry is None):
             raise RuntimeError("[EDC Service] Failed to get edr entry! Response was none!")
 
-        print(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
+        if self.logger:
+            self.logger.info(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
 
         ## Check if the transfer id is available and return the transfer process id
         return self.connection_manager.add_connection(counter_party_id=counter_party_id,

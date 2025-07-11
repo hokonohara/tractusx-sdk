@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryQuerySpec(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.context = {"key": "value"}
         self.offset = 5
         self.limit = 20
@@ -38,7 +38,7 @@ class TestModelFactoryQuerySpec(unittest.TestCase):
 
     def test_get_queryspec_model_with_defaults(self):
         model = ModelFactory.get_queryspec_model(
-            connector_version=self.connector_version
+            dataspace_version=self.dataspace_version
         )
 
         self.assertIsInstance(model, BaseQuerySpecModel)
@@ -53,7 +53,7 @@ class TestModelFactoryQuerySpec(unittest.TestCase):
 
     def test_get_queryspec_model_without_defaults(self):
         model = ModelFactory.get_queryspec_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             context=self.context,
             offset=self.offset,
             limit=self.limit,

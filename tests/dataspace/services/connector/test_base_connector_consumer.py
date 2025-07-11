@@ -27,13 +27,13 @@ from tractusx_sdk.dataspace.services.connector.service_factory import ServiceFac
 
 class TestBaseConsumerConnectorService(unittest.TestCase):
     def setUp(self):
-        self.version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.base_url = "http://consumer-control.plane.url"
         self.dma_path = "/management"
         self.headers = {"X-Api-Key": "api-key-secret", "Content-Type": "application/json"}
 
         self.service = ServiceFactory.get_connector_consumer_service(
-            connector_version=self.version,
+            dataspace_version=self.dataspace_version,
             base_url=self.base_url,
             dma_path=self.dma_path,
             headers=self.headers

@@ -31,18 +31,18 @@ class BaseConnectorProviderService(BaseService):
     _contract_definition_controller: BaseDmaController
     _policy_controller: BaseDmaController
 
-    def __init__(self, version: str, base_url: str, dma_path: str, headers: dict = None):
-        self.version = version
+    def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None):
+        self.dataspace_version = dataspace_version
 
         dma_adapter = AdapterFactory.get_dma_adapter(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         controllers = ControllerFactory.get_dma_controllers_for_version(
-            connector_version=version,
+            dataspace_version=dataspace_version,
             adapter=dma_adapter,
             controller_types=[
                 ControllerType.ASSET,

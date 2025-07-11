@@ -26,7 +26,7 @@ from .utils import TestService
 
 class TestBaseService(unittest.TestCase):
     def setUp(self):
-        self.version = "v1"
+        self.dataspace_version = "v1"
         self.base_url = "https://example.com"
         self.headers = {"Authorization": "Bearer token"}
 
@@ -39,13 +39,13 @@ class TestBaseService(unittest.TestCase):
         service = builder.build()
 
         self.assertIsInstance(service, TestService)
-        self.assertEqual(self.version, service.version)
+        self.assertEqual(self.dataspace_version, service.version)
         self.assertEqual(self.base_url, service.base_url)
         self.assertEqual(self.headers, service.headers)
 
     def test_builder_fails_without_base_url(self):
         builder = TestService.builder()
-        builder.version(self.version)
+        builder.version(self.dataspace_version)
         with self.assertRaises(TypeError):
             builder.build()
 

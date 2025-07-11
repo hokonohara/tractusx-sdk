@@ -51,7 +51,7 @@ class AdapterFactory:
     @staticmethod
     def _get_adapter_builder(
             adapter_type: AdapterType,
-            connector_version: str,
+            dataspace_version: str,
     ):
         """
         Create an adapter, based on the specified adapter type and version.
@@ -61,17 +61,17 @@ class AdapterFactory:
         adapter class, and returns it, with whatever parameters necessary for its initialization.
 
         :param adapter_type: The type of adapter to create, as per the AdapterType enum
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :return: An instance of the specified Adapter subclass
         """
 
         # Check if the requested version is supported for the given adapter type
-        if connector_version not in AdapterFactory.SUPPORTED_VERSIONS:
-            raise ValueError(f"Unsupported version {connector_version}")
+        if dataspace_version not in AdapterFactory.SUPPORTED_VERSIONS:
+            raise ValueError(f"Unsupported version {dataspace_version}")
 
         # Compute the adapter module path dynamically, depending on the connector version
         connector_module = ".".join(__name__.split(".")[0:-1])
-        module_name = f"{connector_module}.{connector_version}"
+        module_name = f"{connector_module}.{dataspace_version}"
 
         # Compute the adapter class name based on the adapter type
         adapter_class_name = f"{adapter_type.value}Adapter"
@@ -92,7 +92,7 @@ class AdapterFactory:
 
     @staticmethod
     def get_dma_adapter(
-            connector_version: str,
+            dataspace_version: str,
             base_url: str,
             dma_path: str,
             headers: dict = None,
@@ -101,7 +101,7 @@ class AdapterFactory:
         """
         Create a (DMA) adapter instance, based a specific version.
 
-        :param connector_version: The version of the Connector DMA (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace DMA (e.g., "jupiter")
         :param base_url: The URL of the Connector DMA to be requested
         :param dma_path: The path of the Connector Data Management API to be requested
         :param headers: The headers (i.e.: API Key) of the Connector to be requested
@@ -110,7 +110,7 @@ class AdapterFactory:
 
         builder = AdapterFactory._get_adapter_builder(
             adapter_type=AdapterType.DMA_ADAPTER,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.base_url(base_url)
@@ -123,7 +123,7 @@ class AdapterFactory:
 
     @staticmethod
     def get_dataplane_adapter(
-            connector_version: str,
+            dataspace_version: str,
             base_url: str,
             headers: dict = None,
             **kwargs
@@ -131,7 +131,7 @@ class AdapterFactory:
         """
         Create a dataplane adapter instance, based a specific version.
 
-        :param connector_version: The version of the Connector dataplane (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace dataplane (e.g., "jupiter")
         :param base_url: The URL of the Connector dataplane to be requested
         :param headers: The headers (i.e.: Edc-Bpn) of the Connector dataplane to be requested
         :return: An instance of the specified Adapter subclass
@@ -139,7 +139,7 @@ class AdapterFactory:
 
         builder = AdapterFactory._get_adapter_builder(
             adapter_type=AdapterType.DATAPLANE_ADAPTER,
-            connector_version=connector_version,
+            dataspace_version=dataspace_version,
         )
 
         builder.base_url(base_url)

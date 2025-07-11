@@ -59,7 +59,7 @@ class ModelFactory:
     @staticmethod
     def _get_model_builder(
             model_type: ModelType,
-            connector_version: str,
+            dataspace_version: str,
     ):
         """
         Instantiates a model builder, based on the specified model type and version.
@@ -69,18 +69,18 @@ class ModelFactory:
         model class, and returns a builder for it.
 
         :param model_type: The type of model to create, as per the ModelType enum
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
 
         :return: An instance of the specified Model subclass' builder
         """
 
         # Check if the requested version is supported for the given model type
-        if connector_version not in ModelFactory.SUPPORTED_VERSIONS:
-            raise ValueError(f"Unsupported version {connector_version}")
+        if dataspace_version not in ModelFactory.SUPPORTED_VERSIONS:
+            raise ValueError(f"Unsupported version {dataspace_version}")
 
         # Compute the model module path dynamically, depending on the connector version
         connector_module = ".".join(__name__.split(".")[0:-1])
-        module_name = f"{connector_module}.{connector_version}"
+        module_name = f"{connector_module}.{dataspace_version}"
 
         # Compute the model class name based on the model type
         model_class_name = f"{model_type.value}Model"
@@ -103,7 +103,7 @@ class ModelFactory:
 
     @staticmethod
     def get_asset_model(
-            connector_version: str,
+            dataspace_version: str,
             oid: str,
             data_address: dict,
             context: dict | list | str = None,
@@ -114,7 +114,7 @@ class ModelFactory:
         """
         Create an Asset model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param oid: The unique identifier for the asset
         :param data_address: The data address associated with the asset
         :param context: Optional context dictionary
@@ -124,7 +124,7 @@ class ModelFactory:
 
         :return: An instance of the AssetModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.ASSET, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.ASSET, dataspace_version)
 
         # Add the required parameters
         builder.id(oid)
@@ -146,7 +146,7 @@ class ModelFactory:
 
     @staticmethod
     def get_catalog_model(
-            connector_version: str,
+            dataspace_version: str,
             counter_party_address: str,
             counter_party_id: str,
             context: dict | list | str = None,
@@ -158,7 +158,7 @@ class ModelFactory:
         """
         Create a Catalog model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param counter_party_address: The address of the counterparty
         :param counter_party_id: The ID of the counterparty
         :param context: Optional context dictionary
@@ -171,7 +171,7 @@ class ModelFactory:
 
         :return: An instance of the CatalogModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.CATALOG, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.CATALOG, dataspace_version)
 
         # Add the required parameters
         builder.counter_party_address(counter_party_address)
@@ -195,7 +195,7 @@ class ModelFactory:
 
     @staticmethod
     def get_contract_definition_model(
-            connector_version: str,
+            dataspace_version: str,
             oid: str,
             access_policy_id: str,
             contract_policy_id: str,
@@ -206,7 +206,7 @@ class ModelFactory:
         """
         Create a Contract Definition model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param oid: The unique identifier for the contract definition
         :param access_policy_id: The ID of the access policy
         :param contract_policy_id: The ID of the contract policy
@@ -216,7 +216,7 @@ class ModelFactory:
 
         :return: An instance of the ContractDefinitionModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.CONTRACT_DEFINITION, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.CONTRACT_DEFINITION, dataspace_version)
 
         # Add the required parameters
         builder.id(oid)
@@ -236,7 +236,7 @@ class ModelFactory:
 
     @staticmethod
     def get_contract_negotiation_model(
-            connector_version: str,
+            dataspace_version: str,
             counter_party_address: str,
             offer_id: str,
             asset_id: str,
@@ -250,7 +250,7 @@ class ModelFactory:
         """
         Create a Contract Negotiation model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param counter_party_address: The address of the counterparty
         :param offer_id: The ID of the offer
         :param asset_id: The ID of the asset
@@ -267,7 +267,7 @@ class ModelFactory:
 
         :return: An instance of the ContractNegotiationModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.CONTRACT_NEGOTIATION, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.CONTRACT_NEGOTIATION, dataspace_version)
 
         # Add the required parameters
         builder.counter_party_address(counter_party_address)
@@ -293,7 +293,7 @@ class ModelFactory:
 
     @staticmethod
     def get_policy_model(
-            connector_version: str,
+            dataspace_version: str,
             oid: str,
             context: dict | list | str = None,
             permissions: dict | list[dict] = None,
@@ -304,7 +304,7 @@ class ModelFactory:
         """
         Create a Policy model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param oid: The unique identifier for the policy
         :param context: Optional context dictionary
         :param permissions: Optional list of permissions
@@ -314,7 +314,7 @@ class ModelFactory:
 
         :return: An instance of the PolicyModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.POLICY, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.POLICY, dataspace_version)
 
         # Add the required parameters
         builder.id(oid)
@@ -339,7 +339,7 @@ class ModelFactory:
 
     @staticmethod
     def get_queryspec_model(
-            connector_version: str,
+            dataspace_version: str,
             context: dict | list | str = None,
             offset: int = 0,
             limit: int = 10,
@@ -351,7 +351,7 @@ class ModelFactory:
         """
         Create a QuerySpec model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param context: Optional context dictionary
         :param offset: Optional offset for pagination
         :param limit: Optional limit for pagination
@@ -362,7 +362,7 @@ class ModelFactory:
 
         :return: An instance of the QuerySpecModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.QUERY_SPEC, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.QUERY_SPEC, dataspace_version)
 
         builder.offset(offset)
         builder.limit(limit)
@@ -382,7 +382,7 @@ class ModelFactory:
 
     @staticmethod
     def get_transfer_process_model(
-            connector_version: str,
+            dataspace_version: str,
             counter_party_address: str,
             transfer_type: str,
             contract_id: str,
@@ -395,7 +395,7 @@ class ModelFactory:
         """
         Create a TransferProcess model instance for a specific version.
 
-        :param connector_version: The version of the Connector (e.g., "jupiter")
+        :param dataspace_version: The version of the Dataspace (e.g., "jupiter")
         :param counter_party_address: The address of the counterparty
         :param transfer_type: The type of transfer
         :param contract_id: The ID of the contract
@@ -407,7 +407,7 @@ class ModelFactory:
 
         :return: An instance of the TransferProcessModel subclass
         """
-        builder = ModelFactory._get_model_builder(ModelType.TRANSFER_PROCESS, connector_version)
+        builder = ModelFactory._get_model_builder(ModelType.TRANSFER_PROCESS, dataspace_version)
 
         # Add the required parameters
         builder.counter_party_address(counter_party_address)
