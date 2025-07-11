@@ -120,7 +120,7 @@ asset = ModelFactory.get_asset_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the asset being defined. This is used to distinguish the asset in the dataspace.
 - `data_address`: A dictionary that specifies the location or type of the data associated with the asset.
 - `context`: Defines the namespace for interpreting metadata and policies.
@@ -143,7 +143,7 @@ catalog_model = ModelFactory.get_catalog_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's catalog service. This is where the catalog query will be sent.
 - `counter_party_id`: The unique identifier of the counterparty. This is used to identify the counterparty in the dataspace.
 
@@ -164,7 +164,7 @@ contract_definition = ModelFactory.get_contract_definition_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the contract definition. This is used to distinguish the contract in the dataspace.
 - `access_policy_id`: The identifier of the access policy associated with the contract. This policy defines who can access the asset.
 - `contract_policy_id`: The identifier of the contract policy associated with the contract. This policy defines how the asset can be used.
@@ -188,7 +188,7 @@ contract_negotiation_model = ModelFactory.get_contract_negotiation_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's negotiation service. This is where the negotiation request will be sent.
 - `counter_party_id`: The unique identifier of the counterparty (e.g., Business Partner Number). This is used to identify the counterparty in the dataspace.
 - `offer_id`: The unique identifier of the data offer being negotiated. This links the negotiation to a specific asset and its associated policies.
@@ -212,7 +212,7 @@ policy = ModelFactory.get_policy_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the policy. This is used to distinguish the policy in the dataspace.
 - `context`: Defines the namespace for interpreting the policy.
 
@@ -231,7 +231,7 @@ queryspec_edr_model = ModelFactory.get_queryspec_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `filter`: A list of conditions used to filter the query results. Each condition specifies an operand, operator, and value.
 - `limit`: Specifies the maximum number of results to return.
 - `offset`: Specifies the starting point for the query results.
@@ -256,7 +256,7 @@ transfer_process_model = ModelFactory.get_transfer_process_model(
 
 #### Explanation of Parameters
 
-- `dataspace_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's transfer service. This is where the transfer request will be sent.
 - `contract_id`: The unique identifier of the contract associated with the data transfer. This ensures that the transfer complies with the agreed-upon terms.
 - `transfer_type`: Specifies the type of data transfer. For example, `"HttpData-PULL"` indicates a pull-based HTTP data transfer.
