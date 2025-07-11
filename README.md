@@ -1,5 +1,5 @@
 > [!IMPORTANT]
-> This Sofware is still in development. Please consult our [Roadmap](#roadmap)
+> This Software is still in development. Please consult our [Roadmap](#roadmap)
 
 # Tractus-X Software Development KIT
 
@@ -19,6 +19,14 @@ No specific use case logic will be configured here, only the bare minimum for in
 - [Industry Core KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Industry%20Core%20Kit/Business%20View%20Industry%20Core%20Kit)
 
 An example of SDK that is already used in Tractus-X is the [Portal Shared Components](https://github.com/eclipse-tractusx/portal-shared-components), however this SDK shall aim to be generic for every application.
+
+## Installation
+
+Install the package directly from PyPI:
+
+```bash
+pip install tractusx-sdk
+```
 
 ## Roadmap
 
