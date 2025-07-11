@@ -59,7 +59,7 @@ class OAuth2Manager:
 
         # Get WellKnown and if not connected it will not work
         if (not self.keycloak_openid.well_known()):
-            raise Exception("It was not able to access the keycloak instance!")
+            raise ConnectionError("Unable to access the Keycloak instance. Check the server URL, realm, and network connectivity.")
         
         self.connected=True
     
@@ -67,23 +67,23 @@ class OAuth2Manager:
     def get_token(self):
         ## Check if connected
         if(not self.connected):
-            raise Exception("Not connected, please execute the connect() method again before requesting a token!")
+            raise RuntimeError("Not connected. Please call the connect() method before requesting a token.")
 
         ## Get the token from the keycloak instance
         token:dict=self.keycloak_openid.token(self.clientid, self.clientsecret, grant_type=["client_credentials"], scope="openid profile email")
         if(token is None):
-            raise Exception("It was not possible to get the token from the iam instance!")
+            raise ValueError("Failed to retrieve token from IAM instance. The credentials might be incorrect.")
         ## Store the token
         self.token = token
         return self.token["access_token"]
     
-    def add_auth_header(self, headers=None):
+    def add_auth_header(self, headers:dict=None):
         ## Check if connected
         if(not self.connected):
-            raise Exception("Not connected, please execute the connect() method again before requesting a authorization header!")
+            raise RuntimeError("Not connected. Please call the connect() method before requesting an authorization header.")
         ## Initialize headers if None
         if headers is None:
-            headers = {}
+            headers = dict()
         ## Build token header
         headers["Authorization"] = "Bearer " + self.get_token()
         return headers
