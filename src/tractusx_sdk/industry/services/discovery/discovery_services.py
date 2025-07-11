@@ -23,10 +23,10 @@
 
 import time
 
-
 from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 from tractusx_sdk.dataspace.managers import OAuth2Manager
 from tractusx_sdk.dataspace.services.discovery import DiscoveryFinderService
+from tractusx_sdk.dataspace.tools.operators import op
 
       
 class BpnDiscoveryService:
@@ -116,7 +116,7 @@ class BpnDiscoveryService:
         """
         json_response:dict = self.search_bpns(keys=keys, identifier_type=identifier_type)
         bpns_data = json_response.get("bpns", [])
-        bpns = [item["value"] for item in bpns_data if "value" in item]
+        bpns = op.extract_dict_values(array=bpns_data, key="value")
         return list(set(bpns)) if bpns else None
     
     def _get_or_update_discovery_url(self, bpn_discovery_key:str) -> str:
