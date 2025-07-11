@@ -40,14 +40,14 @@ from tractusx_sdk.dataspace.controllers.connector.jupiter import (
 
 class TestControllerFactory(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.adapter = Mock(BaseDmaAdapter)
 
     def test_get_controller_unsupported_version(self):
         with self.assertRaises(ValueError):
             ControllerFactory._get_controller_builder(
                 controller_type=ControllerType.ASSET,
-                connector_version="NonExistentVersion"
+                dataspace_version="NonExistentVersion"
             )
 
     def test_get_controller_unsupported_type(self):
@@ -55,7 +55,7 @@ class TestControllerFactory(unittest.TestCase):
             controller_type = Enum('ControllerType', {'foo': 'bar'})
             ControllerFactory._get_controller_builder(
                 controller_type=controller_type.foo,
-                connector_version="jupiter"
+                dataspace_version="jupiter"
             )
 
     def test_get_controller_import_error(self):
@@ -63,12 +63,12 @@ class TestControllerFactory(unittest.TestCase):
             with self.assertRaises(ImportError):
                 ControllerFactory._get_controller_builder(
                     controller_type=ControllerType.ASSET,
-                    connector_version="v0_0_0"
+                    dataspace_version="v0_0_0"
                 )
 
     def test_get_asset_controller(self):
         controller = ControllerFactory.get_asset_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -77,7 +77,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_catalog_controller(self):
         controller = ControllerFactory.get_catalog_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -86,7 +86,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_contract_agreement_controller(self):
         controller = ControllerFactory.get_contract_agreement_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -95,7 +95,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_contract_definition_controller(self):
         controller = ControllerFactory.get_contract_definition_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -104,7 +104,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_contract_negotiation_controller(self):
         controller = ControllerFactory.get_contract_negotiation_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -113,7 +113,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_edr_controller(self):
         controller = ControllerFactory.get_edr_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -122,7 +122,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_policy_controller(self):
         controller = ControllerFactory.get_policy_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 
@@ -131,7 +131,7 @@ class TestControllerFactory(unittest.TestCase):
 
     def test_get_transfer_process_controller(self):
         controller = ControllerFactory.get_transfer_process_controller(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.adapter
         )
 

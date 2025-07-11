@@ -38,9 +38,14 @@ class TestHttpTools(unittest.TestCase):
     @patch("requests.get")
     def test_do_get_without_session_success(self, mock_get):
         """Test a successful GET request."""
-        mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
-        
-        response = HttpTools.do_get(self.test_url)
+        session = Mock()
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"message": "success"}
+        session.get.return_value = mock_response
+        mock_session_class.return_value.__enter__.return_value = session
+
+        response = HttpTools.do_get(self.test_url, session=session)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "success"})
 

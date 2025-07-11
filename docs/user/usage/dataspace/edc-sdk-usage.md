@@ -52,7 +52,7 @@ This section defines the configuration values, metadata, and policies required f
 
 ```python
 edc_url="http://dataprovider-controlplane.tx.test"
-connector_version = "v0_9_0"
+dataspace_version = "jupiter"
 headers={"X-Api-Key": "TEST1", "Content-Type": "application/json"}
 oid = "201"
 data_address = {"type": "test_type", "value": "test_value"}
@@ -109,7 +109,7 @@ The Asset Model represents the metadata and configuration required to define an 
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 asset = ModelFactory.get_asset_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     oid=oid,
     data_address=data_address,
     context=context,
@@ -120,7 +120,7 @@ asset = ModelFactory.get_asset_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the asset being defined. This is used to distinguish the asset in the dataspace.
 - `data_address`: A dictionary that specifies the location or type of the data associated with the asset.
 - `context`: Defines the namespace for interpreting metadata and policies.
@@ -135,7 +135,7 @@ The Catalog Model represents the metadata and configuration required to query an
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 catalog_model = ModelFactory.get_catalog_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     counter_party_address=counter_party_address,
     counter_party_id=counter_party_id
 )
@@ -143,7 +143,7 @@ catalog_model = ModelFactory.get_catalog_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's catalog service. This is where the catalog query will be sent.
 - `counter_party_id`: The unique identifier of the counterparty. This is used to identify the counterparty in the dataspace.
 
@@ -155,7 +155,7 @@ The Contract Definition Model represents the metadata and configuration required
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 contract_definition = ModelFactory.get_contract_definition_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     oid=oid,
     access_policy_id=oid,
     contract_policy_id=oid
@@ -164,7 +164,7 @@ contract_definition = ModelFactory.get_contract_definition_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the contract definition. This is used to distinguish the contract in the dataspace.
 - `access_policy_id`: The identifier of the access policy associated with the contract. This policy defines who can access the asset.
 - `contract_policy_id`: The identifier of the contract policy associated with the contract. This policy defines how the asset can be used.
@@ -177,7 +177,7 @@ The Contract Negotiation Model represents the metadata and configuration require
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 contract_negotiation_model = ModelFactory.get_contract_negotiation_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     counter_party_address=counter_party_address,
     offer_id=offer_id,
     asset_id=asset_id,
@@ -188,7 +188,7 @@ contract_negotiation_model = ModelFactory.get_contract_negotiation_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's negotiation service. This is where the negotiation request will be sent.
 - `counter_party_id`: The unique identifier of the counterparty (e.g., Business Partner Number). This is used to identify the counterparty in the dataspace.
 - `offer_id`: The unique identifier of the data offer being negotiated. This links the negotiation to a specific asset and its associated policies.
@@ -204,7 +204,7 @@ The Policy Model represents the metadata and configuration required to define po
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 policy = ModelFactory.get_policy_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     oid=oid,
     context=context
 )
@@ -212,7 +212,7 @@ policy = ModelFactory.get_policy_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `oid`: The unique identifier for the policy. This is used to distinguish the policy in the dataspace.
 - `context`: Defines the namespace for interpreting the policy.
 
@@ -224,14 +224,14 @@ The QuerySpec Model represents the metadata and configuration required to define
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 queryspec_edr_model = ModelFactory.get_queryspec_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     filter_expression=filter
 )
 ```
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `filter`: A list of conditions used to filter the query results. Each condition specifies an operand, operator, and value.
 - `limit`: Specifies the maximum number of results to return.
 - `offset`: Specifies the starting point for the query results.
@@ -246,7 +246,7 @@ The Transfer Process Model represents the metadata and configuration required to
 from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 transfer_process_model = ModelFactory.get_transfer_process_model(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     counter_party_address=counter_party_address,
     contract_id="6d869fc1-2538-4888-a687-249a9016e6a6",
     transfer_type="HttpData-PULL",
@@ -256,7 +256,7 @@ transfer_process_model = ModelFactory.get_transfer_process_model(
 
 #### Explanation of Parameters
 
-- `connector_version`: Specifies the version of the connector being used. Ensures compatibility with the EDC.
+- `dataspace_version`: Specifies the version of the dataspace being used. Ensures compatibility with the EDC.
 - `counter_party_address`: The endpoint URL of the counterparty's transfer service. This is where the transfer request will be sent.
 - `contract_id`: The unique identifier of the contract associated with the data transfer. This ensures that the transfer complies with the agreed-upon terms.
 - `transfer_type`: Specifies the type of data transfer. For example, `"HttpData-PULL"` indicates a pull-based HTTP data transfer.
@@ -322,7 +322,7 @@ The DMA Adapter (Data Management API Adapter) is a utility class used to interac
 from tractusx_sdk.dataspace.adapters.connector.adapter_factory import AdapterFactory
 
 adapter = AdapterFactory.get_dma_adapter(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     base_url=edc_url,
     dma_path="management",
     headers={"X-Api-Key": "TEST2", "Content-Type": "application/json"}
@@ -345,7 +345,7 @@ The Asset Controller is a component used to manage assets in the Eclipse Dataspa
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 asset_controller = ControllerFactory.get_asset_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=adapter
 )
 ```
@@ -369,7 +369,7 @@ The Catalog Controller is a component used to interact with the catalog of a cou
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 catalog_controller = ControllerFactory.get_catalog_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=consumer_adapter
 )
 ```
@@ -388,7 +388,7 @@ The Contract Agreement Controller is a component used to manage contract agreeme
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 contract_agreement_controller = ControllerFactory.get_contract_agreement_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=consumer_adapter
 )
 ```
@@ -410,7 +410,7 @@ The Contract Definition Controller is a component used to manage contract defini
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 contract_definition_controller =  ControllerFactory.get_contract_definition_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=adapter
 )
 ```
@@ -434,7 +434,7 @@ The Contract Negotiation Controller is a component used to manage contract negot
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 contract_negotiation_controller = ControllerFactory.get_contract_negotiation_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=consumer_adapter
 )
 ```
@@ -459,7 +459,7 @@ The EDR Controller (Endpoint Data Reference Controller) is a component used to m
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 edr_controller = ControllerFactory.get_edr_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=consumer_adapter
 )
 ```
@@ -483,7 +483,7 @@ The Policy Controller is a component used to manage policies in the Eclipse Data
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 policy_controller = ControllerFactory.get_policy_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=adapter
 )
 ```
@@ -507,7 +507,7 @@ The Transfer Process Controller is a component used to manage data transfer proc
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 transfer_process_controller = ControllerFactory.get_transfer_process_controller(
-    connector_version=connector_version,
+    dataspace_version=dataspace_version,
     adapter=consumer_adapter
 )
 ```
@@ -532,12 +532,12 @@ The DMA Controller (Data Management API Controller) is a component used to inter
 from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerFactory
 
 controllers = ControllerFactory.get_dma_controllers_for_version(
-    connector_version=version,
+    dataspace_version=version,
     adapter=dma_adapter
 )
 ```
 
-This method retrieves a set of controllers compatible with the specified `connector_version`.
+This method retrieves a set of controllers compatible with the specified `dataspace_version`.
 
 ## NOTICE
 

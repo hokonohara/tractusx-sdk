@@ -35,7 +35,7 @@ class TestAdapterFactory(unittest.TestCase):
 
     def test_get_dma_adapter_success(self):
         adapter = AdapterFactory.get_dma_adapter(
-            connector_version="jupiter",
+            dataspace_version="jupiter",
             base_url=self.base_url,
             dma_path=self.dma_path,
             headers=self.headers
@@ -47,7 +47,7 @@ class TestAdapterFactory(unittest.TestCase):
     def test_get_adapter_unsupported_version(self):
         with self.assertRaises(ValueError):
             AdapterFactory.get_dma_adapter(
-                connector_version="NonExistentVersion",
+                dataspace_version="NonExistentVersion",
                 base_url=self.base_url,
                 dma_path=self.dma_path,
                 headers=self.headers
@@ -58,7 +58,7 @@ class TestAdapterFactory(unittest.TestCase):
             adapter_type = Enum('AdapterType', { 'foo': 'bar' })
             AdapterFactory._get_adapter_builder(
                 adapter_type=adapter_type.foo,
-                connector_version="jupiter"
+                dataspace_version="jupiter"
             )
 
     def test_get_adapter_import_error(self):
@@ -66,14 +66,14 @@ class TestAdapterFactory(unittest.TestCase):
             with self.assertRaises(ImportError):
                 AdapterFactory._get_adapter_builder(
                     adapter_type=AdapterType.DMA_ADAPTER,
-                    connector_version="v0_0_0"
+                    dataspace_version="v0_0_0"
                 )
 
     def test_get_dataplane_adapter_failure(self):
         # TODO: There is no dataplane adapter yet. Adjust this test when it is implemented.
         with self.assertRaises(AttributeError):
             AdapterFactory.get_dataplane_adapter(
-                connector_version="jupiter",
+                dataspace_version="jupiter",
                 base_url=self.base_url,
                 headers=self.headers
             )

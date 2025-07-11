@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryTransferProcess(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.counter_party_address = "https://counterparty.com"
         self.transfer_type = "dataspace-protocol-http"
         self.contract_id = "contract-id"
@@ -39,7 +39,7 @@ class TestModelFactoryTransferProcess(unittest.TestCase):
 
     def test_get_transfer_process_model_with_defaults(self):
         model = ModelFactory.get_transfer_process_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             transfer_type=self.transfer_type,
             contract_id=self.contract_id,
@@ -59,7 +59,7 @@ class TestModelFactoryTransferProcess(unittest.TestCase):
 
     def test_get_transfer_process_model_without_defaults(self):
         model = ModelFactory.get_transfer_process_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             transfer_type=self.transfer_type,
             contract_id=self.contract_id,

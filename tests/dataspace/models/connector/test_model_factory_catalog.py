@@ -30,7 +30,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryCatalog(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.counter_party_address = "https://counterparty.com"
         self.counter_party_id = "counterparty-id"
         self.context = {"key": "value"}
@@ -40,7 +40,7 @@ class TestModelFactoryCatalog(unittest.TestCase):
 
     def test_get_catalog_model_with_defaults(self):
         model = ModelFactory.get_catalog_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             counter_party_id=self.counter_party_id
         )
@@ -56,7 +56,7 @@ class TestModelFactoryCatalog(unittest.TestCase):
 
     def test_get_catalog_model_with_queryspec_data_only(self):
         model = ModelFactory.get_catalog_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             counter_party_id=self.counter_party_id,
             queryspec=self.queryspec_data
@@ -69,7 +69,7 @@ class TestModelFactoryCatalog(unittest.TestCase):
         queryspec_model.to_data = MagicMock(return_value=self.queryspec_model_to_data)
 
         model = ModelFactory.get_catalog_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             counter_party_id=self.counter_party_id,
             queryspec_model=queryspec_model
@@ -82,7 +82,7 @@ class TestModelFactoryCatalog(unittest.TestCase):
         queryspec_model.to_data = MagicMock(return_value=self.queryspec_model_to_data)
 
         model = ModelFactory.get_catalog_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             counter_party_id=self.counter_party_id,
             queryspec_model=queryspec_model,
@@ -93,7 +93,7 @@ class TestModelFactoryCatalog(unittest.TestCase):
 
     def test_get_catalog_model_without_defaults(self):
         model = ModelFactory.get_catalog_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             counter_party_address=self.counter_party_address,
             counter_party_id=self.counter_party_id,
             context=self.context,

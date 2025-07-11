@@ -377,6 +377,18 @@ class op:
         return next((x for x in array if x[field] == id), None)
 
     @staticmethod
+    def extract_dict_values(array: list, key: str = "value") -> list:
+        """
+        Extracts values for a specified key from a list of dictionaries.
+        Args:
+            array (list): The list of dictionaries to extract values from.
+            key (str, optional): The key to extract values for. Defaults to "value".
+        Returns:
+            list: A list of extracted values corresponding to the specified key.
+        """
+        return [x[key] for x in array if key in x]
+
+    @staticmethod
     def get_future_timestamp(minutes=0, zone=timezone.utc) -> float:
         """
         Calculates a future timestamp by adding minutes to the current time.

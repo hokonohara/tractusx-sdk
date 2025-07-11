@@ -27,7 +27,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryAsset(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "jupiter"
+        self.dataspace_version = "jupiter"
         self.oid = "test-oid"
         self.data_address = {"type": "test_type", "value": "test_value"}
         self.context = {"key": "value"}
@@ -36,7 +36,7 @@ class TestModelFactoryAsset(unittest.TestCase):
 
     def test_get_asset_model_with_defaults(self):
         model = ModelFactory.get_asset_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid,
             data_address=self.data_address
         )
@@ -51,7 +51,7 @@ class TestModelFactoryAsset(unittest.TestCase):
 
     def test_get_asset_model_without_defaults(self):
         model = ModelFactory.get_asset_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid,
             data_address=self.data_address,
             context=self.context,
