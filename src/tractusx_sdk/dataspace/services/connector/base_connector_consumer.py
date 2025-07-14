@@ -773,8 +773,7 @@ class BaseConnectorConsumerService(BaseService):
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
             policies=policies,
-            filter_expression=filter_expression,
-            session=session,
+            filter_expression=filter_expression
         )
 
         if dataplane_url is None or access_token is None:
@@ -784,16 +783,26 @@ class BaseConnectorConsumerService(BaseService):
         url: str = dataplane_url + path
 
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token)
-
+        merged_headers: dict = (headers | dataplane_headers)
+        
+        if(session):
+            return HttpTools.do_get_with_session(
+                url=url,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session,
+            )
+            
         ## Do get request to get a response!
         return HttpTools.do_get(
             url=url,
-            headers=(headers | dataplane_headers),
+            headers=merged_headers,
             verify=verify,
             timeout=timeout,
             params=params,
-            allow_redirects=allow_redirects,
-            session=session,
+            allow_redirects=allow_redirects
         )
 
     def do_post(
@@ -836,8 +845,7 @@ class BaseConnectorConsumerService(BaseService):
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
             policies=policies,
-            filter_expression=filter_expression,
-            session=session,
+            filter_expression=filter_expression
         )
 
         if dataplane_url is None or access_token is None:
@@ -847,14 +855,25 @@ class BaseConnectorConsumerService(BaseService):
         url: str = dataplane_url + path
 
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
-
+        merged_headers: dict = (headers | dataplane_headers)
         ## Do get request to get a response!
+        
+        if(session):
+            return HttpTools.do_post_with_session(
+                url=url,
+                json=body,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session,
+            )
+
         return HttpTools.do_post(
             url=url,
             json=body,
-            headers=(headers | dataplane_headers),
+            headers=merged_headers,
             verify=verify,
             timeout=timeout,
-            allow_redirects=allow_redirects,
-            session=session,
+            allow_redirects=allow_redirects
         )
