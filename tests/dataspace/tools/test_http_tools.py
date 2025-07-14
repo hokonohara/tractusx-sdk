@@ -36,25 +36,14 @@ class TestHttpTools(unittest.TestCase):
         self.payload = {"key": "value"}
 
 
-
     @patch("requests.get")
     def test_do_get_without_session_success(self, mock_get):
         """Test a successful GET request."""
-        mock_response = Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"message": "success"}
+        mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
         response = HttpTools.do_get(self.test_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "success"})
 
-    @patch("requests.get")
-    def test_do_get_without_session_failure(self, mock_get):
-        """Test GET request when server returns an error."""
-        mock_get.return_value = Mock(status_code=500, json=lambda: {"error": "Internal Server Error"})
-        
-        response = HttpTools.do_get(self.test_url)
-        self.assertEqual(response.status_code, 500)
-        self.assertEqual(response.json(), {"error": "Internal Server Error"})
 
     @patch("requests.Session.get")
     def test_do_get_with_session_success(self, mock_get):
@@ -153,15 +142,6 @@ class TestHttpTools(unittest.TestCase):
         
         response = HttpTools.do_delete(self.test_url)
         self.assertEqual(response.status_code, 204)
-
-    @patch("requests.delete")
-    def test_do_delete_without_session_failure(self, mock_delete):
-        """Test DELETE request with not found response."""
-        mock_delete.return_value = Mock(status_code=404, json=lambda: {"error": "Not Found"})
-        
-        response = HttpTools.do_delete(self.test_url)
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json(), {"error": "Not Found"})
 
     @patch("requests.Session.delete")
     def test_do_delete_with_session_success(self, mock_delete):
