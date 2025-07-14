@@ -29,9 +29,12 @@ class AuthManagerInterface:
 
     def add_auth_header(self, headers: dict={}) -> dict:
         """
-        Returns a dictionary of authentication headers to be included in HTTP requests.
+        Adds authentication information to the provided HTTP headers.
+
+        Args:
+            headers (dict, optional): A dictionary of existing HTTP headers to which authentication information will be added. Defaults to an empty dictionary.
 
         Returns:
-            dict: A dictionary containing authentication headers.
+            dict: The updated headers dictionary including authentication information.
         """
-        raise NotImplementedError("get_headers must be implemented by subclasses")
+        raise NotImplementedError("add_auth_header must be implemented by subclasses")
