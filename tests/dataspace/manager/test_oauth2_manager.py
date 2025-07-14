@@ -27,7 +27,6 @@ from fastapi import Request
 from starlette.datastructures import Headers
 from tractusx_sdk.dataspace.managers.oauth2_manager import OAuth2Manager
 from unittest.mock import patch, MagicMock
-import pytest
 
 class TestOAuth2Manager(unittest.TestCase):
 
