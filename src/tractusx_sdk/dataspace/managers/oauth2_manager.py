@@ -88,6 +88,3 @@ class OAuth2Manager(AuthManagerInterface):
         ## Build token header
         headers["Authorization"] = "Bearer " + self.get_token()
         return headers
-    
-    def get_auth_headers(self):
-        return self.get_token()

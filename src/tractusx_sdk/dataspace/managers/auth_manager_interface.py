@@ -27,7 +27,7 @@ class AuthManagerInterface:
     Implementations should provide a method to return authentication headers.
     """
 
-    def get_auth_headers(self) -> dict:
+    def add_auth_header(self, headers: dict={}) -> dict:
         """
         Returns a dictionary of authentication headers to be included in HTTP requests.
 
