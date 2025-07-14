@@ -36,7 +36,7 @@ class TestHttpTools(unittest.TestCase):
         self.payload = {"key": "value"}
 
 
-=======
+
     @patch("requests.get")
     def test_do_get_without_session_success(self, mock_get):
         """Test a successful GET request."""
