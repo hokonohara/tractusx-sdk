@@ -1,6 +1,7 @@
 #################################################################################
 # Tractus-X - Industry Flag Service
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 CGI Deutschland B.V. & Co. KG
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
