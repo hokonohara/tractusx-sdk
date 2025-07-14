@@ -23,6 +23,7 @@
 
 from keycloak.keycloak_openid import KeycloakOpenID
 from .auth_manager_interface import AuthManagerInterface
+from fastapi import Request
 
 class OAuth2Manager(AuthManagerInterface):
     
@@ -88,3 +89,7 @@ class OAuth2Manager(AuthManagerInterface):
         ## Build token header
         headers["Authorization"] = "Bearer " + self.get_token()
         return headers
+
+    def is_authenticated(self, request: Request) -> bool:
+        auth_header = request.headers.get("Authorization")
+        return auth_header is not None and auth_header.startswith("Bearer ") and self.connected and self.token is not None
