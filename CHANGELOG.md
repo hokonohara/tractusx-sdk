@@ -5,6 +5,24 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.2.0] - 2025-07-14
+
+### Added
+
+- feat: adjust dataspace version names to match major release names by @MDSBarbosa in https://github.com/eclipse-tractusx/tractusx-sdk/pull/120
+- feat: added discovery finder, edc discovery and bpn discovery services by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/121
+
+### Breaking Changes
+
+- `EDCService` renamed to `ConnectorService`
+- `version` parameter renamed to `dataspace_version` the content is not anymore `v0_9_0` but is `jupiter` if there is any breaking change in `saturn` something else will be used.
+
+## [0.1.0] - 2025-07-03 - not released, included in v0.2.0
+
+### Added
+
+- feat/consumption: cleaned methods + added data consumption capabilities by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/108
+
 ## [0.0.7] - 2025-05-27
 
 ### Added
