@@ -574,8 +574,7 @@ class BaseConnectorConsumerService(BaseService):
         dct_type: str,
         policies: list = None,
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
-        operator="=",
-        session=None,
+        operator="="
     ) -> tuple[str, str]:
         return self.do_dsp(
             counter_party_id=counter_party_id,
@@ -583,8 +582,7 @@ class BaseConnectorConsumerService(BaseService):
             filter_expression=[
                 self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
             ],
-            policies=policies,
-            session=session,
+            policies=policies
         )
 
     def do_dsp_by_asset_id(
@@ -594,8 +592,7 @@ class BaseConnectorConsumerService(BaseService):
         asset_id: str,
         policies: list = None,
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
-        operator="=",
-        session=None,
+        operator="="
     ) -> tuple[str, str]:
         return self.do_dsp(
             counter_party_id=counter_party_id,
@@ -604,7 +601,6 @@ class BaseConnectorConsumerService(BaseService):
                 self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
             ],
             policies=policies,
-            session=session,
         )
 
     def do_get_by_dct_type(
@@ -685,7 +681,7 @@ class BaseConnectorConsumerService(BaseService):
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="=",
         session=None,
-        **kwargs,
+        **kwargs
     ) -> tuple[str, str]:
         return self.do_post(
             counter_party_id=counter_party_id,
@@ -812,7 +808,6 @@ class BaseConnectorConsumerService(BaseService):
         verify: bool = False,
         headers: dict = None,
         timeout: int = None,
-        params: dict = None,
         allow_redirects: bool = False,
         session=None,
     ) -> Response:
