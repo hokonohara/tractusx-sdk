@@ -43,7 +43,7 @@ class BaseConnectorService(BaseService):
 
         merged_headers = headers or {}
         if auth_header is not None:
-            merged_headers.update(auth_header.get_auth_headers())
+            merged_headers = auth_header.add_auth_header(merged_headers)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
             dataspace_version=dataspace_version,
