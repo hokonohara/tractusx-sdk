@@ -25,6 +25,7 @@
 from typing import Dict, List
 
 from requests import HTTPError
+import requests
 
 from tractusx_sdk.industry.models.aas.v3 import (
     AssetKind,
@@ -55,6 +56,7 @@ class AasService:
         api_path: str,
         auth_service: OAuth2Manager = None,
         verify_ssl: bool = True,
+        session: requests.Session | None = None
     ):
         """
         Initialize the DTR service.
@@ -75,6 +77,11 @@ class AasService:
         # Build complete URLs
         self.aas_url = f"{self.base_url}{self.api_path}"
         self.aas_lookup_url = f"{self.base_lookup_url}{self.api_path}"
+        
+        self.session = session
+        
+        if not self.session:
+            self.session = requests.Session()
 
     def _prepare_headers(
         self, bpn: str | None = None, method: str = "GET"
@@ -150,11 +157,12 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors"
-        response = HttpTools.do_get(
+        response = HttpTools.do_get_with_session(
             url=url,
             params=params,
             headers=headers,
             verify=self.verify_ssl,
+            session=self.session
         )
 
         try:
@@ -199,7 +207,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}"
-        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -246,8 +254,8 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}"
-        response = HttpTools.do_put(
-            url=url, headers=headers, json=shell_dict, verify=self.verify_ssl
+        response = HttpTools.do_put_with_session(
+            url=url, headers=headers, json=shell_dict, verify=self.verify_ssl, session=self.session
         )
 
         try:
@@ -284,7 +292,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}"
-        response = HttpTools.do_delete(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_delete_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -349,11 +357,12 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_identifier}/submodel-descriptors"
-        response = HttpTools.do_get(
+        response = HttpTools.do_get_with_session(
             url=url,
             params=params,
             headers=headers,
             verify=self.verify_ssl,
+            session=self.session
         )
 
         try:
@@ -401,7 +410,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
-        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -442,11 +451,12 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors"
-        response = HttpTools.do_post(
+        response = HttpTools.do_post_with_session(
             url=url,
             json=shell_descriptor_dict,
             headers=headers,
             verify=self.verify_ssl,
+            session=self.session
         )
 
         try:
@@ -495,11 +505,12 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_id}/submodel-descriptors"
-        response = HttpTools.do_post(
+        response = HttpTools.do_post_with_session(
             url=url,
             json=submodel_dict,
             headers=headers,
             verify=self.verify_ssl,
+            session=self.session
         )
 
         try:
@@ -549,11 +560,12 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
-        response = HttpTools.do_put(
+        response = HttpTools.do_put_with_session(
             url=url,
             json=submodel_dict,
             headers=headers,
             verify=self.verify_ssl,
+            session=self.session
         )
 
         try:
@@ -599,7 +611,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/shell-descriptors/{encoded_aas_identifier}/submodel-descriptors/{encoded_submodel_identifier}"
-        response = HttpTools.do_delete(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_delete_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -627,7 +639,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_url}/description"
-        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -669,7 +681,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_lookup_url}/lookup/shells/{encoded_aas_identifier}"
-        response = HttpTools.do_get(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_get_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
@@ -721,8 +733,8 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_lookup_url}/lookup/shells/{encoded_aas_identifier}"
-        response = HttpTools.do_post(
-            url=url, headers=headers, json=list_of_asset_ids, verify=self.verify_ssl
+        response = HttpTools.do_post_with_session(
+            url=url, headers=headers, json=list_of_asset_ids, verify=self.verify_ssl, session=self.session
         )
 
         try:
@@ -769,7 +781,7 @@ class AasService:
 
         # Make the request
         url = f"{self.aas_lookup_url}/lookup/shells/{encoded_aas_identifier}"
-        response = HttpTools.do_delete(url=url, headers=headers, verify=self.verify_ssl)
+        response = HttpTools.do_delete_with_session(url=url, headers=headers, verify=self.verify_ssl, session=self.session)
 
         try:
             # Check for errors
