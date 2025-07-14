@@ -55,7 +55,8 @@ class AuthManager(AuthManagerInterface):
         
         return False
     
-    def get_auth_headers(self) -> dict:
+    def add_auth_header(self, headers: dict={}) -> dict:
         if not self.auth_enabled:
             raise RuntimeError("Authentication is not enabled. Cannot get auth headers.")
-        return {self.api_key_header: self.configured_api_key}
+        auth_header = {self.api_key_header: self.configured_api_key}
+        return {**headers, **auth_header}
