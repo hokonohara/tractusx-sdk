@@ -21,6 +21,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
+from fastapi import Request
+
 class AuthManagerInterface:
     """
     Interface for authentication managers in the Tractus-X SDK.
@@ -38,3 +40,13 @@ class AuthManagerInterface:
             dict: The updated headers dictionary including authentication information.
         """
         raise NotImplementedError("add_auth_header must be implemented by subclasses")
+    
+    def is_authenticated(self, request: Request) -> bool:
+        """
+        Checks if the request is authenticated.
+        Args:
+            request (Request): The FastAPI request object to check for authentication.
+        Returns:
+            bool: True if the request is authenticated, False otherwise.
+        """
+        raise NotImplementedError("is_authenticated must be implemented by subclasses")
