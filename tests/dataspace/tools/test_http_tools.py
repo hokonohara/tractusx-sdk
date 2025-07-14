@@ -35,17 +35,20 @@ class TestHttpTools(unittest.TestCase):
         self.headers = {"Content-Type": "application/json"}
         self.payload = {"key": "value"}
 
-    @patch("requests.Session.get")
-    def test_do_get_success(self, mock_get):
+
+=======
+    @patch("requests.get")
+    def test_do_get_without_session_success(self, mock_get):
         """Test a successful GET request."""
-        mock_get.return_value = Mock(status_code=200, json=lambda: {"message": "success"})
-        
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"message": "success"}
         response = HttpTools.do_get(self.test_url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json(), {"message": "success"})
 
-    @patch("requests.Session.get")
-    def test_do_get_failure(self, mock_get):
+    @patch("requests.get")
+    def test_do_get_without_session_failure(self, mock_get):
         """Test GET request when server returns an error."""
         mock_get.return_value = Mock(status_code=500, json=lambda: {"error": "Internal Server Error"})
         
