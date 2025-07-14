@@ -704,8 +704,7 @@ class BaseConnectorConsumerService(BaseService):
         counter_party_id: str,
         counter_party_address: str,
         filter_expression: list[dict],
-        policies: list,
-        session=None,
+        policies: list
     ) -> tuple[str, str]:
         """
         Does all the dsp necessary operations until getting the edr.
