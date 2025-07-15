@@ -143,7 +143,7 @@ class TestOAuth2Manager(unittest.TestCase):
         manager.connected = True
         manager.keycloak_openid = mock_keycloak
 
-        headers = manager.add_auth_header(None)
+        headers = manager.add_auth_header({})
 
         self.assertIn("Authorization", headers)
         self.assertEqual(headers["Authorization"], "Bearer abc123")
