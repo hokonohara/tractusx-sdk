@@ -23,7 +23,7 @@
 
 import unittest
 from unittest.mock import Mock
-from fastapi import Request
+from fastapi import Request, HTTPException
 from starlette.datastructures import Headers
 from tractusx_sdk.dataspace.managers.oauth2_manager import OAuth2Manager
 from unittest.mock import patch, MagicMock
@@ -175,50 +175,100 @@ class TestOAuth2Manager(unittest.TestCase):
             manager.add_auth_header()
         self.assertIn("Not connected", str(exc.exception))
 
-    def test_is_authenticated_true(self):
+    @patch("tractusx_sdk.dataspace.managers.oauth2_manager.KeycloakOpenID")
+    def test_is_authenticated_success(self, mock_keycloak_cls):
+        # Setup
+        mock_keycloak = MagicMock()
+        mock_keycloak.userinfo.return_value = {"sub": "user1"}
+        mock_keycloak_cls.return_value = mock_keycloak
+
         manager = OAuth2Manager.__new__(OAuth2Manager)
         manager.connected = True
-        manager.token = {"access_token": "abc123"}
-        headers = Headers({"Authorization": "Bearer abc123"})
+        manager.keycloak_openid = mock_keycloak
+
+        headers = Headers({"Authorization": "Bearer validtoken"})
         request = Mock(spec=Request)
         request.headers = headers
-        self.assertTrue(manager.is_authenticated(request))
 
-    def test_is_authenticated_false_no_auth_header(self):
-        manager = OAuth2Manager.__new__(OAuth2Manager)
-        manager.connected = True
-        manager.token = {"access_token": "abc123"}
-        headers = Headers({})
-        request = Mock(spec=Request)
-        request.headers = headers
-        self.assertFalse(manager.is_authenticated(request))
+        result = manager.is_authenticated(request)
+        self.assertTrue(result)
+        mock_keycloak.userinfo.assert_called_once_with("validtoken")
 
-    def test_is_authenticated_false_wrong_prefix(self):
-        manager = OAuth2Manager.__new__(OAuth2Manager)
-        manager.connected = True
-        manager.token = {"access_token": "abc123"}
-        headers = Headers({"Authorization": "Token abc123"})
-        request = Mock(spec=Request)
-        request.headers = headers
-        self.assertFalse(manager.is_authenticated(request))
-
-    def test_is_authenticated_false_not_connected(self):
+    def test_is_authenticated_not_connected_raises(self):
         manager = OAuth2Manager.__new__(OAuth2Manager)
         manager.connected = False
-        manager.token = {"access_token": "abc123"}
-        headers = Headers({"Authorization": "Bearer abc123"})
-        request = Mock(spec=Request)
-        request.headers = headers
-        self.assertFalse(manager.is_authenticated(request))
 
-    def test_is_authenticated_false_no_token(self):
+        request = Mock(spec=Request)
+        request.headers = Headers({"Authorization": "Bearer sometoken"})
+
+        with self.assertRaises(RuntimeError) as exc:
+            manager.is_authenticated(request)
+        self.assertIn("Not connected", str(exc.exception))
+
+    @patch("tractusx_sdk.dataspace.managers.oauth2_manager.KeycloakOpenID")
+    def test_is_authenticated_missing_authorization_header_raises(self, mock_keycloak_cls):
         manager = OAuth2Manager.__new__(OAuth2Manager)
         manager.connected = True
-        manager.token = None
-        headers = Headers({"Authorization": "Bearer abc123"})
+        manager.keycloak_openid = MagicMock()
+
+        request = Mock(spec=Request)
+        request.headers = Headers({})
+
+        with self.assertRaises(HTTPException) as exc:
+            manager.is_authenticated(request)
+        self.assertEqual(exc.exception.status_code, 401)
+        self.assertIn("Missing or invalid Authorization header", exc.exception.detail)
+
+    @patch("tractusx_sdk.dataspace.managers.oauth2_manager.KeycloakOpenID")
+    def test_is_authenticated_invalid_authorization_header_raises(self, mock_keycloak_cls):
+        manager = OAuth2Manager.__new__(OAuth2Manager)
+        manager.connected = True
+        manager.keycloak_openid = MagicMock()
+
+        request = Mock(spec=Request)
+        request.headers = Headers({"Authorization": "Basic sometoken"})
+
+        with self.assertRaises(HTTPException) as exc:
+            manager.is_authenticated(request)
+        self.assertEqual(exc.exception.status_code, 401)
+        self.assertIn("Missing or invalid Authorization header", exc.exception.detail)
+
+    @patch("tractusx_sdk.dataspace.managers.oauth2_manager.KeycloakOpenID")
+    def test_is_authenticated_userinfo_raises_exception(self, mock_keycloak_cls):
+        mock_keycloak = MagicMock()
+        mock_keycloak.userinfo.side_effect = Exception("Token error")
+        mock_keycloak_cls.return_value = mock_keycloak
+
+        manager = OAuth2Manager.__new__(OAuth2Manager)
+        manager.connected = True
+        manager.keycloak_openid = mock_keycloak
+
+        headers = Headers({"Authorization": "Bearer invalidtoken"})
         request = Mock(spec=Request)
         request.headers = headers
-        self.assertFalse(manager.is_authenticated(request))
+
+        with self.assertRaises(HTTPException) as exc:
+            manager.is_authenticated(request)
+        self.assertEqual(exc.exception.status_code, 401)
+        self.assertIn("Invalid or expired token", exc.exception.detail)
+
+    @patch("tractusx_sdk.dataspace.managers.oauth2_manager.KeycloakOpenID")
+    def test_is_authenticated_userinfo_returns_empty_dict(self, mock_keycloak_cls):
+        mock_keycloak = MagicMock()
+        mock_keycloak.userinfo.return_value = {}
+        mock_keycloak_cls.return_value = mock_keycloak
+
+        manager = OAuth2Manager.__new__(OAuth2Manager)
+        manager.connected = True
+        manager.keycloak_openid = mock_keycloak
+
+        headers = Headers({"Authorization": "Bearer validtoken"})
+        request = Mock(spec=Request)
+        request.headers = headers
+
+        result = manager.is_authenticated(request)
+        self.assertFalse(result)
+
 
 if __name__ == "__main__":
     unittest.main()
