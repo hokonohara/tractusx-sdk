@@ -24,7 +24,8 @@
 
 from keycloak.keycloak_openid import KeycloakOpenID
 from .auth_manager_interface import AuthManagerInterface
-from fastapi import Request
+from fastapi import Request, HTTPException
+from starlette.status import HTTP_401_UNAUTHORIZED
 
 class OAuth2Manager(AuthManagerInterface):
     
@@ -92,5 +93,21 @@ class OAuth2Manager(AuthManagerInterface):
         return headers
 
     def is_authenticated(self, request: Request) -> bool:
-        auth_header = request.headers.get("Authorization")
-        return auth_header is not None and auth_header.startswith("Bearer ") and self.connected and self.token is not None
+        """
+        Check if the OAuth2Manager is authenticated.
+        This method verifies whether the Bearer token included in the request is valid.
+        :param request: FastAPI Request object.
+        :return: True if authenticated, False otherwise.
+        """
+        if not self.connected:
+            raise RuntimeError("Not connected. Please call the connect() method before checking authentication.")
+        
+        authorization: str = request.headers.get("Authorization")
+        if not authorization or not authorization.startswith("Bearer "):
+            raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Missing or invalid Authorization header.")
+        token = authorization.split(" ")[1]
+        try:
+            user_info = self.keycloak_openid.userinfo(token)
+            return bool(user_info)
+        except Exception:
+            raise HTTPException(status_code=HTTP_401_UNAUTHORIZED, detail="Invalid or expired token.")
