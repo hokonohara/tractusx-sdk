@@ -27,8 +27,7 @@ from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 from tractusx_sdk.dataspace.managers import OAuth2Manager
 from tractusx_sdk.dataspace.services.discovery import DiscoveryFinderService
 from tractusx_sdk.dataspace.tools.operators import op
-
-      
+import requests
 class BpnDiscoveryService:
     
     oauth:OAuth2Manager
@@ -37,11 +36,14 @@ class BpnDiscoveryService:
     discovery_finder_url:str
     cache_timeout_seconds:int
     
-    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, cache_timeout_seconds:int = 60 * 60 * 12):
+    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, cache_timeout_seconds:int = 60 * 60 * 12, session:requests.Session = None):
         self.discovery_finder_url = discovery_finder_url
         self.oauth = oauth
         self.bpn_discoveries = {}
         self.cache_timeout_seconds = cache_timeout_seconds # Default 12 hours
+        self.session=session
+        if(not self.session):
+            self.session = requests.Session()
 
     def get_connector_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, bpn_discovery_key:str="manufacturerPartId"):
         """
@@ -93,7 +95,7 @@ class BpnDiscoveryService:
         
         headers:dict = self.oauth.add_auth_header(headers={'Content-Type' : 'application/json'})
 
-        response = HttpTools.do_post(url=discovery_url, headers=headers, json=body)
+        response = HttpTools.do_post_with_session(url=discovery_url, headers=headers, json=body, session=self.session)
         if response is None:
             raise Exception("[BPN Discovery Service] No response received from the connector discovery service.")
         if response.status_code == 401:
@@ -169,7 +171,7 @@ class BpnDiscoveryService:
             "key": identifier_key
         }
 
-        response = HttpTools.do_post(url=discovery_url, headers=headers, json=body)
+        response = HttpTools.do_post_with_session(url=discovery_url, headers=headers, json=body, session=self.session)
         if response is None:
             raise Exception("[BPN Discovery Service] No response received from the connector discovery service.")
         if response.status_code == 401:
@@ -198,7 +200,7 @@ class BpnDiscoveryService:
         discovery_url = self._get_or_update_discovery_url(bpn_discovery_key=identifier_type) + "/batch"
         headers: dict = self.oauth.add_auth_header(headers={'Content-Type': 'application/json'})
 
-        response = HttpTools.do_post(url=discovery_url, headers=headers, json=body)
+        response = HttpTools.do_post_with_session(url=discovery_url, headers=headers, json=body, session=self.session)
         if response is None:
             raise Exception("[BPN Discovery Service] No response received from the connector discovery service.")
         if response.status_code == 401:
@@ -222,7 +224,7 @@ class BpnDiscoveryService:
         discovery_url = self._get_or_update_discovery_url(bpn_discovery_key=identifier_type) + f"/{resource_id}"
         headers: dict = self.oauth.add_auth_header(headers={'Content-Type': 'application/json'})
 
-        response = HttpTools.do_delete(url=discovery_url, headers=headers)
+        response = HttpTools.do_delete_with_session(url=discovery_url, headers=headers, session=self.session)
         if response is None:
             raise Exception("[BPN Discovery Service] No response received from the connector discovery service.")
         if response.status_code == 401:

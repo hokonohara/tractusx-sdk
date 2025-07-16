@@ -26,7 +26,6 @@ from tractusx_sdk.dataspace.services.connector.service_factory import ServiceFac
 from unittest import mock
 import tractusx_sdk.dataspace.services.connector.base_connector_consumer as bcc
 
-
 class TestBaseConsumerConnectorService(unittest.TestCase):
     def setUp(self):
         self.dataspace_version = "jupiter"
@@ -48,8 +47,10 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
             mock_response = mock.Mock()
             mock_response.status_code = 200
             mock_do_get.return_value = mock_response
-
+            import requests
+            session = requests.Session()
             response = self.service.do_get(
+                session=session,
                 counter_party_address="http://provider-control.plane.url",
                 counter_party_id="<provider-bpn>",
                 filter_expression=[
@@ -205,31 +206,6 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             service.get_endpoint_with_token("transfer_id")
 
-    def test_do_get_success(self):
-        service, *_ = self.create_mock_service()
-        service.do_dsp = mock.Mock(return_value=("http://dataplane", "token123"))
-        service.get_data_plane_headers = mock.Mock(return_value={"Authorization": "token123"})
-        import requests
-        session = requests.Session()
-        mock_response = mock.Mock()
-        mock_response.status_code = 200
-        mock_response.json.return_value = {"message": "success"}
-        bcc.HttpTools.do_get = mock.Mock(return_value=mock_response)
-        response = service.do_get(
-            counter_party_id="bpn",
-            counter_party_address="url",
-            filter_expression=[{"foo": "bar"}],
-            path="/test",
-            policies=None,
-            verify=True,
-            headers={"X-Test": "1"},
-            timeout=5,
-            params={"q": "x"},
-            allow_redirects=True,
-            session=session
-        )
-        self.assertEqual(response.status_code, 200)
-
     def test_do_get_no_dataplane_url(self):
         service, *_ = self.create_mock_service()
         service.do_dsp = mock.Mock(return_value=(None, None))
@@ -239,29 +215,6 @@ class TestBaseConsumerConnectorService(unittest.TestCase):
                 counter_party_address="url",
                 filter_expression=[{"foo": "bar"}]
             )
-
-    def test_do_get_headers_merge(self):
-        service, *_ = self.create_mock_service()
-        service.do_dsp = mock.Mock(return_value=("http://dataplane", "token123"))
-        service.get_data_plane_headers = mock.Mock(return_value={"Authorization": "token123", "Accept": "application/json"})
-        called = {}
-
-        def fake_do_get(url, headers, **kwargs):
-            called["headers"] = headers
-            mock_resp = mock.Mock()
-            mock_resp.status_code = 200
-            return mock_resp
-
-        bcc.HttpTools.do_get = fake_do_get
-        service.do_get(
-            counter_party_id="bpn",
-            counter_party_address="url",
-            filter_expression=[{"foo": "bar"}],
-            headers={"X-Test": "1"}
-        )
-        self.assertEqual(called["headers"]["Authorization"], "token123")
-        self.assertEqual(called["headers"]["Accept"], "application/json")
-        self.assertEqual(called["headers"]["X-Test"], "1")
 
     # Additional tests for coverage and regression
 

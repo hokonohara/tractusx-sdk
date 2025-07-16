@@ -574,8 +574,7 @@ class BaseConnectorConsumerService(BaseService):
         dct_type: str,
         policies: list = None,
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
-        operator="=",
-        session=None,
+        operator="="
     ) -> tuple[str, str]:
         return self.do_dsp(
             counter_party_id=counter_party_id,
@@ -583,8 +582,7 @@ class BaseConnectorConsumerService(BaseService):
             filter_expression=[
                 self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
             ],
-            policies=policies,
-            session=session,
+            policies=policies
         )
 
     def do_dsp_by_asset_id(
@@ -594,8 +592,7 @@ class BaseConnectorConsumerService(BaseService):
         asset_id: str,
         policies: list = None,
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
-        operator="=",
-        session=None,
+        operator="="
     ) -> tuple[str, str]:
         return self.do_dsp(
             counter_party_id=counter_party_id,
@@ -604,7 +601,6 @@ class BaseConnectorConsumerService(BaseService):
                 self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
             ],
             policies=policies,
-            session=session,
         )
 
     def do_get_by_dct_type(
@@ -685,7 +681,7 @@ class BaseConnectorConsumerService(BaseService):
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="=",
         session=None,
-        **kwargs,
+        **kwargs
     ) -> tuple[str, str]:
         return self.do_post(
             counter_party_id=counter_party_id,
@@ -704,8 +700,7 @@ class BaseConnectorConsumerService(BaseService):
         counter_party_id: str,
         counter_party_address: str,
         filter_expression: list[dict],
-        policies: list,
-        session=None,
+        policies: list
     ) -> tuple[str, str]:
         """
         Does all the dsp necessary operations until getting the edr.
@@ -778,8 +773,7 @@ class BaseConnectorConsumerService(BaseService):
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
             policies=policies,
-            filter_expression=filter_expression,
-            session=session,
+            filter_expression=filter_expression
         )
 
         if dataplane_url is None or access_token is None:
@@ -789,16 +783,26 @@ class BaseConnectorConsumerService(BaseService):
         url: str = dataplane_url + path
 
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token)
-
+        merged_headers: dict = (headers | dataplane_headers)
+        
+        if(session):
+            return HttpTools.do_get_with_session(
+                url=url,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session,
+            )
+            
         ## Do get request to get a response!
         return HttpTools.do_get(
             url=url,
-            headers=(headers | dataplane_headers),
+            headers=merged_headers,
             verify=verify,
             timeout=timeout,
             params=params,
-            allow_redirects=allow_redirects,
-            session=session,
+            allow_redirects=allow_redirects
         )
 
     def do_post(
@@ -813,7 +817,6 @@ class BaseConnectorConsumerService(BaseService):
         verify: bool = False,
         headers: dict = None,
         timeout: int = None,
-        params: dict = None,
         allow_redirects: bool = False,
         session=None,
     ) -> Response:
@@ -842,8 +845,7 @@ class BaseConnectorConsumerService(BaseService):
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
             policies=policies,
-            filter_expression=filter_expression,
-            session=session,
+            filter_expression=filter_expression
         )
 
         if dataplane_url is None or access_token is None:
@@ -853,14 +855,25 @@ class BaseConnectorConsumerService(BaseService):
         url: str = dataplane_url + path
 
         dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
-
+        merged_headers: dict = (headers | dataplane_headers)
         ## Do get request to get a response!
+        
+        if(session):
+            return HttpTools.do_post_with_session(
+                url=url,
+                json=body,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session,
+            )
+
         return HttpTools.do_post(
             url=url,
             json=body,
-            headers=(headers | dataplane_headers),
+            headers=merged_headers,
             verify=verify,
             timeout=timeout,
-            allow_redirects=allow_redirects,
-            session=session,
+            allow_redirects=allow_redirects
         )
