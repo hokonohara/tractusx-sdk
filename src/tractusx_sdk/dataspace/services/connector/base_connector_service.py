@@ -39,12 +39,12 @@ class BaseConnectorService(BaseService):
                  consumer_service: BaseConnectorConsumerService,
                  provider_service: BaseConnectorProviderService,
                  headers: dict = None,
-                 auth_header: AuthManagerInterface | None = None):
+                 auth_manager: AuthManagerInterface | None = None):
         self.dataspace_version = dataspace_version
 
         merged_headers = headers or {}
-        if auth_header is not None:
-            merged_headers = auth_header.add_auth_header(merged_headers)
+        if auth_manager is not None:
+            merged_headers = auth_manager.add_auth_header(merged_headers)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
             dataspace_version=dataspace_version,
