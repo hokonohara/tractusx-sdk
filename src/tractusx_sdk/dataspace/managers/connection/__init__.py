@@ -20,4 +20,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .adapter_factory import AdapterFactory
+from .base_connection_manager import BaseConnectionManager
+from .database import PostgresConnectionManager
+from .file_system import FileSystemConnectionManager
+from .memory import MemoryConnectionManager

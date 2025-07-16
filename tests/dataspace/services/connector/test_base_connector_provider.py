@@ -23,7 +23,7 @@
 
 import pytest
 from unittest.mock import Mock, patch
-from your_package.connector_provider_service import BaseConnectorProviderService
+from tractusx_sdk.dataspace.services.connector import BaseConnectorProviderService
 
 
 @pytest.fixture
@@ -42,8 +42,8 @@ def mock_controllers():
 
 @pytest.fixture
 def service(mock_dma_adapter, mock_controllers):
-    with patch("your_package.connector_provider_service.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
-        with patch("your_package.connector_provider_service.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
+    with patch("tractusx_sdk.dataspace.adapters.connector.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
+        with patch("tractusx_sdk.dataspace.services.connector.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
             return BaseConnectorProviderService(dataspace_version="test", base_url="http://test", dma_path="/dma", verbose=True)
 
 
@@ -54,12 +54,12 @@ def mock_logger():
 
 @pytest.fixture
 def service_verbose_false(mock_dma_adapter, mock_controllers):
-    with patch("your_package.connector_provider_service.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
-        with patch("your_package.connector_provider_service.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
+    with patch("tractusx_sdk.dataspace.adapters.connector.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
+        with patch("tractusx_sdk.dataspace.services.connector.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
             return BaseConnectorProviderService(dataspace_version="test", base_url="http://test", dma_path="/dma", verbose=False)
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_asset_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_asset_model")
 def test_create_asset_success(mock_get_asset_model, service):
     mock_response = Mock(status_code=200)
     mock_response.json.return_value = {"asset": "ok"}
@@ -73,7 +73,7 @@ def test_create_asset_success(mock_get_asset_model, service):
     service._asset_controller.create.assert_called_once()
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_asset_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_asset_model")
 def test_create_asset_failure_raises(mock_get_asset_model, service):
     mock_response = Mock(status_code=400, text="Bad Request")
     service._asset_controller.create.return_value = mock_response
@@ -83,7 +83,7 @@ def test_create_asset_failure_raises(mock_get_asset_model, service):
         service.create_asset(asset_id="123", base_url="http://test", dct_type="test")
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_contract_definition_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_contract_definition_model")
 def test_create_contract_success(mock_get_contract_model, service):
     mock_response = Mock(status_code=200)
     mock_response.json.return_value = {"contract": "ok"}
@@ -101,7 +101,7 @@ def test_create_contract_success(mock_get_contract_model, service):
     service._contract_definition_controller.create.assert_called_once()
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_contract_definition_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_contract_definition_model")
 def test_create_contract_failure_raises(mock_get_contract_model, service):
     mock_response = Mock(status_code=400)
     service._contract_definition_controller.create.return_value = mock_response
@@ -116,7 +116,7 @@ def test_create_contract_failure_raises(mock_get_contract_model, service):
         )
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_policy_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_policy_model")
 def test_create_policy_success(mock_get_policy_model, service):
     mock_response = Mock(status_code=200)
     mock_response.json.return_value = {"policy": "ok"}
@@ -129,7 +129,7 @@ def test_create_policy_success(mock_get_policy_model, service):
     service._policy_controller.create.assert_called_once()
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_policy_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_policy_model")
 def test_create_policy_failure_raises(mock_get_policy_model, service):
     mock_response = Mock(status_code=400)
     service._policy_controller.create.return_value = mock_response
@@ -139,7 +139,7 @@ def test_create_policy_failure_raises(mock_get_policy_model, service):
         service.create_policy(policy_id="policy1")
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_asset_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_asset_model")
 def test_create_asset_verbose_logging(mock_get_asset_model, mock_dma_adapter, mock_controllers):
     logger = Mock()
     service = BaseConnectorProviderService(
@@ -159,7 +159,7 @@ def test_create_asset_verbose_logging(mock_get_asset_model, mock_dma_adapter, mo
     assert logger.info.called
 
 
-@patch("your_package.connector_provider_service.ModelFactory.get_asset_model")
+@patch("tractusx_sdk.dataspace.services.connector.ModelFactory.get_asset_model")
 def test_create_asset_no_verbose_logging(mock_get_asset_model, mock_dma_adapter, mock_controllers):
     logger = Mock()
     service = BaseConnectorProviderService(
