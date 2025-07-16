@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS Next
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -24,7 +25,9 @@ from ..service import BaseService
 from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from ...controllers.connector.controller_factory import ControllerType, ControllerFactory
-
+from ...models.connector.model_factory import ModelFactory
+import logging
+    
 
 class BaseConnectorProviderService(BaseService):
     _asset_controller: BaseDmaController
@@ -71,3 +74,148 @@ class BaseConnectorProviderService(BaseService):
     @property
     def policies(self):
         return self._policy_controller
+    
+    ############################# Short cut sesction
+    ## Code originally beloging to Industry Core Hub: 
+    # https://github.com/eclipse-tractusx/industry-core-hub
+    
+    
+    def create_asset(
+        self,
+        asset_id: str, 
+        base_url: str, 
+        dct_type:str, 
+        version:str="3.0", 
+        semantic_id:str=None, 
+        proxy_params:dict={ 
+                    "proxyQueryParams": "false",
+                    "proxyPath": "true",
+                    "proxyMethod": "true",
+                    "proxyBody": "false"
+                    }, 
+        headers:dict=None,
+        private_properties:dict=None,
+        connector_version:str="jupiter",
+        base_connector_service: BaseConnectorService=None,
+        logger: logging.Logger=None
+    ):
+    
+        context =  {
+            "edc": "https://w3id.org/edc/v0.0.1/ns/",
+            "cx-common": "https://w3id.org/catenax/ontology/common#",
+            "cx-taxo": "https://w3id.org/catenax/taxonomy#",
+            "dct": "http://purl.org/dc/terms/"
+        }
+    
+        data_address = { 
+                "@type": "DataAddress",
+                "type": "HttpData",
+                "baseUrl": base_url
+            }
+    
+        if(proxy_params is not None):
+            data_address.update(proxy_params)
+    
+        if headers is not None:
+            for key, value in headers.items():
+                data_address["header:"+key] = value
+    
+        properties:dict = {
+                "dct:type": {
+                    "@id": dct_type
+                }
+            }
+    
+        if(version is not None):
+            properties["cx-common:version"] = version
+    
+        if(semantic_id is not None):
+            context["aas-semantics"] = "https://admin-shell.io/aas/3/0/HasSemantics/"
+            properties["aas-semantics:semanticId"] = { "@id": semantic_id }
+    
+        asset = ModelFactory.get_asset_model(
+            connector_version=connector_version,
+            context=context,
+            oid=asset_id,
+            properties=properties,
+            private_properties=private_properties,
+            data_address=data_address
+        )
+    
+        asset_response = self.assets.create(obj=asset)
+    
+        if asset_response.status_code != 200:
+            logger.error(asset_response.text)
+            raise ValueError(f"Failed to create asset {asset_id}. Status code: {asset_response.status_code}")
+    
+        return asset_response.json()
+    
+    def create_contract(
+        self,
+        contract_id:str,
+        usage_policy_id:str,
+        access_policy_id:str,
+        asset_id:str,
+        connector_version:str="jupiter",
+        base_connector_service: BaseConnectorService=None,
+        logger: logging.Logger = None
+    ) -> dict:
+        context =  {
+            "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+        }
+        
+        asset_selector = [
+            {
+                "operandLeft": "https://w3id.org/edc/v0.0.1/ns/id",
+                "operator": "=",
+                "operandRight": asset_id
+            }
+        ]
+        
+        contract = ModelFactory.get_contract_definition_model(
+            context=context,
+            connector_version=connector_version,
+            oid=contract_id,
+            assets_selector=asset_selector,
+            contract_policy_id=usage_policy_id,
+            access_policy_id=access_policy_id
+        )
+        
+        # If it doesn't exist, create it
+        logger.info(f"Creating new contract with ID {contract_id}.")
+        created_contract = self.contract_definitions.create(obj=contract)
+        
+        if created_contract.status_code != 200:
+            raise ValueError(f"Failed to create contract {contract_id}. Status code: {created_contract.status_code}")
+        
+        logger.info(f"Contract {contract_id} created successfully.")
+        return created_contract.json()
+    
+    def create_policy(
+        self,
+        policy_id: str,
+        context: dict | list[dict] = {},
+        permissions: dict | list[dict] = [],
+        prohibitions: dict | list[dict] = [],
+        obligations: dict | list[dict] = [],
+        connector_version:str="jupiter",
+        base_connector_service: BaseConnectorService=None,
+        logger: logging.Logger = None
+    ) -> dict:
+        policy = ModelFactory.get_policy_model(
+                connector_version=connector_version,
+                oid=policy_id,
+                context=context,
+                permissions=permissions,
+                prohibitions=prohibitions,
+                obligations=obligations
+        )
+        # If it doesn't exist, create it
+        logger.info(f"Creating new policy with ID {policy_id}.")
+        created_policy = self.policies.create(obj=policy)
+        
+        if created_policy.status_code != 200:
+            raise ValueError(f"Failed to create policy {policy_id}. Status code: {created_policy.status_code}")
+        
+        logger.info(f"Policy {policy_id} created successfully.")
+        return created_policy.json()
