@@ -95,9 +95,7 @@ class BaseConnectorProviderService(BaseService):
             "proxyBody": "false"
         },
         headers: dict = None,
-        private_properties: dict = None,
-        connector_version: str = "jupiter",
-        base_connector_service: 'BaseConnectorProviderService' = None,
+        private_properties: dict = None
     ):
         if self.verbose:
             self.logger.info(f"Creating asset {asset_id} at {base_url}.")
@@ -136,7 +134,7 @@ class BaseConnectorProviderService(BaseService):
             properties["aas-semantics:semanticId"] = {"@id": semantic_id}
 
         asset = ModelFactory.get_asset_model(
-            connector_version=connector_version,
+            connector_version=self.dataspace_version,
             context=context,
             oid=asset_id,
             properties=properties,
@@ -160,9 +158,7 @@ class BaseConnectorProviderService(BaseService):
         contract_id: str,
         usage_policy_id: str,
         access_policy_id: str,
-        asset_id: str,
-        connector_version: str = "jupiter",
-        base_connector_service: 'BaseConnectorProviderService' = None,
+        asset_id: str
     ) -> dict:
         if self.verbose:
             self.logger.info(f"Creating new contract with ID {contract_id}.")
@@ -181,7 +177,7 @@ class BaseConnectorProviderService(BaseService):
 
         contract = ModelFactory.get_contract_definition_model(
             context=context,
-            connector_version=connector_version,
+            connector_version=self.dataspace_version,
             oid=contract_id,
             assets_selector=asset_selector,
             contract_policy_id=usage_policy_id,
@@ -204,15 +200,13 @@ class BaseConnectorProviderService(BaseService):
         context: dict | list[dict] = {},
         permissions: dict | list[dict] = [],
         prohibitions: dict | list[dict] = [],
-        obligations: dict | list[dict] = [],
-        connector_version: str = "jupiter",
-        base_connector_service: 'BaseConnectorProviderService' = None,
+        obligations: dict | list[dict] = []
     ) -> dict:
         if self.verbose:
             self.logger.info(f"Creating new policy with ID {policy_id}.")
 
         policy = ModelFactory.get_policy_model(
-            connector_version=connector_version,
+            connector_version=self.dataspace_version,
             oid=policy_id,
             context=context,
             permissions=permissions,
