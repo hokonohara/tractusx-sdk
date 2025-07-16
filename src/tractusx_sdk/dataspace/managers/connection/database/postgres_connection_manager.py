@@ -22,6 +22,8 @@
 ## Code created partially using a LLM (GPT 4o) and reviewed by a human committer
 
 from sqlmodel import SQLModel, Field, Session, select
+from sqlalchemy import JSON
+from sqlmodel import Column
 from ..base_connection_manager import BaseConnectionManager
 from sqlalchemy.engine import Engine as E
 from sqlalchemy.orm import Session as S
@@ -35,7 +37,7 @@ class EDRConnection(SQLModel, table=True):
     counter_party_address: str
     query_checksum: str
     policy_checksum: str
-    edr_data: dict
+    edr_data: dict = Field(sa_column=Column(JSON))
 
 
 class PostgresConnectionManager(BaseConnectionManager):
