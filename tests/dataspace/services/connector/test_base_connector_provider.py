@@ -24,6 +24,7 @@
 import pytest
 from unittest.mock import Mock, patch
 from tractusx_sdk.dataspace.services.connector import BaseConnectorProviderService
+from tractusx_sdk.dataspace.controllers.connector.controller_factory import ControllerType
 
 
 @pytest.fixture
@@ -37,29 +38,43 @@ def mock_controllers():
     contract_definition_controller = Mock()
     policy_controller = Mock()
     return {
-        "ASSET": asset_controller,
-        "CONTRACT_DEFINITION": contract_definition_controller,
-        "POLICY": policy_controller
+        ControllerType.ASSET: asset_controller,
+        ControllerType.CONTRACT_DEFINITION: contract_definition_controller,
+        ControllerType.POLICY: policy_controller
     }
 
 
 @pytest.fixture
 def service(mock_dma_adapter, mock_controllers):
     with patch("tractusx_sdk.dataspace.adapters.connector.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
-        with patch("tractusx_sdk.dataspace.controllers.connector.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
-            return BaseConnectorProviderService(dataspace_version="jupiter", base_url="http://test", dma_path="/dma", verbose=True)
-
-
-@pytest.fixture
-def mock_logger():
-    return Mock()
+        with patch("tractusx_sdk.dataspace.controllers.connector.ControllerFactory.get_dma_controllers_for_version") as mock_get_controllers:
+            mock_get_controllers.return_value = mock_controllers
+            svc = BaseConnectorProviderService(
+                dataspace_version="jupiter",
+                base_url="http://test",
+                dma_path="/dma",
+                verbose=True
+            )
+            yield svc
 
 
 @pytest.fixture
 def service_verbose_false(mock_dma_adapter, mock_controllers):
     with patch("tractusx_sdk.dataspace.adapters.connector.AdapterFactory.get_dma_adapter", return_value=mock_dma_adapter):
-        with patch("tractusx_sdk.dataspace.controllers.connector.ControllerFactory.get_dma_controllers_for_version", return_value=mock_controllers):
-            return BaseConnectorProviderService(dataspace_version="jupiter", base_url="http://test", dma_path="/dma", verbose=False)
+        with patch("tractusx_sdk.dataspace.controllers.connector.ControllerFactory.get_dma_controllers_for_version") as mock_get_controllers:
+            mock_get_controllers.return_value = mock_controllers
+            svc = BaseConnectorProviderService(
+                dataspace_version="jupiter",
+                base_url="http://test",
+                dma_path="/dma",
+                verbose=False
+            )
+            yield svc
+
+
+@pytest.fixture
+def mock_logger():
+    return Mock()
 
 
 @patch("tractusx_sdk.dataspace.models.connector.ModelFactory.get_asset_model")
