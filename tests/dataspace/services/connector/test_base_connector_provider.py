@@ -23,7 +23,7 @@
 
 import pytest
 from unittest import mock
-from tractusx_sdk.dataspace.connector import ConnectorServiceProvider
+from tractusx_sdk.dataspace.connector import BaseConnectorProviderService
 
 @pytest.fixture
 def mock_base_connector_service():
@@ -268,7 +268,7 @@ def test_create_policy_failure_raises(
     mock_response = mock.Mock()
     mock_response.status_code = 400
     mock_response.json.return_value = {"error": "bad request"}
-    mock_base_connector_service.provider.policies.create.return_value = mock_response
+    mock_base_connector_service.policies.create.return_value = mock_response
     mock_policy_model_factory.return_value = {"mock": "policy"}
 
     with pytest.raises(ValueError) as exc:
