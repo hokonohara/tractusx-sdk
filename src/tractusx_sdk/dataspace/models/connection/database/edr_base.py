@@ -20,17 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-"""
-This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
+from sqlmodel import SQLModel, Field
+from sqlalchemy import JSON, String
+from sqlmodel import Column
 
-:copyright: (c) 2025 Eclipse Foundation
-:license: Apache License, Version 2.0, see LICENSE for more details.
-"""
-
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
-
-from .postgres_connection_manager import PostgresConnectionManager
-from .postgres_memory_refresh_connection_manager import PostgresMemoryRefreshConnectionManager
-from .postgres_memory_connection_manager import PostgresMemoryConnectionManager
+class EDRBase(SQLModel):
+    transfer_id: str = Field(primary_key=True)
+    counter_party_id: str
+    counter_party_address: str
+    query_checksum: str
+    policy_checksum: str
+    edr_data: dict = Field(sa_column=Column(JSON))
+    edr_hash: str = Field(default=None, sa_column=Column(String))

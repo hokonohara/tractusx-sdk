@@ -20,17 +20,4 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-"""
-This module contains utility functions and classes for working with the Eclipse Tractus-X Software Development KIT.
-
-:copyright: (c) 2025 Eclipse Foundation
-:license: Apache License, Version 2.0, see LICENSE for more details.
-"""
-
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
-
-from .postgres_connection_manager import PostgresConnectionManager
-from .postgres_memory_refresh_connection_manager import PostgresMemoryRefreshConnectionManager
-from .postgres_memory_connection_manager import PostgresMemoryConnectionManager
+from .edr_base import EDRBase

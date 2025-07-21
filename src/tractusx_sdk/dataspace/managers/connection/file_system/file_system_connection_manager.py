@@ -19,6 +19,10 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
+"""
+FileSystem-based connection manager for persisting EDR connections to disk.
+Extends MemoryConnectionManager to support persistence using JSON files with file-based locking.
+"""
 ## Code created partially using a LLM (GPT 4o) and reviewed by a human committer
 
 import json
@@ -27,55 +31,93 @@ import threading
 import time
 from filelock import FileLock
 from ..memory import MemoryConnectionManager
-
+import hashlib
+import json
 class FileSystemConnectionManager(MemoryConnectionManager):
+    """
+    Manages EDR connections with persistence to the filesystem using JSON files.
+    Periodically saves and reloads data from disk to keep in-memory cache synchronized.
+    """
     
     file_path: str
     lock: FileLock
     persist_interval: int
-    _last_modified_time: int
     _stop_event: threading.Event
     
-    def __init__(self, path: str = "/data/connection_cache.json", persist_interval: int = 5):
+    def __init__(self, path: str = "./data/connection_cache.json", persist_interval: int = 5):
+        """
+        Initialize the file system connection manager with periodic persistence.
+
+        Args:
+            path (str): Path to the JSON file used for persisting connections.
+            persist_interval (int): Time interval in seconds for saving and reloading connections.
+        """
+        # Set up the file path, file lock, and background persistence thread.
         super().__init__()
         self.file_path = path
         self.lock = FileLock(f"{self.file_path}.lock")
         self.persist_interval = persist_interval
-        self._last_modified_time = 0
         self._stop_event = threading.Event()
+        self._last_loaded_hash = None
+        self._load_if_updated()
         self._start_background_tasks()
 
     def _start_background_tasks(self):
+        """
+        Start the background thread for periodic persistence.
+        """
         threading.Thread(target=self._persistence_loop, daemon=True).start()
 
     def _persistence_loop(self):
+        """
+        Background thread loop to periodically save to and load from the JSON file.
+        """
         while not self._stop_event.is_set():
             time.sleep(self.persist_interval)
             self._save_to_file()
             self._load_if_updated()
 
     def _save_to_file(self):
+        """
+        Save current in-memory connections to a JSON file with file locking if it differs from the last saved state.
+        """
         try:
             os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+            current_hash = self._calculate_hash(self.open_connections)
+            if current_hash == self._last_loaded_hash:
+                return
             with self.lock:
                 with open(self.file_path, "w") as f:
                     json.dump(self.open_connections, f)
-                self._last_modified_time = os.path.getmtime(self.file_path)
+                self._last_loaded_hash = current_hash
         except Exception as e:
             print(f"[FileSystemConnectionManager] Error saving to file: {e}")
 
     def _load_if_updated(self):
+        """
+        Load connections from the JSON file if the content differs from the current in-memory state.
+        """
         try:
             if not os.path.exists(self.file_path):
                 return
-            modified_time = os.path.getmtime(self.file_path)
-            if modified_time > self._last_modified_time:
-                with self.lock:
-                    with open(self.file_path, "r") as f:
-                        self.open_connections = json.load(f)
-                self._last_modified_time = modified_time
+            with self.lock:
+                with open(self.file_path, "r") as f:
+                    file_connections = json.load(f)
+                file_hash = self._calculate_hash(file_connections)
+                if file_hash != self._last_loaded_hash:
+                    self.open_connections = file_connections
+                    self._last_loaded_hash = file_hash
         except Exception as e:
             print(f"[FileSystemConnectionManager] Error loading from file: {e}")
 
+    def _calculate_hash(self, data):
+        """
+        Generate a hash from the current connections data for change detection.
+        """
+        return hashlib.sha256(json.dumps(data, sort_keys=True, default=str).encode()).hexdigest()
+
     def stop(self):
+        """
+        Stop the background persistence thread.
+        """
         self._stop_event.set()
