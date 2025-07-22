@@ -53,14 +53,12 @@ class PostgresMemoryConnectionManager(MemoryConnectionManager):
         # Initialize base memory connection manager and configure database.
         # Dynamically define the SQLModel table for EDR connections.
         # Load existing data from the database into memory.
-        super().__init__(provider_id_key=provider_id_key, edrs_key=edrs_key)
+        super().__init__(provider_id_key=provider_id_key, edrs_key=edrs_key, logger=logger, verbose=verbose)
         self.engine = engine
         self.provider_id_key = provider_id_key
         self.table_name = table_name
         self.open_connections = {}
         self._stop_event = threading.Event()
-        self.logger = logger
-        self.verbose = verbose
         self.edrs_key = edrs_key
         self._save_thread = None
         self._last_saved_hash = None
