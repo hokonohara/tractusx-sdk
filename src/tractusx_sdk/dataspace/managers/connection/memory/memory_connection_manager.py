@@ -179,5 +179,5 @@ class MemoryConnectionManager(BaseConnectionManager):
                 return False
             except KeyError:
                 if self.logger and self.verbose:
-                    self.logger.error(f"[Memory Connection Manager] No EDR found to delete for the provided keys.")
+                    self.logger.error("[Memory Connection Manager] No EDR found to delete for the provided keys.")
                 return False
