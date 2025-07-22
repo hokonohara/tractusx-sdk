@@ -29,6 +29,8 @@ from sqlmodel import select, delete, Session, SQLModel
 from sqlalchemy.exc import SQLAlchemyError
 from ..memory.memory_connection_manager import MemoryConnectionManager
 import logging
+from ....constants import JSONLDKeys  
+
 
 class PostgresMemoryConnectionManager(MemoryConnectionManager):
     """
@@ -197,7 +199,7 @@ class PostgresMemoryConnectionManager(MemoryConnectionManager):
                                 for policy_checksum, edr_data in policies.items():
                                     hash_value = self._calculate_connection_hash(provider_id, endpoint, query_checksum, policy_checksum)
                                     session.add(self.EDRConnection(
-                                        transfer_id=edr_data.get('@id'),
+                                        transfer_id=edr_data.get(JSONLDKeys.AT_ID),
                                         counter_party_id=provider_id,
                                         counter_party_address=endpoint,
                                         query_checksum=query_checksum,

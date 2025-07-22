@@ -32,7 +32,6 @@ import time
 from filelock import FileLock
 from ..memory import MemoryConnectionManager
 import hashlib
-import json
 class FileSystemConnectionManager(MemoryConnectionManager):
     """
     Manages EDR connections with persistence to the filesystem using JSON files.
