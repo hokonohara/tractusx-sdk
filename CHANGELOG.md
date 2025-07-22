@@ -5,14 +5,13 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [0.3.2] - 2025-07-22 - not released, included in v0.3.1
+## [0.3.2] - 2025-07-22
 
-### Added
+### Fixed
 
-- feat: enhance connection management with Postgres support + memory Postgres connection caching by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/129
+- Fixed a bug in the memory connection manager and added missing logger support by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/131
 
-
-## [0.3.1] - 2025-07-18
+## [0.3.1] - 2025-07-18 - not released, included in v0.3.2
 
 ### Added
 
