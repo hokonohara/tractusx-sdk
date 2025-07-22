@@ -21,6 +21,11 @@
 #################################################################################
 
 from .base_connection_manager import BaseConnectionManager
-from .database import PostgresConnectionManager
+from .database import (
+    PostgresConnectionManager,
+    PostgresMemoryConnectionManager,
+    PostgresMemoryRefreshConnectionManager
+)
 from .file_system import FileSystemConnectionManager
 from .memory import MemoryConnectionManager
+

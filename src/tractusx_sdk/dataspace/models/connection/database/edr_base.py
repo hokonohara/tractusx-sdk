@@ -20,7 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-# Package-level variables
-__version__ = '0.3.1'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from sqlmodel import SQLModel, Field
+from sqlalchemy import JSON, String
+from sqlmodel import Column
+
+class EDRBase(SQLModel):
+    transfer_id: str = Field(primary_key=True)
+    counter_party_id: str
+    counter_party_address: str
+    query_checksum: str
+    policy_checksum: str
+    edr_data: dict = Field(sa_column=Column(JSON))
+    edr_hash: str = Field(default=None, sa_column=Column(String))
