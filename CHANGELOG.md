@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
  ### Added
 
- - feat/refactor: policy governance models, constants and update models to use new JSON-LD keys by @matbmoser in #126
+ - feat: enhance connection management with Postgres support + memory Postgres connection caching in #126
 
 ## [0.3.0] - 2025-07-16
 
