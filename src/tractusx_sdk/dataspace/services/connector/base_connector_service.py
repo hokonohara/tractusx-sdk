@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -26,6 +27,7 @@ from ..service import BaseService
 from ...adapters.connector.adapter_factory import AdapterFactory
 from ...controllers.connector.base_dma_controller import BaseDmaController
 from ...controllers.connector.controller_factory import ControllerFactory
+from ...managers.auth_manager import AuthManagerInterface
 
 
 class BaseConnectorService(BaseService):
@@ -36,14 +38,19 @@ class BaseConnectorService(BaseService):
     def __init__(self, dataspace_version: str, base_url: str, dma_path: str,
                  consumer_service: BaseConnectorConsumerService,
                  provider_service: BaseConnectorProviderService,
-                 headers: dict = None):
+                 headers: dict = None,
+                 auth_manager: AuthManagerInterface | None = None):
         self.dataspace_version = dataspace_version
+
+        merged_headers = headers or {}
+        if auth_manager is not None:
+            merged_headers = auth_manager.add_auth_header(merged_headers)
 
         dma_adapter = AdapterFactory.get_dma_adapter(
             dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
-            headers=headers
+            headers=merged_headers
         )
 
         self._contract_agreement_controller = ControllerFactory.get_contract_agreement_controller(

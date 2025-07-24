@@ -20,31 +20,12 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-DSP_DATASET_KEY:str="dcat:dataset"
-DSP_POLICY_KEY:str="odrl:hasPolicy"
+from .base_connection_manager import BaseConnectionManager
+from .database import (
+    PostgresConnectionManager,
+    PostgresMemoryConnectionManager,
+    PostgresMemoryRefreshConnectionManager
+)
+from .file_system import FileSystemConnectionManager
+from .memory import MemoryConnectionManager
 
-class JSONLDKeys:
-    AT_ID = "@id"
-    AT_TYPE = "@type"
-    AT_CONTEXT = "@context"
-class DCATKeys:
-    DATASET = "dcat:dataset"
-    
-class ODRLTypes:
-    PERMISSION: str = "permission"
-    PROHIBITION: str = "prohibition"
-    OBLIGATION: str = "obligation"
-    OPERAND_LEFT: str = "operandLeft"
-    OPERATOR: str = "operator"
-    OPERAND_RIGHT: str = "operandRight"
-    EQUALS: str = "="
-class ODRLKeys:
-    POLICY = "odrl:hasPolicy"
-    LEFT_OPERAND = "odrl:leftOperand"
-    OPERATOR = f"odrl:{ODRLTypes.OPERATOR}"
-    RIGHT_OPERAND = "odrl:rightOperand"
-    ODRL_AND = "odrl:and"
-    ODRL_OR = "odrl:or"
-    PERMISSION: str = f"odrl:{ODRLTypes.PERMISSION}"
-    PROHIBITION: str = f"odrl:{ODRLTypes.PROHIBITION}"
-    OBLIGATION: str = f"odrl:{ODRLTypes.OBLIGATION}"

@@ -137,6 +137,8 @@ class ServiceFactory:
             base_url: str,
             dma_path: str,
             headers: dict = None,
+            verbose: bool = True,
+            logger: logging.Logger = None,
             **kwargs
     ):
         """
@@ -146,6 +148,8 @@ class ServiceFactory:
         :param base_url: The base URL of the Connector service
         :param dma_path: The DMA path of the Connector service
         :param headers: The extra headers to be used for requests to the service
+        :param verbose: Verbose flag for the service
+        :param logger: Logger instance for the service
         :return: An instance of the specified Service subclass
         """
 
@@ -160,7 +164,7 @@ class ServiceFactory:
         builder.headers(headers)
 
         # Include any additional parameters
-        builder.data(kwargs)
+        builder.data({**kwargs, "verbose": verbose, "logger": logger})
         return builder.build()
 
     @staticmethod
@@ -200,6 +204,8 @@ class ServiceFactory:
             base_url=base_url,
             dma_path=dma_path,
             headers=headers,
+            verbose=verbose,
+            logger=logger
         )
 
         builder = ServiceFactory._get_service_builder(

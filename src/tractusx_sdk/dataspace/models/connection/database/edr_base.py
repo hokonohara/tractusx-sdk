@@ -20,31 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-DSP_DATASET_KEY:str="dcat:dataset"
-DSP_POLICY_KEY:str="odrl:hasPolicy"
+from sqlmodel import SQLModel, Field
+from sqlalchemy import JSON, String
+from sqlmodel import Column
 
-class JSONLDKeys:
-    AT_ID = "@id"
-    AT_TYPE = "@type"
-    AT_CONTEXT = "@context"
-class DCATKeys:
-    DATASET = "dcat:dataset"
-    
-class ODRLTypes:
-    PERMISSION: str = "permission"
-    PROHIBITION: str = "prohibition"
-    OBLIGATION: str = "obligation"
-    OPERAND_LEFT: str = "operandLeft"
-    OPERATOR: str = "operator"
-    OPERAND_RIGHT: str = "operandRight"
-    EQUALS: str = "="
-class ODRLKeys:
-    POLICY = "odrl:hasPolicy"
-    LEFT_OPERAND = "odrl:leftOperand"
-    OPERATOR = f"odrl:{ODRLTypes.OPERATOR}"
-    RIGHT_OPERAND = "odrl:rightOperand"
-    ODRL_AND = "odrl:and"
-    ODRL_OR = "odrl:or"
-    PERMISSION: str = f"odrl:{ODRLTypes.PERMISSION}"
-    PROHIBITION: str = f"odrl:{ODRLTypes.PROHIBITION}"
-    OBLIGATION: str = f"odrl:{ODRLTypes.OBLIGATION}"
+class EDRBase(SQLModel):
+    transfer_id: str = Field(primary_key=True)
+    counter_party_id: str
+    counter_party_address: str
+    query_checksum: str
+    policy_checksum: str
+    edr_data: dict = Field(sa_column=Column(JSON))
+    edr_hash: str = Field(default=None, sa_column=Column(String))

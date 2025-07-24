@@ -19,3 +19,5 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
+
+from .controller_factory import ControllerFactory
