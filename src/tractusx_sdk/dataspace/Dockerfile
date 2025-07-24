@@ -43,7 +43,7 @@ ENV PYTHONFAULTHANDLER=1 \
 WORKDIR /app
 
 # Install runtime dependencies
-RUN apk update && apk add --no-cache curl sqlite-libs
+RUN apk update && apk add --no-cache curl && apk upgrade sqlite-libs
 
 # Copy only the built wheel
 COPY --from=builder /build/dist/*.whl ./
