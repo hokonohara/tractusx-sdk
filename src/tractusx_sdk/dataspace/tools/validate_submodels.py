@@ -23,12 +23,14 @@
 from typing import Optional
 
 from requests import HTTPError, get
+import jsonschema
 
 
 ## Test Orchestrator of Eclipse Tractus-X SDK Services
 ## License: Apache License, Version 2.0
 ## Source: https://github.com/eclipse-tractusx/tractusx-sdk-services/blob/cfd73933ad7871891bee9f117b32643bc9abad40/test-orchestrator/test_orchestrator/utils.py#L176-L217
 
+@staticmethod
 def submodel_schema_finder(
         semantic_id,
         link_core: Optional[str] = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/'):
@@ -59,3 +61,39 @@ def submodel_schema_finder(
     return {'status': 'ok',
             'message': 'Submodel validation schema retrieved successfully',
             'schema': schema}
+
+@staticmethod
+def json_validator(schema, json_to_validate, validation_type = 'jsonschema'):
+    """
+    Validates a JSON object against a given schema.
+
+    This function uses the specified validation type to check whether a JSON object
+    conforms to a given schema. Currently, only 'jsonschema' validation is supported.
+    Validation errors are recorded with details about the specific violations.
+
+    :param schema: The JSON schema object to validate against.
+    :param json_to_validate: The JSON object to be validated.
+    :param validation_type: The type of validation to perform. Default is 'jsonschema'.
+    :raises HTTPError: Raised if validation errors are found.
+    :return: A dictionary indicating the status and message if validation passes successfully.
+    """
+
+    error_records = []
+
+    if validation_type == 'jsonschema':
+        validator = jsonschema.Draft7Validator(schema)
+
+        for error in validator.iter_errors(json_to_validate):
+            error_records.append({
+                "path": ".".join(str(p) for p in error.path) if error.path else "root",
+                "message": error.message,
+                "validator": error.validator,
+                "expected": error.schema.get("type", "N/A"),  
+                "invalid_value": error.instance  
+            })
+
+        if error_records:
+            raise HTTPError(f"422 Client Error: Validation error - {len(error_records)} validation errors found: {error_records}")
+
+    return {"status": "ok",
+            "message": "Congratulations, your JSON file passed the validation test"}
