@@ -118,7 +118,6 @@ class SammSchemaContextTranslator:
                 raise Exception("Invalid semantic id, missing the model reference!")
             
             aspectName = semanticParts[1]
-
             self.aspectPrefix = aspectName
         
             
@@ -153,7 +152,7 @@ class SammSchemaContextTranslator:
             traceback.print_exc()
             raise Exception("It was not possible to create flattened jsonld schema")
 
-    def schema_to_jsonld_nested(self, semanticId, schema=None, aspectPrefix="aspect", link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/'):
+    def schema_to_jsonld_nested(self, semanticId, schema=None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/'):
         try:
             # If schema is None, try to fetch it using the semantic ID
             if schema is None:
@@ -168,8 +167,8 @@ class SammSchemaContextTranslator:
             if((len(semanticParts) < 2) or (semanticParts[1] == '')):
                 raise Exception("Invalid semantic id, missing the model reference!")
             
-            if not(aspectPrefix is None):
-                self.aspectPrefix = aspectPrefix
+            aspectName = semanticParts[1]
+            self.aspectPrefix = aspectName
 
         
             jsonLdContext = self.create_node(property=schema)

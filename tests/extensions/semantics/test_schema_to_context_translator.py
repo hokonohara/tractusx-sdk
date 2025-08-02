@@ -185,7 +185,7 @@ class TestSchemaToJsonLD:
         assert "@context" in result
         context = result["@context"]
         assert "@version" in context
-        assert math.isclose(result["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
+        assert math.isclose(context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert "schema" in context
         assert context["schema"] == "https://schema.org/"
         assert "TestAspect" in context
@@ -195,14 +195,14 @@ class TestSchemaToJsonLD:
 
     def test_schema_to_jsonld_with_custom_aspect_prefix(self, translator):
         """Test with nested schema method which supports custom aspect prefix."""
-        semantic_id = "urn:samm:example:1.0.0#TestAspect"
+        semantic_id = "urn:samm:example:1.0.0#Custom"
         schema = {"type": "string"}
         
-        result = translator.schema_to_jsonld_nested(semantic_id, schema, aspectPrefix="custom")
+        result = translator.schema_to_jsonld_nested(semantic_id, schema)
         
         context = result["@context"]
-        assert "custom" in context
-        assert context["custom"] == "urn:samm:example:1.0.0#"
+        assert "Custom" in context
+        assert context["Custom"]["@id"] == "Custom:Custom"
 
     def test_schema_to_jsonld_invalid_semantic_id(self, translator):
         """Test with invalid semantic ID."""
