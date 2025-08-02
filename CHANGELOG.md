@@ -5,6 +5,13 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.4]
+
+### Added
+
+- Added SammSchemaContextTranslator for converting SAMM schemas to JSON-LD contexts for verifiable credentials by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/134
+- chore: eliminated trivy and docker files by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/135
+
 ## [0.3.3] - 2025-07-29
 
 ### Added

@@ -19,6 +19,9 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
-__version__ = '0.3.4'
+
+from .schema_to_context_translator import SammSchemaContextTranslator
+
+# Package-level variables
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
