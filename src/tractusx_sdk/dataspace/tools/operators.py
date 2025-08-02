@@ -286,7 +286,7 @@ class op:
         return time.sleep(seconds)
     
     @staticmethod
-    def get_attribute(source_object:str,attr_path:str,default_value=None,path_sep:str="."):
+    def get_attribute(source_object:dict,attr_path:str,default_value=None,path_sep:str="."):
         """
             Method to retrieve an attribute from a nested JSON object
                 Accepts: source_object: JSON object
