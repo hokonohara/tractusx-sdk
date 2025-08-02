@@ -85,7 +85,7 @@ class SammSchemaContextTranslator:
                 self.logger.error(f"Error fetching schema for {semantic_id}: {e}")
             return None
 
-    def schema_to_jsonld(self, semanticId, schema=None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/'):
+    def schema_to_jsonld(self, semantic_id: str, schema: dict = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> dict:
         """
         Convert a SAMM schema to a flattened JSON-LD context suitable for verifiable credentials.
         
@@ -95,7 +95,7 @@ class SammSchemaContextTranslator:
         the semantic model properties directly without nesting.
         
         Args:
-            semanticId (str): The semantic ID of the SAMM model
+            semantic_id (str): The semantic ID of the SAMM model
             schema (dict, optional): The schema to convert. If None, will auto-fetch.
             aspectPrefix (str): Prefix for the aspect namespace
             link_core (str): Base URL for fetching schemas
@@ -107,13 +107,13 @@ class SammSchemaContextTranslator:
             # If schema is None, try to fetch it using the semantic ID
             if schema is None:
                 if self.verbose and self.logger:
-                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semanticId}")
-                schema = self.fetch_schema_from_semantic_id(semanticId, link_core=link_core)
+                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semantic_id}")
+                schema = self.fetch_schema_from_semantic_id(semantic_id, link_core=link_core)
                 if schema is None:
-                    raise Exception(f"Could not fetch schema for semantic ID: {semanticId}")
+                    raise Exception(f"Could not fetch schema for semantic ID: {semantic_id}")
             
             self.baseSchema = copy.copy(schema)
-            semanticParts = semanticId.split(self.rootRef)  
+            semanticParts = semantic_id.split(self.rootRef)  
             if((len(semanticParts) < 2) or (semanticParts[1] == '')):
                 raise Exception("Invalid semantic id, missing the model reference!")
             
@@ -152,18 +152,18 @@ class SammSchemaContextTranslator:
             traceback.print_exc()
             raise Exception("It was not possible to create flattened jsonld schema")
 
-    def schema_to_jsonld_nested(self, semanticId, schema=None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/'):
+    def schema_to_jsonld_nested(self, semantic_id: str, schema: dict = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> dict:
         try:
             # If schema is None, try to fetch it using the semantic ID
             if schema is None:
                 if self.verbose and self.logger:
-                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semanticId}")
-                schema = self.fetch_schema_from_semantic_id(semanticId, link_core=link_core)
+                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semantic_id}")
+                schema = self.fetch_schema_from_semantic_id(semantic_id, link_core=link_core)
                 if schema is None:
-                    raise Exception(f"Could not fetch schema for semantic ID: {semanticId}")
+                    raise Exception(f"Could not fetch schema for semantic ID: {semantic_id}")
             
             self.baseSchema = copy.copy(schema)
-            semanticParts = semanticId.split(self.rootRef)  
+            semanticParts = semantic_id.split(self.rootRef)  
             if((len(semanticParts) < 2) or (semanticParts[1] == '')):
                 raise Exception("Invalid semantic id, missing the model reference!")
             

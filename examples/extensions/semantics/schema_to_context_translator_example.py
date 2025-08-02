@@ -48,16 +48,8 @@ def main():
     # Create translator instance
     translator = SammSchemaContextTranslator(logger=logger, verbose=True)
     
-    print("=" * 70)
-    print("SammSchemaContextTranslator - Auto-fetch Example")
-    print("=" * 70)
-    
     # Use a SerialPart semantic ID - the translator will automatically fetch the schema
     semantic_id = "urn:samm:io.catenax.pcf:7.0.0#Pcf"
-    
-    print(f"🚀 Converting Tractus-X semantic model to JSON-LD context")
-    print(f"   Semantic ID: {semantic_id}")
-    print(f"   Schema: Will be auto-fetched from Tractus-X repository")
     
     try:
         # The translator automatically fetches the schema and converts it to JSON-LD
@@ -67,11 +59,11 @@ def main():
             json.dump(result, f, indent=2)
 
     except Exception as e:
-        print(f"❌ Error: {e}")
-        print(f"💡 Make sure the semantic ID is valid and the schema is available")
-        print(f"   Try other Tractus-X semantic IDs like:")
-        print(f"   - urn:samm:io.catenax.pcf:7.0.0#Pcf")
-        print(f"   - urn:samm:io.catenax.battery.battery_pass:6.0.0#BatteryPass")
+        print(f"Error: {e}"
+        + f" Make sure the semantic ID is valid and the schema is available"
+        + f"   Try other Tractus-X semantic IDs like:"
+        + f"   - urn:samm:io.catenax.pcf:7.0.0#Pcf"
+        + f"   - urn:samm:io.catenax.battery.battery_pass:6.0.0#BatteryPass")
 
 
 if __name__ == "__main__":
