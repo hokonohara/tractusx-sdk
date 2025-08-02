@@ -538,7 +538,7 @@ class TestGetSchemaRef:
         assert result2 == {"type": "string"}
         
         # Third call should trigger recursion limit
-        translator_with_logger.depht = 2  # Set to limit
+        translator_with_logger.depth = 2  # Set to limit
         result3 = translator_with_logger.get_schema_ref("test/ref", "some/other/test/ref/even/more")
         assert result3 is None
         
