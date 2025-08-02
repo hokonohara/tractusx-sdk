@@ -21,6 +21,7 @@
 #################################################################################
 ## Code created partially using a LLM (Claude Sonnet 4) and reviewed by a human committer
 
+import math
 import pytest
 import logging
 from unittest.mock import Mock, patch
@@ -184,7 +185,7 @@ class TestSchemaToJsonLD:
         assert "@context" in result
         context = result["@context"]
         assert "@version" in context
-        assert context["@version"] == 1.1
+        assert math.isclose(result["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert "schema" in context
         assert context["schema"] == "https://schema.org/"
         assert "TestAspect" in context
@@ -436,7 +437,7 @@ class TestCreatePropertiesContext:
         
         assert result is not None
         assert "@version" in result
-        assert result["@version"] == 1.1
+        assert math.isclose(result["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert "id" in result
         assert "type" in result
         assert "testProp" in result
