@@ -42,7 +42,7 @@ class SammSchemaContextTranslator:
         self.aspectPrefix = "aspect"
         self.contextPrefix = "@context"
         self.recursionDepth = 2
-        self.depht = 0
+        self.depth = 0
         self.initialJsonLd = {
             "@version": 1.1,
             self.schemaPrefix: "https://schema.org/"
