@@ -431,13 +431,13 @@ class SammSchemaContextTranslator:
                 path = ref.removeprefix(self.path_sep) 
                 return op.get_attribute(self.baseSchema, attr_path=path, path_sep=self.refPathSep, default_value=None)
             
-            if(self.depht >= self.recursionDepth):
+            if(self.depth >= self.recursionDepth):
                 if(self.verbose and self.logger is not None):
                     self.logger.warning(f"[WARNING] Infinite recursion detected in the following path: ref[{ref}] and acumulated ref[{actualref}]!")
-                self.depht=0
+                self.depth=0
                 return None
             
-            self.depht+=1
+            self.depth+=1
             
             path = ref.removeprefix(self.path_sep) 
 
