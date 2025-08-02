@@ -141,7 +141,7 @@ class TestSammSchemaContextTranslatorInit:
         assert translator.aspectPrefix == "aspect"
         assert translator.contextPrefix == "@context"
         assert translator.recursionDepth == 2
-        assert translator.depht == 0
+        assert translator.depth == 0
 
     def test_init_with_logger_and_verbose(self):
         """Test initialization with logger and verbose mode."""

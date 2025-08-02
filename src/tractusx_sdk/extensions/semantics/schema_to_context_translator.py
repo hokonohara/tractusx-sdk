@@ -85,6 +85,49 @@ class SammSchemaContextTranslator:
                 self.logger.error(f"Error fetching schema for {semantic_id}: {e}")
             return None
 
+    def _prepare_schema_and_context(self, semantic_id: str, schema: dict = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> tuple:
+        """
+        Common preparation logic for both flattened and nested JSON-LD context generation.
+        
+        Args:
+            semantic_id (str): The semantic ID of the SAMM model
+            schema (dict, optional): The schema to convert. If None, will auto-fetch.
+            link_core (str): Base URL for fetching schemas
+            
+        Returns:
+            tuple: (schema, aspect_name, jsonld_context, response_context)
+        """
+        # If schema is None, try to fetch it using the semantic ID
+        if schema is None:
+            if self.verbose and self.logger:
+                self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semantic_id}")
+            schema = self.fetch_schema_from_semantic_id(semantic_id, link_core=link_core)
+            if schema is None:
+                raise Exception(f"Could not fetch schema for semantic ID: {semantic_id}")
+        
+        self.baseSchema = copy.copy(schema)
+        semantic_parts = semantic_id.split(self.rootRef)  
+        if((len(semantic_parts) < 2) or (semantic_parts[1] == '')):
+            raise Exception("Invalid semantic id, missing the model reference!")
+        
+        aspect_name = semantic_parts[1]
+        self.aspectPrefix = aspect_name
+        
+        # Create the node context for the schema
+        jsonld_context = self.create_node(property=schema)
+        
+        if jsonld_context is None:
+            raise Exception("It was not possible to generated the json-ld!")
+        
+        # Start with the basic JSON-LD structure
+        response_context = copy.copy(self.initialJsonLd)
+        
+        # Add semantic path reference
+        semantic_path = semantic_parts[0]
+        response_context[self.aspectPrefix] = semantic_path + self.rootRef
+        
+        return schema, aspect_name, jsonld_context, response_context
+
     def schema_to_jsonld(self, semantic_id: str, schema: dict = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> dict:
         """
         Convert a SAMM schema to a flattened JSON-LD context suitable for verifiable credentials.
@@ -97,97 +140,65 @@ class SammSchemaContextTranslator:
         Args:
             semantic_id (str): The semantic ID of the SAMM model
             schema (dict, optional): The schema to convert. If None, will auto-fetch.
-            aspectPrefix (str): Prefix for the aspect namespace
             link_core (str): Base URL for fetching schemas
             
         Returns:
             dict: Flattened JSON-LD context
         """
         try:
-            # If schema is None, try to fetch it using the semantic ID
-            if schema is None:
-                if self.verbose and self.logger:
-                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semantic_id}")
-                schema = self.fetch_schema_from_semantic_id(semantic_id, link_core=link_core)
-                if schema is None:
-                    raise Exception(f"Could not fetch schema for semantic ID: {semantic_id}")
+            schema, _, jsonld_context, response_context = self._prepare_schema_and_context(
+                semantic_id, schema, link_core
+            )
             
-            self.baseSchema = copy.copy(schema)
-            semanticParts = semantic_id.split(self.rootRef)  
-            if((len(semanticParts) < 2) or (semanticParts[1] == '')):
-                raise Exception("Invalid semantic id, missing the model reference!")
-            
-            aspectName = semanticParts[1]
-            self.aspectPrefix = aspectName
-        
-            
-            # Create the node context for the schema
-            jsonLdContext = self.create_node(property=schema)
-            
-            if jsonLdContext is None:
-                raise Exception("It was not possible to generated the json-ld!")
-            
-            # Start with the basic JSON-LD structure
-            responseContext = copy.copy(self.initialJsonLd)
-            
-            # Instead of nesting under aspectName, flatten the properties to root level
-            if "@context" in jsonLdContext and isinstance(jsonLdContext["@context"], dict):
+            # Flatten the properties to root level
+            if "@context" in jsonld_context and isinstance(jsonld_context["@context"], dict):
                 # Merge the properties from the nested context to the root level
-                nested_context = jsonLdContext["@context"]
+                nested_context = jsonld_context["@context"]
                 for key, value in nested_context.items():
                     if key not in ["@version", "id", "type"]:  # Skip standard JSON-LD keys
-                        responseContext[key] = value
-            
-            semanticPath = semanticParts[0]
-            responseContext[self.aspectPrefix] = semanticPath + self.rootRef
+                        response_context[key] = value
             
             # Add description if available
             if "description" in schema:
-                responseContext["@definition"] = schema["description"]
+                response_context["@definition"] = schema["description"]
                 
             return {
-                "@context": responseContext
+                "@context": response_context
             }
         except:
             traceback.print_exc()
             raise Exception("It was not possible to create flattened jsonld schema")
 
     def schema_to_jsonld_nested(self, semantic_id: str, schema: dict = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> dict:
-        try:
-            # If schema is None, try to fetch it using the semantic ID
-            if schema is None:
-                if self.verbose and self.logger:
-                    self.logger.info(f"Schema not provided, attempting to fetch from semantic ID: {semantic_id}")
-                schema = self.fetch_schema_from_semantic_id(semantic_id, link_core=link_core)
-                if schema is None:
-                    raise Exception(f"Could not fetch schema for semantic ID: {semantic_id}")
-            
-            self.baseSchema = copy.copy(schema)
-            semanticParts = semantic_id.split(self.rootRef)  
-            if((len(semanticParts) < 2) or (semanticParts[1] == '')):
-                raise Exception("Invalid semantic id, missing the model reference!")
-            
-            aspectName = semanticParts[1]
-            self.aspectPrefix = aspectName
-
+        """
+        Convert a SAMM schema to a nested JSON-LD context.
         
-            jsonLdContext = self.create_node(property=schema)
+        This variant creates a nested context where the semantic model properties are grouped
+        under the aspect name in the context structure.
+        
+        Args:
+            semantic_id (str): The semantic ID of the SAMM model
+            schema (dict, optional): The schema to convert. If None, will auto-fetch.
+            link_core (str): Base URL for fetching schemas
             
-            if jsonLdContext is None:
-                raise Exception("It was not possible to generated the json-ld!")
+        Returns:
+            dict: Nested JSON-LD context
+        """
+        try:
+            schema, aspect_name, jsonld_context, response_context = self._prepare_schema_and_context(
+                semantic_id, schema, link_core
+            )
             
-            responseContext = copy.copy(self.initialJsonLd)
-
-            semanticPath = semanticParts[0]
-            responseContext[self.aspectPrefix] = semanticPath + self.rootRef
-            aspectName = semanticParts[1]
-            jsonLdContext["@id"] = ":".join([self.aspectPrefix,aspectName])
-            responseContext[aspectName] = jsonLdContext
+            # Create nested structure under aspect name
+            jsonld_context["@id"] = ":".join([self.aspectPrefix, aspect_name])
+            response_context[aspect_name] = jsonld_context
             
+            # Add description if available
             if "description" in schema:
-                responseContext[aspectName]["@context"]["@definition"] = schema["description"]
+                response_context[aspect_name]["@context"]["@definition"] = schema["description"]
+                
             return {
-                "@context": responseContext
+                "@context": response_context
             }
         except:
             traceback.print_exc()
