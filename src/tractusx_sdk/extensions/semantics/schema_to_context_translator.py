@@ -161,6 +161,10 @@ class SammSchemaContextTranslator:
             # Add description if available
             if "description" in schema:
                 response_context["@definition"] = schema["description"]
+            
+            # Add x-samm-aspect-model-urn if available at the root level
+            if "x-samm-aspect-model-urn" in schema:
+                response_context["@samm-urn"] = schema["x-samm-aspect-model-urn"]
                 
             return {
                 "@context": response_context
@@ -196,6 +200,10 @@ class SammSchemaContextTranslator:
             # Add description if available
             if "description" in schema:
                 response_context[aspect_name]["@context"]["@definition"] = schema["description"]
+            
+            # Add x-samm-aspect-model-urn if available at the root level
+            if "x-samm-aspect-model-urn" in schema:
+                response_context[aspect_name]["@context"]["@samm-urn"] = schema["x-samm-aspect-model-urn"]
                 
             return {
                 "@context": response_context
@@ -344,15 +352,21 @@ class SammSchemaContextTranslator:
             if nodeItem is None: return None
 
             newContext.update(nodeItem)
-            ## Overite the existing description of ref item
-
-            if not ("description" in item):
-                return newContext
             
-            if not ("@context" in newContext):
-                newContext["@context"] = dict()
+            ## Check if we need to add additional context information
+            needs_context_update = ("description" in item) or ("x-samm-aspect-model-urn" in item)
+            
+            if needs_context_update:
+                if not ("@context" in newContext):
+                    newContext["@context"] = dict()
 
-            newContext["@context"]["@definition"]  = item["description"] 
+                ## Override the existing description of ref item
+                if "description" in item:
+                    newContext["@context"]["@definition"] = item["description"]
+                
+                ## Add x-samm-aspect-model-urn if present in the item
+                if "x-samm-aspect-model-urn" in item:
+                    newContext["@context"]["@samm-urn"] = item["x-samm-aspect-model-urn"]
 
             return newContext
         except:
@@ -374,14 +388,20 @@ class SammSchemaContextTranslator:
             ## If was not possible to get the reference return None
             if nodeProperty is None: return None
 
-            ## Overite the existing description of ref property
-            if not ("description" in node):
-                return nodeProperty
+            ## Check if we need to add additional context information
+            needs_context_update = ("description" in node) or ("x-samm-aspect-model-urn" in node)
             
-            if not ("@context" in nodeProperty):
-                nodeProperty["@context"] = dict()
+            if needs_context_update:
+                if not ("@context" in nodeProperty):
+                    nodeProperty["@context"] = dict()
 
-            nodeProperty["@context"]["@definition"]  = node["description"]
+                ## Override the existing description of ref property
+                if "description" in node:
+                    nodeProperty["@context"]["@definition"] = node["description"]
+                
+                ## Add x-samm-aspect-model-urn if present in the property
+                if "x-samm-aspect-model-urn" in node:
+                    nodeProperty["@context"]["@samm-urn"] = node["x-samm-aspect-model-urn"]
 
             return nodeProperty
         except:
@@ -410,15 +430,26 @@ class SammSchemaContextTranslator:
                 newNode["@id"] = self.aspectPrefix+":"+key
             
 
-            ## If description exists add definition to the node
-
-            if not ("description" in property):
-                return newNode
+            ## Check if we need to create a @context section
+            needs_context = False
             
-            if not ("@context" in newNode):
-                newNode["@context"] = dict()
-
-            newNode["@context"]["@definition"] = property["description"]
+            ## If description exists add definition to the node
+            if "description" in property:
+                needs_context = True
+            
+            ## If x-samm-aspect-model-urn exists, add it to preserve semantic model information
+            if "x-samm-aspect-model-urn" in property:
+                needs_context = True
+            
+            if needs_context:
+                if not ("@context" in newNode):
+                    newNode["@context"] = dict()
+                
+                if "description" in property:
+                    newNode["@context"]["@definition"] = property["description"]
+                
+                if "x-samm-aspect-model-urn" in property:
+                    newNode["@context"]["@samm-urn"] = property["x-samm-aspect-model-urn"]
 
             return newNode
         except:
