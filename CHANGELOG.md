@@ -5,6 +5,12 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.5]
+
+### Added
+
+- feat: enhance schema context with `x-samm-aspect-model-urn` and metadata handling by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/136
+
 ## [0.3.4]
 
 ### Added
