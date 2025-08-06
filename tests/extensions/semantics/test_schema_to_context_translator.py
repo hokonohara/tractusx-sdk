@@ -307,7 +307,7 @@ class TestCreateValueNode:
 class TestCreateObjectNode:
     """Test the create_object_node method."""
 
-    @patch.object(SammSchemaContextTranslator, 'create_properties_context')
+    @patch.object(SammSchemaContextTranslator, 'create_single_properties_context')
     def test_create_object_node_with_properties(self, mock_create_properties, translator):
         """Test creating an object node with properties."""
         mock_create_properties.return_value = {"test": "context"}
@@ -422,7 +422,7 @@ class TestFilterKey:
 
 
 class TestCreatePropertiesContext:
-    """Test the create_properties_context method."""
+    """Test the create_single_properties_context method."""
 
     @patch.object(SammSchemaContextTranslator, 'create_node_property')
     def test_create_properties_context_valid(self, mock_create_node_property, translator):
@@ -433,7 +433,7 @@ class TestCreatePropertiesContext:
             "testProp": {"$ref": "#/components/schemas/StringProperty"}
         }
         
-        result = translator.create_properties_context(properties, "test/ref")
+        result = translator.create_single_properties_context(properties, "test/ref")
         
         assert result is not None
         assert "@version" in result
@@ -445,15 +445,15 @@ class TestCreatePropertiesContext:
 
     def test_create_properties_context_empty(self, translator):
         """Test creating properties context with empty properties returns None."""
-        result = translator.create_properties_context({}, "test/ref")
+        result = translator.create_single_properties_context({}, "test/ref")
         assert result is None
         
-        result = translator.create_properties_context(None, "test/ref")
+        result = translator.create_single_properties_context(None, "test/ref")
         assert result is None
 
     def test_create_properties_context_invalid_type(self, translator):
         """Test creating properties context with invalid type returns None."""
-        result = translator.create_properties_context("not_a_dict", "test/ref")
+        result = translator.create_single_properties_context("not_a_dict", "test/ref")
         assert result is None
 
 
@@ -526,21 +526,25 @@ class TestGetSchemaRef:
     @patch('tractusx_sdk.extensions.semantics.schema_to_context_translator.op.get_attribute')
     def test_get_schema_ref_recursion_detection(self, mock_get_attribute, translator_with_logger):
         """Test recursion detection in get_schema_ref."""
+        import hashlib
+        
         mock_get_attribute.return_value = {"type": "string"}
         translator_with_logger.baseSchema = {"test": "schema"}
         
-        # First call should work
-        result1 = translator_with_logger.get_schema_ref("test/ref", "some/other/test/ref")
+        # Test case where ref is NOT in actualref (should work normally)
+        result1 = translator_with_logger.get_schema_ref("test/ref", "some/other/path")
         assert result1 == {"type": "string"}
         
-        # Second call with same ref in actualref should increment depth
-        result2 = translator_with_logger.get_schema_ref("test/ref", "some/other/test/ref/more")
-        assert result2 == {"type": "string"}
+        # Test case where ref hash IS in actualref and depth exceeds limit
+        ref = "test/ref"
+        ref_hash = hashlib.sha256(ref.encode()).hexdigest()
+        actualref_with_hash = f"some/path/{ref_hash}/more"
         
-        # Third call should trigger recursion limit
-        translator_with_logger.depth = 2  # Set to limit
-        result3 = translator_with_logger.get_schema_ref("test/ref", "some/other/test/ref/even/more")
-        assert result3 is None
+        # Set depth to exceed limit
+        translator_with_logger.depth = translator_with_logger.recursionDepth  # Should trigger limit
+        
+        result2 = translator_with_logger.get_schema_ref(ref, actualref_with_hash)
+        assert result2 is None
         
         # Check that warning was logged
         translator_with_logger.logger.warning.assert_called()
@@ -577,6 +581,306 @@ class TestExpandNode:
         
         result = translator.expand_node("#/components/schemas/MissingProperty", "test/ref")
         assert result is None
+
+
+class TestCreateMultiplePropertiesContext:
+    """Test the create_multiple_properties_context method for allOf processing."""
+
+    @pytest.fixture
+    def allof_schema(self):
+        """Schema with allOf references for testing."""
+        return {
+            "components": {
+                "schemas": {
+                    "PersonalData": {
+                        "type": "object",
+                        "description": "Personal data schema",
+                        "properties": {
+                            "firstName": {
+                                "type": "string",
+                                "description": "First name"
+                            },
+                            "lastName": {
+                                "type": "string",
+                                "description": "Last name"
+                            }
+                        }
+                    },
+                    "ContactData": {
+                        "type": "object",
+                        "description": "Contact information schema",
+                        "properties": {
+                            "email": {
+                                "type": "string",
+                                "description": "Email address"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    @patch.object(SammSchemaContextTranslator, 'create_item_context')
+    def test_create_multiple_properties_context_with_parent_metadata(self, mock_create_item, translator, allof_schema):
+        """Test that parent metadata is preserved in allOf processing."""
+        translator.baseSchema = allof_schema
+        
+        # Mock the item context to simulate expanded schemas
+        mock_create_item.return_value = {
+            "@context": {
+                "@version": 1.1,
+                "id": "@id", 
+                "type": "@type",
+                "firstName": {
+                    "@id": "aspect:firstName",
+                    "@type": "schema:string"
+                },
+                "email": {
+                    "@id": "aspect:email", 
+                    "@type": "schema:string"
+                }
+            }
+        }
+        
+        # allOf combining schemas  
+        all_of_items = [
+            {"$ref": "#/components/schemas/PersonalData"},
+            {"$ref": "#/components/schemas/ContactData"}
+        ]
+        
+        # Parent property with metadata
+        parent_property = {
+            "type": "object",
+            "description": "Complete user profile",
+            "x-samm-aspect-model-urn": "urn:samm:example:1.0.0#UserProfile",
+            "allOf": all_of_items
+        }
+        
+        result_context = translator.create_multiple_properties_context(
+            all_of=all_of_items,
+            property=parent_property,
+            actualref=""
+        )
+        
+        # Verify base template is preserved
+        assert result_context["@version"] == 1.1
+        assert result_context["id"] == "@id"
+        assert result_context["type"] == "@type"
+        
+        # Verify parent metadata is preserved
+        assert result_context["@definition"] == "Complete user profile"
+        assert result_context["@samm-urn"] == "urn:samm:example:1.0.0#UserProfile"
+        
+        # Verify properties from allOf are merged
+        assert "firstName" in result_context
+        assert "email" in result_context
+
+    @patch.object(SammSchemaContextTranslator, 'create_item_context')
+    def test_create_multiple_properties_context_without_parent_metadata(self, mock_create_item, translator, allof_schema):
+        """Test allOf processing without parent metadata."""
+        translator.baseSchema = allof_schema
+        
+        # Mock simple context
+        mock_create_item.return_value = {
+            "@context": {
+                "@version": 1.1,
+                "id": "@id",
+                "type": "@type",
+                "firstName": {
+                    "@id": "aspect:firstName",
+                    "@type": "schema:string"
+                }
+            }
+        }
+        
+        all_of_items = [{"$ref": "#/components/schemas/PersonalData"}]
+        
+        # Parent property without metadata
+        parent_property = {
+            "type": "object",
+            "allOf": all_of_items
+        }
+        
+        result_context = translator.create_multiple_properties_context(
+            all_of=all_of_items,
+            property=parent_property,
+            actualref=""
+        )
+        
+        # Verify base template is preserved
+        assert result_context["@version"] == 1.1
+        assert result_context["id"] == "@id"
+        assert result_context["type"] == "@type"
+        
+        # Verify no metadata is added when not present
+        assert "@definition" not in result_context
+        assert "@samm-urn" not in result_context
+        
+        # Verify properties are still merged
+        assert "firstName" in result_context
+
+    def test_create_multiple_properties_context_empty_allof(self, translator):
+        """Test allOf processing with empty allOf array."""
+        all_of_items = []
+        parent_property = {"type": "object", "allOf": all_of_items}
+        
+        result_context = translator.create_multiple_properties_context(
+            all_of=all_of_items,
+            property=parent_property,
+            actualref=""
+        )
+        
+        # Should still return base template
+        assert result_context["@version"] == 1.1
+        assert result_context["id"] == "@id"
+        assert result_context["type"] == "@type"
+
+    @patch.object(SammSchemaContextTranslator, 'create_item_context')
+    def test_create_multiple_properties_context_invalid_refs(self, mock_create_item, translator, allof_schema):
+        """Test allOf processing with invalid references."""
+        translator.baseSchema = allof_schema
+        
+        # Mock return None for invalid refs, valid context for valid refs
+        def mock_item_context_side_effect(item, actualref):
+            if item.get("$ref") == "#/components/schemas/PersonalData":
+                return {
+                    "@context": {
+                        "@version": 1.1,
+                        "id": "@id",
+                        "type": "@type",
+                        "firstName": {
+                            "@id": "aspect:firstName",
+                            "@type": "schema:string"
+                        }
+                    }
+                }
+            return None  # For invalid refs
+        
+        mock_create_item.side_effect = mock_item_context_side_effect
+        
+        # Mix of valid and invalid references
+        all_of_items = [
+            {"$ref": "#/components/schemas/PersonalData"},  # Valid
+            {"$ref": "#/components/schemas/NonExistent"},   # Invalid
+            {"not_a_ref": "value"},                         # Not a reference
+        ]
+        
+        parent_property = {
+            "type": "object",
+            "description": "Test with invalid refs",
+            "allOf": all_of_items
+        }
+        
+        result_context = translator.create_multiple_properties_context(
+            all_of=all_of_items,
+            property=parent_property,
+            actualref=""
+        )
+        
+        # Should still work and include parent metadata
+        assert result_context["@version"] == 1.1
+        assert result_context["@definition"] == "Test with invalid refs"
+        
+        # Should include properties from valid refs
+        assert "firstName" in result_context
+
+
+class TestCreateObjectNodeWithAllOf:
+    """Test create_object_node method with allOf scenarios."""
+
+    @pytest.fixture
+    def allof_schema(self):
+        """Schema with allOf references for testing."""
+        return {
+            "components": {
+                "schemas": {
+                    "Schema1": {
+                        "type": "object",
+                        "properties": {
+                            "prop1": {"type": "string"}
+                        }
+                    },
+                    "Schema2": {
+                        "type": "object",
+                        "properties": {
+                            "prop2": {"type": "integer"}
+                        }
+                    }
+                }
+            }
+        }
+
+    @patch.object(SammSchemaContextTranslator, 'create_multiple_properties_context')
+    def test_create_object_node_with_allof(self, mock_create_multiple, translator, allof_schema):
+        """Test create_object_node with allOf property."""
+        translator.baseSchema = allof_schema
+        
+        # Mock the multiple properties context creation
+        mock_create_multiple.return_value = {
+            "@version": 1.1,
+            "id": "@id",
+            "type": "@type",
+            "@definition": "Combined schema",
+            "@samm-urn": "urn:samm:test:1.0.0#Combined",
+            "prop1": {"@id": "aspect:prop1"},
+            "prop2": {"@id": "aspect:prop2"}
+        }
+        
+        # Property with allOf
+        property_def = {
+            "type": "object",
+            "description": "Combined schema",
+            "x-samm-aspect-model-urn": "urn:samm:test:1.0.0#Combined",
+            "allOf": [
+                {"$ref": "#/components/schemas/Schema1"},
+                {"$ref": "#/components/schemas/Schema2"}
+            ]
+        }
+        
+        node = {"@id": "test:Combined"}
+        
+        result = translator.create_object_node(property_def, node, "")
+        
+        assert result is not None
+        assert "@context" in result
+        context = result["@context"]
+        
+        # Verify parent metadata is included
+        assert context["@definition"] == "Combined schema"
+        assert context["@samm-urn"] == "urn:samm:test:1.0.0#Combined"
+        
+        # Verify base template
+        assert context["@version"] == 1.1
+        assert context["id"] == "@id"
+        assert context["type"] == "@type"
+        
+        # Verify merged properties
+        assert "prop1" in context
+        assert "prop2" in context
+
+    def test_create_object_node_allof_vs_properties(self, translator):
+        """Test that allOf takes precedence over properties when both are present."""
+        # This shouldn't happen in valid schemas, but test the behavior
+        property_def = {
+            "type": "object",
+            "properties": {"regularProp": {"type": "string"}},
+            "allOf": [{"$ref": "#/$defs/SomeSchema"}]
+        }
+        
+        node = {"@id": "test:Mixed"}
+        
+        # Should use allOf path (create_multiple_properties_context)
+        # and not properties path (create_single_properties_context)
+        with patch.object(translator, 'create_multiple_properties_context') as mock_multi:
+            with patch.object(translator, 'create_single_properties_context') as mock_single:
+                mock_multi.return_value = {"test": "allof"}
+                
+                result = translator.create_object_node(property_def, node, "")
+                
+                # Should call create_multiple_properties_context, not create_single_properties_context
+                mock_multi.assert_called_once()
+                mock_single.assert_not_called()
+                assert result["@context"] == {"test": "allof"}
 
 
 class TestIntegration:
