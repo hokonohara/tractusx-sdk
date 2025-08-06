@@ -189,7 +189,7 @@ class TestSchemaToJsonLD:
         assert "schema" in context
         assert context["schema"] == "https://schema.org/"
         assert "TestAspect" in context
-        assert context["TestAspect"] == "urn:samm:example:1.0.0#"
+        assert context["testaspect-aspect"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Test string property"
 
@@ -202,7 +202,7 @@ class TestSchemaToJsonLD:
         
         context = result["@context"]
         assert "Custom" in context
-        assert context["Custom"]["@id"] == "Custom:Custom"
+        assert context["Custom"]["@id"] == "custom-aspect:Custom"
 
     def test_schema_to_jsonld_invalid_semantic_id(self, translator):
         """Test with invalid semantic ID."""
@@ -230,7 +230,7 @@ class TestSchemaToJsonLD:
         context = result["@context"]
         
         assert "TestAspect" in context
-        assert context["TestAspect"] == "urn:samm:example:1.0.0#"
+        assert context["testaspect-aspect"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Test description"
 
@@ -591,7 +591,7 @@ class TestIntegration:
         assert "@context" in result
         context = result["@context"]
         assert "ComplexAspect" in context
-        assert context["ComplexAspect"] == "urn:samm:example:1.0.0#"
+        assert context["complexaspect-aspect"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Complex nested schema"
 
