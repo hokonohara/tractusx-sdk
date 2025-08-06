@@ -663,7 +663,7 @@ class TestCreateMultiplePropertiesContext:
         )
         
         # Verify base template is preserved
-        assert result_context["@version"] == 1.1
+        assert math.isclose(result_context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert result_context["id"] == "@id"
         assert result_context["type"] == "@type"
         
@@ -708,7 +708,7 @@ class TestCreateMultiplePropertiesContext:
         )
         
         # Verify base template is preserved
-        assert result_context["@version"] == 1.1
+        assert math.isclose(result_context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert result_context["id"] == "@id"
         assert result_context["type"] == "@type"
         
@@ -731,7 +731,7 @@ class TestCreateMultiplePropertiesContext:
         )
         
         # Should still return base template
-        assert result_context["@version"] == 1.1
+        assert math.isclose(result_context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert result_context["id"] == "@id"
         assert result_context["type"] == "@type"
 
@@ -778,7 +778,7 @@ class TestCreateMultiplePropertiesContext:
         )
         
         # Should still work and include parent metadata
-        assert result_context["@version"] == 1.1
+        assert math.isclose(result_context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert result_context["@definition"] == "Test with invalid refs"
         
         # Should include properties from valid refs
@@ -850,7 +850,7 @@ class TestCreateObjectNodeWithAllOf:
         assert context["@samm-urn"] == "urn:samm:test:1.0.0#Combined"
         
         # Verify base template
-        assert context["@version"] == 1.1
+        assert math.isclose(context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert context["id"] == "@id"
         assert context["type"] == "@type"
         
