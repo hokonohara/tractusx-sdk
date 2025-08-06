@@ -21,6 +21,6 @@
 #################################################################################
 
 # Package-level variables
-__version__ = '0.3.6'
+__version__ = '0.3.7'
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
