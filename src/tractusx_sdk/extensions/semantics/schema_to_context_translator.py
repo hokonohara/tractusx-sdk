@@ -20,10 +20,10 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-## JSON Schema to JSON-LD @context from Eclipse Tractus-X Simple Wallet
+## JSON Schema to JSON-LD @context from Eclipse Tractus-X Digital Product Passport Simple Wallet
 ## Author: Mathias Brunkow Moser
 ## License: Apache License, Version 2.0
-## Original Source: https://github.com/eclipse-tractusx/digital-product-pass/blob/main/dpp-verification/simple-wallet/utilities/httpUtils.py
+## Original Source: https://github.com/eclipse-tractusx/digital-product-pass/blob/main/dpp-verification/simple-wallet/passport/sammSchemaParser.py
 ## Here extended and stabilized to work with any SAMM Schema from sldt-semantic-models for the Data Trust & Security KIT
 
 
