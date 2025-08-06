@@ -111,7 +111,7 @@ class SammSchemaContextTranslator:
             raise Exception("Invalid semantic id, missing the model reference!")
         
         aspect_name = semantic_parts[1]
-        self.aspectPrefix = aspect_name
+        self.aspectPrefix = f"{aspect_name.lower()}-aspect"
         
         # Create the node context for the schema
         jsonld_context = self.create_node(property=schema)
@@ -146,9 +146,15 @@ class SammSchemaContextTranslator:
             dict: Flattened JSON-LD context
         """
         try:
-            schema, _, jsonld_context, response_context = self._prepare_schema_and_context(
+            schema, aspect_name, jsonld_context, response_context = self._prepare_schema_and_context(
                 semantic_id, schema, link_core
             )
+            
+            # Add the aspect name itself as a property in the flattened context
+            response_context[aspect_name] = {
+                "@id": f"{self.aspectPrefix}:{aspect_name}",
+                "@type": "@id"
+            }
             
             # Flatten the properties to root level
             if "@context" in jsonld_context and isinstance(jsonld_context["@context"], dict):
