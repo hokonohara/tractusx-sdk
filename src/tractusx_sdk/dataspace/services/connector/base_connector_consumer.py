@@ -577,6 +577,37 @@ class BaseConnectorConsumerService(BaseService):
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
         operator="="
     ) -> tuple[str, str]:
+        """
+        Performs DSP (Dataspace Protocol) exchange filtered by DCT (Dublin Core Terms) type from the DCMI Metadata Terms.
+        
+        This method establishes an EDC connection by filtering the catalog based on a specific DCT type,
+        negotiates the contract, and returns the dataplane endpoint and access token for data access.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for data access.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval fails.
+        
+        Example:
+        ```python
+        endpoint, token = connector.do_dsp_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            dct_type="IndustryFlagService"
+        )
+        ```
+        """
         return self.do_dsp(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -595,6 +626,37 @@ class BaseConnectorConsumerService(BaseService):
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="="
     ) -> tuple[str, str]:
+        """
+        Performs DSP (Dataspace Protocol) exchange filtered by specific asset ID.
+        
+        This method establishes an EDC connection by filtering the catalog for a specific asset,
+        negotiates the contract, and returns the dataplane endpoint and access token for data access.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for data access.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval fails.
+        
+        Example:
+        ```python
+        endpoint, token = connector.do_dsp_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc"
+        )
+        ```
+        """
         return self.do_dsp(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -615,6 +677,43 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs,
     ):
+        """
+        Executes an HTTP GET request to an asset behind an EDC, filtered by DCT type.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) and then executes a GET request to the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_get method 
+            (e.g., path, headers, timeout, verify, params, allow_redirects).
+
+        Returns:
+        requests.Response: The HTTP response from the GET request to the dataplane.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        response = connector.do_get_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            dct_type="IndustryFlagService",
+            path="/data/latest",
+            timeout=30
+        )
+        data = response.json()
+        ```
+        """
         return self.do_get(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -637,6 +736,44 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs,
     ):
+        """
+        Executes an HTTP GET request to a specific asset behind an EDC.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) for a specific asset and then executes a GET request to the 
+        resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_get method 
+            (e.g., path, headers, timeout, verify, params, allow_redirects).
+
+        Returns:
+        requests.Response: The HTTP response from the GET request to the dataplane.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        response = connector.do_get_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
+            path="/data/latest",
+            headers={"Accept": "application/json"}
+        )
+        data = response.json()
+        ```
+        """
         return self.do_get(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -660,6 +797,46 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs,
     ) -> tuple[str, str]:
+        """
+        Executes an HTTP POST request to an asset behind an EDC, filtered by DCT type.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) and then executes a POST request with the provided body to 
+        the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        body: The request body to send in the POST request. Can be dict, list, or any JSON-serializable object.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_post method 
+            (e.g., path, content_type, headers, timeout, verify, allow_redirects).
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for the completed request.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        request_data = {"query": "SELECT * FROM data", "limit": 100}
+        endpoint, token = connector.do_post_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            body=request_data,
+            dct_type="QueryService",
+            path="/query",
+            content_type="application/json"
+        )
+        ```
+        """
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -684,6 +861,46 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs
     ) -> tuple[str, str]:
+        """
+        Executes an HTTP POST request to a specific asset behind an EDC.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) for a specific asset and then executes a POST request with 
+        the provided body to the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        body: The request body to send in the POST request. Can be dict, list, or any JSON-serializable object.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_post method 
+            (e.g., path, content_type, headers, timeout, verify, allow_redirects).
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for the completed request.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        update_data = {"status": "processed", "timestamp": "2025-08-07T10:30:00Z"}
+        endpoint, token = connector.do_post_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            body=update_data,
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
+            path="/update",
+            content_type="application/json"
+        )
+        ```
+        """
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
