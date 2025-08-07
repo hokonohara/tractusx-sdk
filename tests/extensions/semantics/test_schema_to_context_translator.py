@@ -189,7 +189,7 @@ class TestSchemaToJsonLD:
         assert "schema" in context
         assert context["schema"] == "https://schema.org/"
         assert "TestAspect" in context
-        assert context["testaspect-aspect"] == "urn:samm:example:1.0.0#"
+        assert context["cx"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Test string property"
 
@@ -202,7 +202,7 @@ class TestSchemaToJsonLD:
         
         context = result["@context"]
         assert "Custom" in context
-        assert context["Custom"]["@id"] == "custom-aspect:Custom"
+        assert context["Custom"]["@id"] == "cx:Custom"
 
     def test_schema_to_jsonld_invalid_semantic_id(self, translator):
         """Test with invalid semantic ID."""
@@ -230,9 +230,144 @@ class TestSchemaToJsonLD:
         context = result["@context"]
         
         assert "TestAspect" in context
-        assert context["testaspect-aspect"] == "urn:samm:example:1.0.0#"
+        assert context["cx"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Test description"
+
+    def test_schema_to_jsonld_with_conflicting_properties(self, translator):
+        """Test schema with properties that conflict with JSON-LD reserved words."""
+        semantic_id = "urn:samm:example:1.0.0#TestAspect"
+        
+        # Create a schema with property references that would create "id" and "type" context entries
+        schema = {
+            "type": "object",
+            "description": "Schema with conflicting properties",
+            "properties": {
+                "identifier": {
+                    "$ref": "#/components/schemas/IdProperty"
+                },
+                "typeField": {
+                    "$ref": "#/components/schemas/TypeProperty"
+                },
+                "normalProp": {
+                    "$ref": "#/components/schemas/StringProperty"
+                }
+            },
+            "components": {
+                "schemas": {
+                    "IdProperty": {
+                        "type": "string",
+                        "description": "An ID property"
+                    },
+                    "TypeProperty": {
+                        "type": "string", 
+                        "description": "A type property"
+                    },
+                    "StringProperty": {
+                        "type": "string",
+                        "description": "A normal property"
+                    }
+                }
+            }
+        }
+        
+        result = translator.schema_to_jsonld(semantic_id, schema)
+        context = result["@context"]
+        
+        # Verify basic structure
+        assert "TestAspect" in context
+        assert context["cx"] == "urn:samm:example:1.0.0#"
+        assert "@definition" in context
+        assert context["@definition"] == "Schema with conflicting properties"
+        
+        # Verify properties are present (these should be normal properties, not conflicting ones)
+        assert "identifier" in context
+        assert "typeField" in context
+        assert "normalProp" in context
+        
+        # Verify the standard JSON-LD properties remain unchanged
+        assert context["id"] == "@id"
+        assert context["type"] == "@type"
+
+    @patch.object(SammSchemaContextTranslator, 'create_node')
+    def test_schema_to_jsonld_with_id_type_conflict_resolution(self, mock_create_node, translator):
+        """Test the specific logic for handling 'id' and 'type' property conflicts."""
+        semantic_id = "urn:samm:example:1.0.0#TestAspect"
+        schema = {"type": "object", "description": "Test schema"}
+        
+        # Mock create_node to return a context that has "id" and "type" as non-string values
+        # This simulates the scenario where the nested context would conflict with JSON-LD reserved words
+        mock_create_node.return_value = {
+            "@context": {
+                "@version": 1.1,
+                "id": {"@id": "aspect:id", "@type": "schema:string"},  # Non-string value that should get prefixed
+                "type": {"@id": "aspect:type", "@type": "schema:string"},  # Non-string value that should get prefixed
+                "normalProp": {"@id": "aspect:normalProp", "@type": "schema:string"},
+                "stringValue": "this-stays-as-is"  # String value that should not get prefixed
+            }
+        }
+        
+        result = translator.schema_to_jsonld(semantic_id, schema)
+        context = result["@context"]
+        
+        # Verify that non-string "id" and "type" properties get prefixed with aspect prefix
+        assert "cx:id" in context
+        assert "cx:type" in context
+        assert context["cx:id"] == {"@id": "aspect:id", "@type": "schema:string"}
+        assert context["cx:type"] == {"@id": "aspect:type", "@type": "schema:string"}
+        
+        # Verify that normal properties don't get prefixed
+        assert "normalProp" in context
+        assert context["normalProp"] == {"@id": "aspect:normalProp", "@type": "schema:string"}
+        
+        # Verify that string values don't get prefixed (even if they're named "id" or "type")
+        assert "stringValue" in context
+        assert context["stringValue"] == "this-stays-as-is"
+        
+        # Verify that the conflicting properties are NOT present as standard JSON-LD properties
+        # because they were moved to prefixed versions
+        assert "id" not in context
+        assert "type" not in context
+        
+        # Verify other standard context elements are present
+        assert math.isclose(context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
+        assert context["cx"] == "urn:samm:example:1.0.0#"
+        assert context["@definition"] == "Test schema"
+
+    @patch.object(SammSchemaContextTranslator, 'create_node')
+    def test_schema_to_jsonld_without_id_type_conflicts(self, mock_create_node, translator):
+        """Test that standard JSON-LD properties are preserved when there are no conflicts."""
+        semantic_id = "urn:samm:example:1.0.0#TestAspect"
+        schema = {"type": "object", "description": "Test schema"}
+        
+        # Mock create_node to return a context with standard JSON-LD id/type as strings
+        # (these should not be prefixed since they are strings)
+        mock_create_node.return_value = {
+            "@context": {
+                "@version": 1.1,
+                "id": "@id",  # String value - should not get prefixed
+                "type": "@type",  # String value - should not get prefixed
+                "normalProp": {"@id": "aspect:normalProp", "@type": "schema:string"},
+                "anotherProp": {"@id": "aspect:anotherProp", "@type": "schema:string"}
+            }
+        }
+        
+        result = translator.schema_to_jsonld(semantic_id, schema)
+        context = result["@context"]
+        
+        # Verify that standard JSON-LD properties are present when they are strings
+        assert "id" in context
+        assert "type" in context
+        assert context["id"] == "@id"
+        assert context["type"] == "@type"
+        
+        # Verify that conflicting prefixed versions are NOT present
+        assert "cx:id" not in context
+        assert "cx:type" not in context
+        
+        # Verify normal properties are present
+        assert "normalProp" in context
+        assert "anotherProp" in context
 
 
 class TestCreateNode:
@@ -895,7 +1030,7 @@ class TestIntegration:
         assert "@context" in result
         context = result["@context"]
         assert "ComplexAspect" in context
-        assert context["complexaspect-aspect"] == "urn:samm:example:1.0.0#"
+        assert context["cx"] == "urn:samm:example:1.0.0#"
         assert "@definition" in context
         assert context["@definition"] == "Complex nested schema"
 

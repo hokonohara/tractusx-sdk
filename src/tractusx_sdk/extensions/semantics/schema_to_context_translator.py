@@ -153,7 +153,7 @@ class SammSchemaContextTranslator:
                 self.logger.error(f"Error fetching schema for {semantic_id}: {e}")
             return None
 
-    def _prepare_schema_and_context(self, semantic_id: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> Tuple[Dict[str, Any], str, Dict[str, Any], Dict[str, Any]]:
+    def _prepare_schema_and_context(self, semantic_id: str, aspect_prefix: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> Tuple[Dict[str, Any], str, Dict[str, Any], Dict[str, Any]]:
         """
         Common preparation logic for both flattened and nested JSON-LD context generation.
         
@@ -197,8 +197,12 @@ class SammSchemaContextTranslator:
             raise Exception("Invalid semantic id, missing the model reference!")
         
         aspect_name = semantic_parts[1]
-        self.aspectPrefix = f"{aspect_name.lower()}-aspect"
         
+        if(aspect_prefix is None):
+            aspect_prefix = f"{aspect_name.lower()}-aspect"
+            
+        self.aspectPrefix = aspect_prefix
+
         # Create the node context for the schema
         jsonld_context = self.create_node(property=schema)
         
@@ -214,7 +218,7 @@ class SammSchemaContextTranslator:
         
         return schema, aspect_name, jsonld_context, response_context
 
-    def schema_to_jsonld(self, semantic_id: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> Dict[str, Any]:
+    def schema_to_jsonld(self, semantic_id: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/', aspect_prefix:str = "cx") -> Dict[str, Any]:
         """
         Convert a SAMM schema to a flattened JSON-LD context suitable for verifiable credentials.
         
@@ -257,7 +261,7 @@ class SammSchemaContextTranslator:
         """
         try:
             schema, aspect_name, jsonld_context, response_context = self._prepare_schema_and_context(
-                semantic_id, schema, link_core
+                semantic_id, aspect_prefix, schema, link_core
             )
             
             # Add the aspect name itself as a property in the flattened context
@@ -271,8 +275,10 @@ class SammSchemaContextTranslator:
                 # Merge the properties from the nested context to the root level
                 nested_context = jsonld_context["@context"]
                 for key, value in nested_context.items():
-                    if key not in ["@version", "id", "type"]:  # Skip standard JSON-LD keys
-                        response_context[key] = value
+                    if key in ["id", "type"] and not isinstance(value, str):
+                        response_context[f"{self.aspectPrefix}:{key}"] = value
+                        continue
+                    response_context[key] = value
             
             # Add description if available
             if "description" in schema:
@@ -288,7 +294,7 @@ class SammSchemaContextTranslator:
         except:
             raise Exception("It was not possible to create flattened jsonld schema")
 
-    def schema_to_jsonld_nested(self, semantic_id: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/') -> Dict[str, Any]:
+    def schema_to_jsonld_nested(self, semantic_id: str, schema: Optional[Dict[str, Any]] = None, link_core: str = 'https://raw.githubusercontent.com/eclipse-tractusx/sldt-semantic-models/main/',  aspect_prefix:str = "cx") -> Dict[str, Any]:
         """
         Convert a SAMM schema to a nested JSON-LD context.
         
@@ -337,7 +343,7 @@ class SammSchemaContextTranslator:
         """
         try:
             schema, aspect_name, jsonld_context, response_context = self._prepare_schema_and_context(
-                semantic_id, schema, link_core
+                semantic_id, aspect_prefix, schema, link_core
             )
             
             # Create nested structure under aspect name
@@ -633,6 +639,7 @@ class SammSchemaContextTranslator:
         
         if (" " in cleanKey): 
             cleanKey = cleanKey.replace(" ","-")
+        
         return cleanKey
 
 
@@ -760,11 +767,10 @@ class SammSchemaContextTranslator:
 
             ## Fill the node context with the properties
             for propKey, prop in oldProperties.items():
-                key = self.filter_key(key=propKey)
+                key:str = self.filter_key(key=propKey)
                 prop = self.create_node_property(key=key, node=prop, actualref=actualref)
                 if (prop is None):
                     continue
-                
 
                 newContext[key] = prop
 
