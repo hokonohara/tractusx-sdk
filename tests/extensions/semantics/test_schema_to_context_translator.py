@@ -330,7 +330,7 @@ class TestSchemaToJsonLD:
         assert "type" not in context
         
         # Verify other standard context elements are present
-        assert context["@version"] == 1.1
+        assert math.isclose(context["@version"], 1.1, rel_tol=1e-09, abs_tol=1e-09)
         assert context["cx"] == "urn:samm:example:1.0.0#"
         assert context["@definition"] == "Test schema"
 
