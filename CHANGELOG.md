@@ -5,6 +5,11 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.3.8]
+
+### Fixed
+
+- bugfix: add configurable prefix and resolved protected keys [`id` & `type`] issue by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/140
 
 ## [0.3.7]
 
