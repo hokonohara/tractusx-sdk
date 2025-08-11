@@ -23,7 +23,7 @@
 import pytest
 import time
 from unittest import mock
-from tractusx_sdk.industry.services.discovery.discovery_services import BpnDiscoveryService
+from tractusx_sdk.industry.services.discovery.bpn_discovery_service import BpnDiscoveryService
 
 @pytest.fixture
 def mock_oauth():

@@ -24,4 +24,4 @@
 __author__ = 'Eclipse Tractus-X Contributors'
 __license__ = "Apache License, Version 2.0"
 
-from .discovery_services import BpnDiscoveryService
+from .bpn_discovery_service import BpnDiscoveryService
