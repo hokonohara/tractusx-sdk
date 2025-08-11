@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- fix: fixed aas_service bug behaviour with do_post_with_session by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/142
+-fix: bug on do_post resolved by `do_post_with_session` by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/142
   
 ## [0.4.0]
 
