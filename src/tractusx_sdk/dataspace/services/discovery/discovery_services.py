@@ -29,7 +29,7 @@ from ...managers import OAuth2Manager
 class DiscoveryFinderService:
 
     @staticmethod
-    def find_discovery_urls(url:str,  oauth:OAuth2Manager, keys:list=["bpn"], types_key:str="types", endpoints_key:str="endpoints", endpoint_addresses_key:str="endpointAddresses", return_type_key:str='type') -> str | None:
+    def find_discovery_urls(url:str,  oauth:OAuth2Manager, keys:list=["bpn"], types_key:str="types", endpoints_key:str="endpoints", endpoint_addresses_key:str="endpointAddress", return_type_key:str='type') -> str | None:
         """
           Allows you to find a discovery service urls by key
         """
@@ -64,14 +64,15 @@ class ConnectorDiscoveryService:
     oauth:OAuth2Manager
     connector_discovery_key:str
 
-    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, connector_discovery_key:str="bpn"):  
-        self.connector_discovery_url = self.get_connector_discovery_url(oauth=oauth, discovery_finder_url=discovery_finder_url, connector_discovery_key=connector_discovery_key)
+    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, connector_discovery_key:str="bpn", endpoint_addresses_key:str="endpointAddress", types_key="types", endpoints_key="endpoints", return_type_key='type'):  
+        self.connector_discovery_url = self.get_connector_discovery_url(oauth=oauth, discovery_finder_url=discovery_finder_url, connector_discovery_key=connector_discovery_key, endpoint_addresses_key=endpoint_addresses_key, types_key=types_key, endpoints_key=endpoints_key, return_type_key=return_type_key)
         self.oauth = oauth
+        self.endpoint_addresses_key = endpoint_addresses_key
 
-    def get_connector_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, connector_discovery_key:str="bpn"):
+    def get_connector_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, connector_discovery_key:str="bpn", endpoint_addresses_key:str="endpointAddress", types_key="types", endpoints_key="endpoints", return_type_key='type') -> str:
 
 
-        endpoints = DiscoveryFinderService.find_discovery_urls(url=discovery_finder_url, oauth=oauth, keys=[connector_discovery_key])
+        endpoints = DiscoveryFinderService.find_discovery_urls(url=discovery_finder_url, oauth=oauth, keys=[connector_discovery_key], endpoint_addresses_key=endpoint_addresses_key, types_key=types_key, endpoints_key=endpoints_key, return_type_key=return_type_key)
         if(connector_discovery_key not in endpoints):
           raise Exception("[Connector Discovery Service] Connector Discovery endpoint not found!")
         

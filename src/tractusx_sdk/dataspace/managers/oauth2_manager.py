@@ -68,13 +68,13 @@ class OAuth2Manager(AuthManagerInterface):
         self.connected=True
     
 
-    def get_token(self):
+    def get_token(self, scope:str="openid profile email"):
         ## Check if connected
         if(not self.connected):
             raise RuntimeError("Not connected. Please call the connect() method before requesting a token.")
 
         ## Get the token from the keycloak instance
-        token:dict=self.keycloak_openid.token(self.clientid, self.clientsecret, grant_type=["client_credentials"], scope="openid profile email")
+        token:dict=self.keycloak_openid.token(self.clientid, self.clientsecret, grant_type=["client_credentials"], scope=scope)
         if(token is None):
             raise ValueError("Failed to retrieve token from IAM instance. The credentials might be incorrect.")
         ## Store the token
