@@ -19,6 +19,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
+## Code created partially using a LLM (Claude Sonnet 4) and reviewed by a human committer
 
 """
 Discovery Services Quick Start Example
