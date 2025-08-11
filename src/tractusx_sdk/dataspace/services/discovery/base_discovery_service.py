@@ -25,6 +25,9 @@ import logging
 from typing import Optional
 from abc import ABC, abstractmethod
 
+from tractusx_sdk.dataspace.managers.oauth2_manager import OAuth2Manager
+from tractusx_sdk.dataspace.services.discovery import DiscoveryFinderService
+
 
 class BaseDiscoveryService(ABC):
     """
@@ -36,8 +39,8 @@ class BaseDiscoveryService(ABC):
     - Safety mechanisms preserving cached URLs during failures
     - Cache management methods (flush, invalidate, status)
     """
-    
-    def __init__(self, oauth, discovery_finder_service, cache_timeout_seconds: int = 60 * 60 * 12,
+
+    def __init__(self, oauth: OAuth2Manager, discovery_finder_service: DiscoveryFinderService, cache_timeout_seconds: int = 60 * 60 * 12,
                  verbose: bool = False, logger: Optional[logging.Logger] = None):
         """
         Initialize the base discovery service.

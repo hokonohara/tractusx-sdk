@@ -84,7 +84,7 @@ class BpnDiscoveryService(BaseDiscoveryService):
         if(discovery_key not in endpoints):
           raise Exception("[BPN Discovery Service] BPN Discovery endpoint not found!")
 
-        base_url = endpoints[discovery_key]
+        base_url:str = endpoints[discovery_key]
         
         # Remove trailing slash from base_url if present
         base_url = base_url.rstrip('/')
