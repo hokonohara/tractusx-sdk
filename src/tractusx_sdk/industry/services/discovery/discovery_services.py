@@ -22,6 +22,8 @@
 #################################################################################
 
 import time
+import logging
+from typing import Optional
 
 from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 from tractusx_sdk.dataspace.managers import OAuth2Manager
@@ -29,23 +31,54 @@ from tractusx_sdk.dataspace.services.discovery import DiscoveryFinderService
 from tractusx_sdk.dataspace.tools.operators import op
 import requests
 class BpnDiscoveryService:
-    
+    session:requests.Session
     oauth:OAuth2Manager
     bpn_discoveries:dict
     bpn_discovery_key:str
     discovery_finder_url:str
     cache_timeout_seconds:int
+    endpoint_address_key:str
+    types_key:str
+    endpoints_key:str
+    return_type_key:str
+    verbose:bool
+    logger:Optional[logging.Logger]
     
-    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, cache_timeout_seconds:int = 60 * 60 * 12, session:requests.Session = None):
+    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, cache_timeout_seconds:int = 60 * 60 * 12, 
+                 session:requests.Session = None, endpoint_address_key:str="endpointAddress", 
+                 types_key:str="types", endpoints_key:str="endpoints", return_type_key:str='type',
+                 verbose:bool=False, logger:Optional[logging.Logger]=None):
+        """
+        Initialize the BPN Discovery Service.
+        
+        Args:
+            oauth (OAuth2Manager): OAuth2 manager for authentication.
+            discovery_finder_url (str): URL for the discovery finder service.
+            cache_timeout_seconds (int): Cache timeout in seconds (default: 12 hours).
+            session (requests.Session): HTTP session for connection reuse.
+            endpoint_address_key (str): Key for endpoint address in discovery response.
+            types_key (str): Key for types in discovery response.
+            endpoints_key (str): Key for endpoints in discovery response.
+            return_type_key (str): Key for return type in discovery response.
+            verbose (bool): Enable verbose logging (default: False).
+            logger (Optional[logging.Logger]): Logger instance for logging (default: None).
+        """
         self.discovery_finder_url = discovery_finder_url
         self.oauth = oauth
         self.bpn_discoveries = {}
         self.cache_timeout_seconds = cache_timeout_seconds # Default 12 hours
-        self.session=session
+        self.session = session
+        self.endpoint_address_key = endpoint_address_key
+        self.types_key = types_key
+        self.endpoints_key = endpoints_key
+        self.return_type_key = return_type_key
+        self.verbose = verbose
+        self.logger = logger
+        
         if(not self.session):
             self.session = requests.Session()
 
-    def get_connector_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, bpn_discovery_key:str="manufacturerPartId"):
+    def get_bpn_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, bpn_discovery_key:str="manufacturerPartId"):
         """
         Fetches the discovery URL for a given BPN identifier type.
 
@@ -60,13 +93,19 @@ class BpnDiscoveryService:
         Raises:
             Exception: If no discovery endpoint is found for the given key.
         """
-        endpoints = DiscoveryFinderService.find_discovery_urls(url=discovery_finder_url, oauth=oauth, keys=[bpn_discovery_key])
+        endpoints = DiscoveryFinderService.find_discovery_urls(
+            url=discovery_finder_url, 
+            oauth=oauth, 
+            keys=[bpn_discovery_key], 
+            types_key=self.types_key, 
+            endpoints_key=self.endpoints_key, 
+            endpoint_address_key=self.endpoint_address_key, 
+            return_type_key=self.return_type_key
+        )
         if(bpn_discovery_key not in endpoints):
           raise Exception("[Connector Discovery Service] Connector Discovery endpoint not found!")
 
-        self.bpn_discovery_url = endpoints[bpn_discovery_key]
-
-        return self.bpn_discovery_url
+        return endpoints[bpn_discovery_key]
 
     def search_bpns(self, keys:list, identifier_type:str="manufacturerPartId") -> list | None:
         """
@@ -121,32 +160,67 @@ class BpnDiscoveryService:
         bpns = op.extract_dict_values(array=bpns_data, key="value")
         return list(set(bpns)) if bpns else None
     
-    def _get_or_update_discovery_url(self, bpn_discovery_key:str) -> str:
+    def _get_or_update_discovery_url(self, bpn_discovery_key:str="manufacturerPartId") -> str:
         """
         Retrieves a cached discovery URL or updates the cache if expired.
+        
+        Safety mechanism: If the refresh attempt fails, the cached URL is preserved
+        to maintain service availability during temporary connectivity issues.
 
         Args:
             bpn_discovery_key (str): The identifier key for the discovery type.
 
         Returns:
             str: A valid discovery URL.
+            
+        Raises:
+            Exception: If no cached URL exists and the initial discovery fails.
         """
         current_time = time.time()
         entry:dict = self.bpn_discoveries.get(bpn_discovery_key)
+        
         # Check if the entry exists and if it is still valid
         if (
             not entry or
             (current_time - entry.get("timestamp", 0)) > self.cache_timeout_seconds
         ):
-            url = self.get_connector_discovery_url(
-                oauth=self.oauth,
-                discovery_finder_url=self.discovery_finder_url,
-                bpn_discovery_key=bpn_discovery_key
-            )
-            self.bpn_discoveries[bpn_discovery_key] = {
-                "url": url,
-                "timestamp": current_time
-            }
+            try:
+                url = self.get_bpn_discovery_url(
+                    oauth=self.oauth,
+                    discovery_finder_url=self.discovery_finder_url,
+                    bpn_discovery_key=bpn_discovery_key
+                )
+                if url:
+                    # Update cache only if successful
+                    self.bpn_discoveries[bpn_discovery_key] = {
+                        "url": url,
+                        "timestamp": current_time
+                    }
+                    if self.verbose and self.logger:
+                        import datetime
+                        cache_count = len(self.bpn_discoveries)
+                        valid_until = datetime.datetime.fromtimestamp(current_time + self.cache_timeout_seconds)
+                        self.logger.info(f"[BPN Discovery Service] Updated cache with new discovery URL for key '{bpn_discovery_key}': {url}")
+                        self.logger.info(f"[BPN Discovery Service] Cache status: {cache_count} URL(s) cached, valid until {valid_until.strftime('%Y-%m-%d %H:%M:%S')}")
+                    
+            except Exception as e:
+                # If we have a cached entry, preserve it and continue using it
+                if entry:
+                    # Log the error but continue with cached URL
+                    if self.verbose and self.logger:
+                        self.logger.warning(f"[BPN Discovery Service] Failed to refresh discovery URL, using cached version. Error: {str(e)}")
+                    return entry["url"]
+                else:
+                    # No cached entry available, re-raise the exception
+                    raise e
+        else:
+            # Using valid cached URL
+            if self.verbose and self.logger and entry:
+                import datetime
+                cache_count = len(self.bpn_discoveries)
+                valid_until = datetime.datetime.fromtimestamp(entry["timestamp"] + self.cache_timeout_seconds)
+                self.logger.debug(f"[BPN Discovery Service] Using cached discovery URL for key '{bpn_discovery_key}': {entry['url']}")
+                self.logger.debug(f"[BPN Discovery Service] Cache status: {cache_count} URL(s) cached, this entry valid until {valid_until.strftime('%Y-%m-%d %H:%M:%S')}")
             
         return self.bpn_discoveries[bpn_discovery_key]["url"]
 
