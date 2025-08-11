@@ -9,7 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Fixed
 
-- fix: fixed configuration key propagation error in discovery services by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/141
+- fix: fixed configuration key propagation error & enhanced logging in discovery services by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/141
 
 ## [0.3.8]
 
