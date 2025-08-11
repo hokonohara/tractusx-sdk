@@ -21,7 +21,6 @@
 #################################################################################
 
 import pytest
-import time
 from unittest import mock
 from tractusx_sdk.dataspace.services.discovery.discovery_finder_service import DiscoveryFinderService
 from tractusx_sdk.dataspace.services.discovery.connector_discovery_service import ConnectorDiscoveryService
