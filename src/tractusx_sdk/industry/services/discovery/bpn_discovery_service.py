@@ -1,7 +1,6 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
-# Copyright (c) 2025 CGI Deutschland B.V. & Co. KG
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -21,52 +20,89 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-import time
+import logging
+from typing import Optional
 
 from tractusx_sdk.dataspace.tools.http_tools import HttpTools
 from tractusx_sdk.dataspace.managers import OAuth2Manager
 from tractusx_sdk.dataspace.services.discovery import DiscoveryFinderService
+from tractusx_sdk.dataspace.services.discovery.base_discovery_service import BaseDiscoveryService
 from tractusx_sdk.dataspace.tools.operators import op
 import requests
-class BpnDiscoveryService:
-    
+
+class BpnDiscoveryService(BaseDiscoveryService):
+    session:requests.Session
+    base_path:str
     oauth:OAuth2Manager
-    bpn_discoveries:dict
-    bpn_discovery_key:str
-    discovery_finder_url:str
-    cache_timeout_seconds:int
-    
-    def __init__(self, oauth:OAuth2Manager, discovery_finder_url:str, cache_timeout_seconds:int = 60 * 60 * 12, session:requests.Session = None):
-        self.discovery_finder_url = discovery_finder_url
+    def __init__(self, oauth:OAuth2Manager, discovery_finder_service: DiscoveryFinderService, cache_timeout_seconds:int = 60 * 60 * 12,
+                 session:requests.Session = None, base_path:str="/api/v1.0/administration/connectors/bpnDiscovery",
+                 verbose:bool=False, logger:Optional[logging.Logger]=None):
+        """
+        Initialize the BPN Discovery Service.
+        
+        Args:
+            discovery_finder_service: DiscoveryFinderService instance for finding discovery URLs.
+            cache_timeout_seconds (int): Cache timeout in seconds (default: 12 hours).
+            session (requests.Session): HTTP session for connection reuse.
+            base_path (str): API path to append to the base URL from discovery finder (default: "/api/v1.0/administration/connectors/bpnDiscovery").
+            verbose (bool): Enable verbose logging (default: False).
+            logger (Optional[logging.Logger]): Logger instance for logging (default: None).
+        """
         self.oauth = oauth
-        self.bpn_discoveries = {}
-        self.cache_timeout_seconds = cache_timeout_seconds # Default 12 hours
-        self.session=session
+        super().__init__(
+            oauth=oauth,
+            discovery_finder_service=discovery_finder_service,
+            cache_timeout_seconds=cache_timeout_seconds,
+            verbose=verbose,
+            logger=logger
+        )
+        self.session = session
+        self.base_path = base_path
         if(not self.session):
             self.session = requests.Session()
 
-    def get_connector_discovery_url(self, oauth:OAuth2Manager, discovery_finder_url:str, bpn_discovery_key:str="manufacturerPartId"):
+    def get_service_name(self) -> str:
+        """Returns the service name for logging purposes."""
+        return "BPN Discovery Service"
+
+    def get_discovery_url(self, discovery_finder_service: DiscoveryFinderService, discovery_key:str) -> str:
         """
         Fetches the discovery URL for a given BPN identifier type.
 
         Args:
-            oauth (OAuth2Manager): The OAuth2 manager for authentication.
-            discovery_finder_url (str): The URL for the discovery finder service.
-            bpn_discovery_key (str): The key used to identify the discovery type (default: "manufacturerPartId").
+            discovery_finder_service: DiscoveryFinderService instance for finding discovery URLs.
+            discovery_key (str): The key used to identify the discovery type.
 
         Returns:
-            str: The connector discovery URL for the given identifier type.
+            str: The BPN discovery URL for the given identifier type.
 
         Raises:
             Exception: If no discovery endpoint is found for the given key.
         """
-        endpoints = DiscoveryFinderService.find_discovery_urls(url=discovery_finder_url, oauth=oauth, keys=[bpn_discovery_key])
-        if(bpn_discovery_key not in endpoints):
-          raise Exception("[Connector Discovery Service] Connector Discovery endpoint not found!")
+        endpoints = discovery_finder_service.find_discovery_urls(keys=[discovery_key])
+        if(discovery_key not in endpoints):
+          raise Exception("[BPN Discovery Service] BPN Discovery endpoint not found!")
 
-        self.bpn_discovery_url = endpoints[bpn_discovery_key]
+        base_url:str = endpoints[discovery_key]
+        
+        # Remove trailing slash from base_url if present
+        base_url = base_url.rstrip('/')
+        # Remove leading slash from base_path if present  
+        path = self.base_path.lstrip('/')
+        
+        if(not base_url.endswith(path)):
+        # Construct the full URL
+            full_url = f"{base_url}/{path}"
+        else:
+            full_url = base_url
+        
+        return full_url
 
-        return self.bpn_discovery_url
+    def get_bpn_discovery_url(self, bpn_discovery_key:str="manufacturerPartId"):
+        """
+        Legacy method for backward compatibility. Use get_discovery_url instead.
+        """
+        return self.get_discovery_url(self.discovery_finder_service, bpn_discovery_key)
 
     def search_bpns(self, keys:list, identifier_type:str="manufacturerPartId") -> list | None:
         """
@@ -82,7 +118,10 @@ class BpnDiscoveryService:
         Raises:
             Exception: If the request fails or returns a non-200 response.
         """
-        discovery_url = self._get_or_update_discovery_url(bpn_discovery_key=identifier_type)
+        discovery_url:str = self._get_or_update_discovery_url(bpn_discovery_key=identifier_type)
+
+        if(not discovery_url.endswith("/search")):
+            discovery_url += "/search"
 
         body:dict = {
             "searchFilter": [
@@ -91,6 +130,59 @@ class BpnDiscoveryService:
                     "keys": keys
                 }
             ]
+        }
+        
+        headers:dict = self.oauth.add_auth_header(headers={'Content-Type' : 'application/json'})
+
+        response = HttpTools.do_post_with_session(url=discovery_url, headers=headers, json=body, session=self.session)
+        if response is None:
+            raise Exception("[BPN Discovery Service] No response received from the connector discovery service.")
+        if response.status_code == 401:
+            raise Exception("[BPN Discovery Service] Unauthorized access. Please check your clientid permissions.")
+        if response.status_code != 200:
+            raise Exception("[BPN Discovery Service] It was not possible to get the connector urls because the connector discovery service response was not successful!")
+
+        return response.json()
+
+    def search_bpns_multi_type(self, search_filters:list) -> dict:
+        """
+        Sends a search request to the BPN discovery service with multiple identifier types and keys.
+
+        Args:
+            search_filters (list): List of search filter dictionaries, each containing:
+                - type (str): The identifier type (e.g., "manufacturerPartId", "batchId", "serialNumber")
+                - keys (list): List of identifier keys for this type
+
+        Example:
+            search_filters = [
+                {"type": "manufacturerPartId", "keys": ["part-123", "part-456"]},
+                {"type": "batchId", "keys": ["batch-001", "batch-002"]},
+                {"type": "serialNumber", "keys": ["SN-789", "SN-012"]}
+            ]
+
+        Returns:
+            dict: The raw JSON response from the BPN discovery service.
+
+        Raises:
+            Exception: If the request fails or returns a non-200 response.
+        """
+        if not search_filters or not isinstance(search_filters, list):
+            raise ValueError("search_filters must be a non-empty list of filter dictionaries")
+        
+        # Validate search filters format
+        for filter_item in search_filters:
+            if not isinstance(filter_item, dict) or "type" not in filter_item or "keys" not in filter_item:
+                raise ValueError("Each search filter must be a dictionary with 'type' and 'keys' fields")
+            if not isinstance(filter_item["keys"], list) or not filter_item["keys"]:
+                raise ValueError("Each search filter must have a non-empty 'keys' list")
+        
+        # Use the first identifier type to get the discovery URL
+        # (assuming all types use the same discovery endpoint)
+        primary_type = search_filters[0]["type"]
+        discovery_url = self._get_or_update_discovery_url(bpn_discovery_key=primary_type)
+
+        body:dict = {
+            "searchFilter": search_filters
         }
         
         headers:dict = self.oauth.add_auth_header(headers={'Content-Type' : 'application/json'})
@@ -120,35 +212,41 @@ class BpnDiscoveryService:
         bpns_data = json_response.get("bpns", [])
         bpns = op.extract_dict_values(array=bpns_data, key="value")
         return list(set(bpns)) if bpns else None
-    
-    def _get_or_update_discovery_url(self, bpn_discovery_key:str) -> str:
-        """
-        Retrieves a cached discovery URL or updates the cache if expired.
 
+    def find_bpns_multi_type(self, search_filters:list) -> list | None:
+        """
+        Finds and returns a list of unique BPNs corresponding to multiple identifier types and keys.
+
+        Args:
+            search_filters (list): List of search filter dictionaries, each containing:
+                - type (str): The identifier type (e.g., "manufacturerPartId", "batchId", "serialNumber")
+                - keys (list): List of identifier keys for this type
+
+        Example:
+            search_filters = [
+                {"type": "manufacturerPartId", "keys": ["part-123", "part-456"]},
+                {"type": "batchId", "keys": ["batch-001", "batch-002"]}
+            ]
+
+        Returns:
+            list | None: A list of unique BPNs or None if none found.
+        """
+        json_response:dict = self.search_bpns_multi_type(search_filters=search_filters)
+        bpns_data = json_response.get("bpns", [])
+        bpns = op.extract_dict_values(array=bpns_data, key="value")
+        return list(set(bpns)) if bpns else None
+    
+    def _get_or_update_discovery_url(self, bpn_discovery_key:str="manufacturerPartId") -> str:
+        """
+        Wrapper method for backward compatibility.
+        
         Args:
             bpn_discovery_key (str): The identifier key for the discovery type.
 
         Returns:
             str: A valid discovery URL.
         """
-        current_time = time.time()
-        entry:dict = self.bpn_discoveries.get(bpn_discovery_key)
-        # Check if the entry exists and if it is still valid
-        if (
-            not entry or
-            (current_time - entry.get("timestamp", 0)) > self.cache_timeout_seconds
-        ):
-            url = self.get_connector_discovery_url(
-                oauth=self.oauth,
-                discovery_finder_url=self.discovery_finder_url,
-                bpn_discovery_key=bpn_discovery_key
-            )
-            self.bpn_discoveries[bpn_discovery_key] = {
-                "url": url,
-                "timestamp": current_time
-            }
-            
-        return self.bpn_discoveries[bpn_discovery_key]["url"]
+        return super()._get_or_update_discovery_url(bpn_discovery_key)
 
     def set_identifier(self, identifier_key: str, identifier_type:str="manufacturerPartId") -> dict:
         """
