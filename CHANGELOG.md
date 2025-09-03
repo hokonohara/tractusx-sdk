@@ -5,6 +5,12 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.4.2]
+
+### Fixed
+
+-fix: update parameters for POST request in BaseConnectorConsumerService to include json and body options by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/149
+
 ## [0.4.1]
 
 ### Fixed
