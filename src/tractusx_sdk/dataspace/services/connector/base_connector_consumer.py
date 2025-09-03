@@ -832,7 +832,7 @@ class BaseConnectorConsumerService(BaseService):
         endpoint, token = connector.do_post_by_dct_type(
             counter_party_id="BPNL000000000001",
             counter_party_address="https://provider-edc.example.com/api/v1/dsp",
-            body=request_data,
+            json=request_data,
             dct_type="QueryService",
             path="/query",
             content_type="application/json"
@@ -899,7 +899,7 @@ class BaseConnectorConsumerService(BaseService):
         endpoint, token = connector.do_post_by_asset_id(
             counter_party_id="BPNL000000000001",
             counter_party_address="https://provider-edc.example.com/api/v1/dsp",
-            body=update_data,
+            json=update_data,
             asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
             path="/update",
             content_type="application/json"
