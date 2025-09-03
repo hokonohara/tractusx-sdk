@@ -1027,10 +1027,11 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         filter_expression: list[dict],
         path: str = "/",
         content_type: str = "application/json",
+        json=None,
+        body=None,
         policies: list = None,
         verify: bool = False,
         headers: dict = None,
@@ -1048,7 +1049,8 @@ class BaseConnectorConsumerService(BaseService):
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider.
-        body (dict): The data to be sent in the POST request.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        body (dict, optional): The data to be sent in the POST request.
         path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
         content_type (str, optional): The content type of the POST request. Defaults to "application/json".
         policies (list, optional): The policies to be used for the transfer. Defaults to None.
@@ -1079,7 +1081,8 @@ class BaseConnectorConsumerService(BaseService):
         if(session):
             return HttpTools.do_post_with_session(
                 url=url,
-                json=body,
+                json=json,
+                data=body,
                 headers=merged_headers,
                 verify=verify,
                 timeout=timeout,
@@ -1089,7 +1092,8 @@ class BaseConnectorConsumerService(BaseService):
 
         return HttpTools.do_post(
             url=url,
-            json=body,
+            json=json,
+            data=body,
             headers=merged_headers,
             verify=verify,
             timeout=timeout,
