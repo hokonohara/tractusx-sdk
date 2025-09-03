@@ -789,8 +789,9 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         dct_type: str,
+        json=None,
+        body=None,
         policies: list = None,
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
         operator="=",
@@ -807,7 +808,8 @@ class BaseConnectorConsumerService(BaseService):
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider's DSP endpoint.
-        body: The request body to send in the POST request. Can be dict, list, or any JSON-serializable object.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        body (dict, optional): The data to be sent in the POST request.
         dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
         policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
         dct_type_key (str, optional): The JSON path key for DCT type filtering. 
@@ -840,6 +842,7 @@ class BaseConnectorConsumerService(BaseService):
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
+            json=json,
             body=body,
             filter_expression=[
                 self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
