@@ -1094,4 +1094,3 @@ class BaseConnectorConsumerService(BaseService):
             timeout=timeout,
             allow_redirects=allow_redirects
         )
-        )
