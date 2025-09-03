@@ -323,10 +323,11 @@ class BaseConnectorConsumerService(BaseService):
 
     def get_catalogs_by_dct_type(self, counter_party_id: str, edcs: list, dct_type: str,
                                  dct_type_key: str = "'http://purl.org/dc/terms/type'.'@id'", timeout: int = None):
-        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, key=dct_type_key,
-                                             value=dct_type, operator="=", timeout=timeout)
+        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, 
+                                             filter_expression=[self.get_filter_expression(key=dct_type_key, value=dct_type, operator="=")],
+                                             timeout=timeout)
 
-    def get_catalogs_with_filter(self, counter_party_id: str, edcs: list, key: str, value: str, operator: str = "=",
+    def get_catalogs_with_filter(self, counter_party_id: str, edcs: list, filter_expression: list[dict],
                                  timeout: int = None):
 
         ## Where the catalogs get stored
@@ -338,9 +339,7 @@ class BaseConnectorConsumerService(BaseService):
             {
                 'counter_party_id': counter_party_id,
                 'counter_party_address': edc_url,
-                'key': key,
-                'operator': operator,
-                'value': value,
+                'filter_expression': filter_expression,
                 'timeout': timeout,
                 'catalogs': catalogs
             }
@@ -1094,4 +1093,5 @@ class BaseConnectorConsumerService(BaseService):
             verify=verify,
             timeout=timeout,
             allow_redirects=allow_redirects
+        )
         )
