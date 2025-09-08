@@ -41,6 +41,7 @@ class ControllerType(Enum):
     EDR = "Edr"
     POLICY = "Policy"
     TRANSFER_PROCESS = "TransferProcess"
+    DATAPLANE_SELECTOR = "DataplaneSelector"
     # TODO: Add any other existing controller types
 
 
@@ -297,6 +298,31 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.TRANSFER_PROCESS,
+            dataspace_version=dataspace_version,
+        )
+
+        builder.adapter(adapter)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()
+    
+    def get_dataplane_selector_controller(
+            dataspace_version: str,
+            adapter: BaseDmaAdapter,
+            **kwargs
+    ):
+        """
+        Create a dataplane_selector controller instance, based a specific version.
+
+        :param dataspace_version: The version of the Dataspace (i.e: "saturn")
+        :param adapter: The DMA adapter to use for the controller
+
+        :return: An instance of the specified Controller subclass
+        """
+
+        builder = ControllerFactory._get_controller_builder(
+            controller_type=ControllerType.DATAPLANE_SELECTOR,
             dataspace_version=dataspace_version,
         )
 
