@@ -20,6 +20,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .dma_adapter import DmaAdapter
+from ..base_dma_controller import BaseDmaController
+from tractusx_sdk.dataspace.adapters.connector.saturn import DmaAdapter
 
-__all__ = ['DmaAdapter']
+
+class DmaController(BaseDmaController):
+    """
+    Implementation of a base DmaController for the Connector saturn Data Management API.
+
+    This class overrides the adapter method of the parent's _Builder class in order
+    to ensure the correct Adapter class types are used, instead of the generic ones.
+    """
+
+    class _Builder(BaseDmaController._Builder):
+        def adapter(self, adapter: DmaAdapter):
+            return super().adapter(adapter)
