@@ -20,24 +20,28 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
+from abc import ABC
+from typing import Optional, Union
+from pydantic import Field
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel'
-]
+from ..model import BaseModel
+
+
+class BaseEvaluationPolicyModel(BaseModel, ABC):
+    """
+    Base model class for representing a connector's policy evaluation request.
+    """
+
+    policy_scope: str
+    context: Optional[Union[dict, list, str]] = Field(default={
+        "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+    })
+
+    class _Builder(BaseModel._Builder):
+        def context(self, context: dict):
+            self._data["context"] = context
+            return self
+
+        def policy_scope(self, policy_scope: str):
+            self._data["policy_scope"] = policy_scope
+            return self

@@ -20,24 +20,27 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
+from json import dumps as jdumps
+from pydantic import Field
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel'
-]
+from ..base_evaluation_policy_model import BaseEvaluationPolicyModel
+
+
+class EvaluationPolicyModel(BaseEvaluationPolicyModel):
+    TYPE: str = Field(default="PolicyEvaluationPlanRequest", frozen=True)
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a saturn connector when using an evaluation policy model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "policyScope": self.policy_scope
+        }
+
+        return jdumps(data)
