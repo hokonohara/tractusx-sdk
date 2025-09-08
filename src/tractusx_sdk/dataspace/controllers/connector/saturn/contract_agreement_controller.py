@@ -22,6 +22,7 @@
 
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import GetControllerMixin, GetAllControllerMixin
+from tractusx_sdk.dataspace.models.connector.saturn import ContractAgreementRetirementModel
 
 
 class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, DmaController):
@@ -33,3 +34,13 @@ class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, Dma
 
     def get_negotiation_by_id(self, oid: str, **kwargs):
         return self.adapter.get(url=f"{self.endpoint_url}/{oid}/negotiation", **kwargs)
+
+    def agreement_retirement(self, obj: ContractAgreementRetirementModel, **kwargs):
+        kwargs["data"] = obj.to_data()
+        return self.adapter.post(url=f"{self.endpoint_url}/retirements", **kwargs)
+    
+    def get_all_retired_agreements(self, **kwargs):
+        return self.adapter.post(url=f"{self.endpoint_url}/retirements/request", **kwargs)
+    
+    def delete_retired_agreement_by_id(self, oid: str, **kwargs):
+        return self.adapter.delete(url=f"{self.endpoint_url}/retirements/{oid}", **kwargs)

@@ -20,26 +20,34 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_agreement_retirement_model import ContractAgreementRetirementModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
+from abc import ABC
+from typing import Optional, Union
+from pydantic import Field
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractAgreementRetirementModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel'
-]
+from ..model import BaseModel
+
+
+class BaseContractAgreementRetirementModel(BaseModel, ABC):
+    """
+    Base model class for representing a connector's contract agreement retirement.
+    """
+
+    agreement_id: str
+    reason: str
+    context: Optional[Union[dict, list, str]] = Field(default={
+        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    })
+
+    class _Builder(BaseModel._Builder):
+        def context(self, context: dict):
+            self._data["context"] = context
+            return self
+
+        def agreement_id(self, agreement_id: str):
+            self._data["agreement_id"] = agreement_id
+            return self
+
+        def reason(self, reason: str):
+            self._data["reason"] = reason
+            return self

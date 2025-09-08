@@ -20,26 +20,25 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_agreement_retirement_model import ContractAgreementRetirementModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
+from json import dumps as jdumps
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractAgreementRetirementModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel'
-]
+from ..base_contract_agreement_retirement_model import BaseContractAgreementRetirementModel
+
+
+class ContractAgreementRetirementModel(BaseContractAgreementRetirementModel):
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a saturn connector when using a contract agreement retirement model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "edc:agreementId": self.agreement_id,
+            "tx:reason": self.reason
+        }
+
+        return jdumps(data)
