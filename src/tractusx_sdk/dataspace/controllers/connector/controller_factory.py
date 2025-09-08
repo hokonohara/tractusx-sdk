@@ -42,6 +42,7 @@ class ControllerType(Enum):
     POLICY = "Policy"
     TRANSFER_PROCESS = "TransferProcess"
     DATAPLANE_SELECTOR = "DataplaneSelector"
+    APPLICATION_OBSERVABILITY = "ApplicationObservability"
     # TODO: Add any other existing controller types
 
 
@@ -323,6 +324,31 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.DATAPLANE_SELECTOR,
+            dataspace_version=dataspace_version,
+        )
+
+        builder.adapter(adapter)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()
+    
+    def get_application_observability_controller(
+            dataspace_version: str,
+            adapter: BaseDmaAdapter,
+            **kwargs
+    ):
+        """
+        Create an application_observability controller instance, based a specific version.
+
+        :param dataspace_version: The version of the Dataspace (i.e: "saturn")
+        :param adapter: The DMA adapter to use for the controller
+
+        :return: An instance of the specified Controller subclass
+        """
+
+        builder = ControllerFactory._get_controller_builder(
+            controller_type=ControllerType.APPLICATION_OBSERVABILITY,
             dataspace_version=dataspace_version,
         )
 
