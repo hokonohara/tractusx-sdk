@@ -22,7 +22,7 @@
 
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
-from tractusx_sdk.dataspace.models.connector.jupiter import AssetModel
+from tractusx_sdk.dataspace.models.connector.saturn import AssetModel
 
 
 class AssetController(CrudDmaController, DmaController):

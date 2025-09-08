@@ -19,3 +19,23 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
+
+from .asset_model import AssetModel
+from .catalog_model import CatalogModel
+from .catalog_dataset_request_model import CatalogDatasetRequestModel
+from .contract_definition_model import ContractDefinitionModel
+from .contract_negotiation_model import ContractNegotiationModel
+from .policy_model import PolicyModel
+from .queryspec_model import QuerySpecModel
+from .transfer_process_model import TransferProcessModel
+
+__all__ = [
+    'AssetModel',
+    'CatalogModel',
+    'CatalogDatasetRequestModel',
+    'ContractDefinitionModel',
+    'ContractNegotiationModel',
+    'PolicyModel',
+    'QuerySpecModel',
+    'TransferProcessModel'
+]
