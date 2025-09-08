@@ -27,7 +27,7 @@ from tractusx_sdk.dataspace.models.connector.saturn import AssetModel
 
 class AssetController(CrudDmaController, DmaController):
     """
-    Concrete implementation of the AssetController for the Connector jupiter Data Management API.
+    Concrete implementation of the AssetController for the Connector saturn Data Management API.
 
     This class overrides the create and update methods in order to ensure the correct class types are used,
     instead of the generic ones.

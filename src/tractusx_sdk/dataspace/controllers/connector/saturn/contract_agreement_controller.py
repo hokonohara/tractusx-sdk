@@ -26,7 +26,7 @@ from tractusx_sdk.dataspace.controllers.connector.utils.mixins import GetControl
 
 class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, DmaController):
     """
-    Concrete implementation of the ContractAgreementController for the Connector jupiter Data Management API.
+    Concrete implementation of the ContractAgreementController for the Connector saturn Data Management API.
     """
 
     endpoint_url = "/v3/contractagreements"
