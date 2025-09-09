@@ -788,8 +788,9 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         dct_type: str,
+        json=None,
+        data=None,
         policies: list = None,
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
         operator="=",
@@ -800,13 +801,14 @@ class BaseConnectorConsumerService(BaseService):
         Executes an HTTP POST request to an asset behind an EDC, filtered by DCT type.
         
         This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
-        and EDR token acquisition) and then executes a POST request with the provided body to 
+        and EDR token acquisition) and then executes a POST request with the provided data to 
         the resulting dataplane endpoint.
 
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider's DSP endpoint.
-        body: The request body to send in the POST request. Can be dict, list, or any JSON-serializable object.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
         dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
         policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
         dct_type_key (str, optional): The JSON path key for DCT type filtering. 
@@ -829,7 +831,7 @@ class BaseConnectorConsumerService(BaseService):
         endpoint, token = connector.do_post_by_dct_type(
             counter_party_id="BPNL000000000001",
             counter_party_address="https://provider-edc.example.com/api/v1/dsp",
-            body=request_data,
+            json=request_data,
             dct_type="QueryService",
             path="/query",
             content_type="application/json"
@@ -839,7 +841,8 @@ class BaseConnectorConsumerService(BaseService):
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
-            body=body,
+            json=json,
+            data=data,
             filter_expression=[
                 self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
             ],
@@ -852,8 +855,9 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         asset_id: str,
+        json=None,
+        data=None,
         policies: list = None,
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="=",
@@ -865,12 +869,13 @@ class BaseConnectorConsumerService(BaseService):
         
         This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
         and EDR token acquisition) for a specific asset and then executes a POST request with 
-        the provided body to the resulting dataplane endpoint.
+        the provided data to the resulting dataplane endpoint.
 
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider's DSP endpoint.
-        body: The request body to send in the POST request. Can be dict, list, or any JSON-serializable object.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
         asset_id (str): The unique identifier of the asset to access.
         policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
         asset_id_key (str, optional): The JSON path key for asset ID filtering. 
@@ -893,7 +898,7 @@ class BaseConnectorConsumerService(BaseService):
         endpoint, token = connector.do_post_by_asset_id(
             counter_party_id="BPNL000000000001",
             counter_party_address="https://provider-edc.example.com/api/v1/dsp",
-            body=update_data,
+            json=update_data,
             asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
             path="/update",
             content_type="application/json"
@@ -903,7 +908,8 @@ class BaseConnectorConsumerService(BaseService):
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
-            body=body,
+            json=json,
+            data=data,
             filter_expression=[
                 self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
             ],
@@ -1026,10 +1032,11 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         filter_expression: list[dict],
         path: str = "/",
         content_type: str = "application/json",
+        json=None,
+        data=None,
         policies: list = None,
         verify: bool = False,
         headers: dict = None,
@@ -1042,12 +1049,13 @@ class BaseConnectorConsumerService(BaseService):
 
         This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
         using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
-        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided body, headers, and content type.
+        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided data, headers, and content type.
 
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider.
-        body (dict): The data to be sent in the POST request.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
         path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
         content_type (str, optional): The content type of the POST request. Defaults to "application/json".
         policies (list, optional): The policies to be used for the transfer. Defaults to None.
@@ -1078,7 +1086,8 @@ class BaseConnectorConsumerService(BaseService):
         if(session):
             return HttpTools.do_post_with_session(
                 url=url,
-                json=body,
+                json=json,
+                data=data,
                 headers=merged_headers,
                 verify=verify,
                 timeout=timeout,
@@ -1088,7 +1097,8 @@ class BaseConnectorConsumerService(BaseService):
 
         return HttpTools.do_post(
             url=url,
-            json=body,
+            json=json,
+            data=data,
             headers=merged_headers,
             verify=verify,
             timeout=timeout,
