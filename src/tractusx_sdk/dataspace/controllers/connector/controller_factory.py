@@ -308,6 +308,7 @@ class ControllerFactory:
         builder.data(kwargs)
         return builder.build()
     
+    @staticmethod
     def get_dataplane_selector_controller(
             dataspace_version: str,
             adapter: BaseDmaAdapter,
@@ -333,6 +334,7 @@ class ControllerFactory:
         builder.data(kwargs)
         return builder.build()
     
+    @staticmethod
     def get_application_observability_controller(
             dataspace_version: str,
             adapter: BaseDmaAdapter,
