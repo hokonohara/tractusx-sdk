@@ -43,6 +43,7 @@ class ControllerType(Enum):
     TRANSFER_PROCESS = "TransferProcess"
     DATAPLANE_SELECTOR = "DataplaneSelector"
     APPLICATION_OBSERVABILITY = "ApplicationObservability"
+    CONNECTOR_DISCOVERY = "ConnectorDiscovery"
     # TODO: Add any other existing controller types
 
 
@@ -351,6 +352,32 @@ class ControllerFactory:
 
         builder = ControllerFactory._get_controller_builder(
             controller_type=ControllerType.APPLICATION_OBSERVABILITY,
+            dataspace_version=dataspace_version,
+        )
+
+        builder.adapter(adapter)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()
+
+    @staticmethod
+    def get_connector_discovery_controller(
+            dataspace_version: str,
+            adapter: BaseDmaAdapter,
+            **kwargs
+    ):
+        """
+        Create a connector_discovery controller instance, based a specific version.
+
+        :param dataspace_version: The version of the Dataspace (i.e: "saturn")
+        :param adapter: The DMA adapter to use for the controller
+
+        :return: An instance of the specified Controller subclass
+        """
+
+        builder = ControllerFactory._get_controller_builder(
+            controller_type=ControllerType.CONNECTOR_DISCOVERY,
             dataspace_version=dataspace_version,
         )
 

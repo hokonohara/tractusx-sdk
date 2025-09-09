@@ -20,28 +20,28 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_agreement_retirement_model import ContractAgreementRetirementModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
-from .connector_discovery_model import ConnectorDiscoveryModel
+from json import dumps as jdumps
+from pydantic import Field
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractAgreementRetirementModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel',
-    'ConnectorDiscoveryModel'
-]
+from ..base_connector_discovery_model import BaseConnectorDiscoveryModel
+
+
+class ConnectorDiscoveryModel(BaseConnectorDiscoveryModel):
+    TYPE: str = Field(default="tx:ConnectorParamsDiscoveryRequest", frozen=True)
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a saturn connector when using a connector discovery model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "tx:bpnl": self.bpnl,
+            "edc:counterPartyAddress": self.counter_party_address
+        }
+
+        return jdumps(data)

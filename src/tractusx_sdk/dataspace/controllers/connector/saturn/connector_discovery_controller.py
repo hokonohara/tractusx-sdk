@@ -20,28 +20,19 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-from .asset_model import AssetModel
-from .catalog_model import CatalogModel
-from .catalog_dataset_request_model import CatalogDatasetRequestModel
-from .contract_agreement_retirement_model import ContractAgreementRetirementModel
-from .contract_definition_model import ContractDefinitionModel
-from .contract_negotiation_model import ContractNegotiationModel
-from .policy_model import PolicyModel
-from .evaluation_policy_model import EvaluationPolicyModel
-from .queryspec_model import QuerySpecModel
-from .transfer_process_model import TransferProcessModel
-from .connector_discovery_model import ConnectorDiscoveryModel
+from .dma_controller import DmaController
+from tractusx_sdk.dataspace.models.connector.saturn import ConnectorDiscoveryModel
 
-__all__ = [
-    'AssetModel',
-    'CatalogModel',
-    'CatalogDatasetRequestModel',
-    'ContractAgreementRetirementModel',
-    'ContractDefinitionModel',
-    'ContractNegotiationModel',
-    'PolicyModel',
-    'EvaluationPolicyModel',
-    'QuerySpecModel',
-    'TransferProcessModel',
-    'ConnectorDiscoveryModel'
-]
+
+class ConnectorDiscoveryController(DmaController):
+    """
+    Concrete implementation of the ConnectorDiscoveryController for the Connector saturn Data Management API.
+
+    This class overrides the create method in order to ensure the correct class types are used, instead of the generic ones.
+    """
+
+    endpoint_url = "/v4alpha/connectordiscovery/dspversionparams"
+
+    def get_discover(self, obj: ConnectorDiscoveryModel, **kwargs):
+        kwargs["data"] = obj.to_data()
+        return self.adapter.post(url=self.endpoint_url, **kwargs)
