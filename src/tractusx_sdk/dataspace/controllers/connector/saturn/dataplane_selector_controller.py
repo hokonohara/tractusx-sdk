@@ -21,6 +21,7 @@
 #################################################################################
 
 from .dma_controller import DmaController
+from tractusx_sdk.dataspace.constants import V3, V4_ALPHA
 
 
 class DataplaneSelectorController(DmaController):
@@ -30,7 +31,10 @@ class DataplaneSelectorController(DmaController):
     This class overrides the create method in order to ensure the correct class types are used, instead of the generic ones.
     """
 
-    endpoint_url = "/v3/dataplanes"
+    endpoint_url = "/dataplanes"
 
-    def get_all(self, **kwargs):
-        return self.adapter.get(url=self.endpoint_url, **kwargs)
+    def get_all_v3(self, **kwargs):
+        return self.adapter.get(url=f"{V3}/{self.endpoint_url}", **kwargs)
+    
+    def get_all_v4alpha(self, **kwargs):
+        return self.adapter.get(url=f"{V4_ALPHA}/{self.endpoint_url}", **kwargs)

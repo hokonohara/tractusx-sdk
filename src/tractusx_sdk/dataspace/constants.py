@@ -23,6 +23,9 @@
 DSP_DATASET_KEY:str="dcat:dataset"
 DSP_POLICY_KEY:str="odrl:hasPolicy"
 
+V3:str="/v3"
+V4_ALPHA:str="/v4alpha"
+
 class JSONLDKeys:
     AT_ID = "@id"
     AT_TYPE = "@type"
