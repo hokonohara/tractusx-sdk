@@ -23,6 +23,7 @@
 from .dma_controller import DmaController
 from tractusx_sdk.dataspace.controllers.connector.utils.mixins import GetControllerMixin, GetAllControllerMixin
 from tractusx_sdk.dataspace.models.connector.saturn import ContractAgreementRetirementModel
+from tractusx_sdk.dataspace.constants import V3, V4_ALPHA
 
 
 class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, DmaController):
@@ -30,17 +31,26 @@ class ContractAgreementController(GetControllerMixin, GetAllControllerMixin, Dma
     Concrete implementation of the ContractAgreementController for the Connector saturn Data Management API.
     """
 
-    endpoint_url = "/v3/contractagreements"
+    endpoint_url = "/contractagreements"
 
     def get_negotiation_by_id(self, oid: str, **kwargs):
-        return self.adapter.get(url=f"{self.endpoint_url}/{oid}/negotiation", **kwargs)
+        return self.adapter.get(url=f"{V3}/{self.endpoint_url}/{oid}/negotiation", **kwargs)
 
     def agreement_retirement(self, obj: ContractAgreementRetirementModel, **kwargs):
         kwargs["data"] = obj.to_data()
-        return self.adapter.post(url=f"{self.endpoint_url}/retirements", **kwargs)
+        return self.adapter.post(url=f"{V3}/{self.endpoint_url}/retirements", **kwargs)
     
     def get_all_retired_agreements(self, **kwargs):
-        return self.adapter.post(url=f"{self.endpoint_url}/retirements/request", **kwargs)
-    
+        return self.adapter.post(url=f"{V3}/{self.endpoint_url}/retirements/request", **kwargs)
+
     def delete_retired_agreement_by_id(self, oid: str, **kwargs):
-        return self.adapter.delete(url=f"{self.endpoint_url}/retirements/{oid}", **kwargs)
+        return self.adapter.delete(url=f"{V3}/{self.endpoint_url}/retirements/{oid}", **kwargs)
+    
+    def get_all_v4alpha(self, **kwargs):
+        return super().get_all(url=f"{V4_ALPHA}/{self.endpoint_url}", **kwargs)
+    
+    def get_by_id_v4alpha(self, oid: str, **kwargs):
+        return super().get_by_id(oid, url=f"{V4_ALPHA}/{self.endpoint_url}", **kwargs)
+    
+    def get_negotiation_by_id_v4alpha(self, oid: str, **kwargs):
+        return self.adapter.get(url=f"{V4_ALPHA}/{self.endpoint_url}/{oid}/negotiation", **kwargs)
