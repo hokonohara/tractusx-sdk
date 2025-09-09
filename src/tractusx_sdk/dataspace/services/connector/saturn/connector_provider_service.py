@@ -20,10 +20,8 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-# Package-level variables
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from ..base_connector_provider import BaseConnectorProviderService
 
-from .connector_service import ConnectorService
-from .connector_provider_service import ConnectorProviderService
-from .connector_consumer_service import ConnectorConsumerService
+
+class ConnectorProviderService(BaseConnectorProviderService):
+    pass  # Nothing in this version differs from the base class
