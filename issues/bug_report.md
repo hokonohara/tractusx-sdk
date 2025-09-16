@@ -13,3 +13,11 @@ Instead of using 'key' as a parameter for the functions, the implementation shou
 
 ### Suggested Fix:
 Update the function parameters to use the filter expression instead of 'key'.
+
+## NOTICE
+
+This work is licensed under the [CC-BY-4.0](https://creativecommons.org/licenses/by/4.0/legalcode).
+
+- SPDX-License-Identifier: CC-BY-4.0
+- SPDX-FileCopyrightText: 2025 Contributors to the Eclipse Foundation
+- Source URL: https://github.com/eclipse-tractusx/tractusx-sdk
