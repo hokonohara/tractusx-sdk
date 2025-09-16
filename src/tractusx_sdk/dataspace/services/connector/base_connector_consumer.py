@@ -538,7 +538,7 @@ class BaseConnectorConsumerService(BaseService):
         ## If is there return the cached one, if the selection is the same the transfer id can be reused!
         if (transfer_process_id is not None):
             if self.logger:
-                self.logger.info(
+                self.logger.debug(
                     "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
                     counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
