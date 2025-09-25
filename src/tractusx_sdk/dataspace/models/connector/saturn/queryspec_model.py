@@ -20,6 +20,31 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from json import dumps as jdumps
+from pydantic import Field
+
+from ..base_queryspec_model import BaseQuerySpecModel
+
+
+class QuerySpecModel(BaseQuerySpecModel):
+    TYPE: str = Field(default="QuerySpec", frozen=True)
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that
+        will be sent to the connector when using a queryspec model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "offset": self.offset,
+            "limit": self.limit,
+            "sortOrder": self.sort_order,
+            "sortField": self.sort_field,
+            "filterExpression": self.filter_expression
+        }
+
+        return jdumps(data)

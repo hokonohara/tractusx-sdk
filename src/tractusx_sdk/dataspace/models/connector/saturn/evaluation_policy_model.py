@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -20,6 +21,27 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from json import dumps as jdumps
+from pydantic import Field
+
+from ..base_evaluation_policy_model import BaseEvaluationPolicyModel
+
+
+class EvaluationPolicyModel(BaseEvaluationPolicyModel):
+    TYPE: str = Field(default="PolicyEvaluationPlanRequest", frozen=True)
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a saturn connector when using an evaluation policy model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "policyScope": self.policy_scope
+        }
+
+        return jdumps(data)

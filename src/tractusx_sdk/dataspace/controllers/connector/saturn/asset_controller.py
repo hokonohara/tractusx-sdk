@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -20,6 +21,23 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from .dma_controller import DmaController
+from tractusx_sdk.dataspace.controllers.connector.utils.mixins import CrudDmaController
+from tractusx_sdk.dataspace.models.connector.saturn import AssetModel
+
+
+class AssetController(CrudDmaController, DmaController):
+    """
+    Concrete implementation of the AssetController for the Connector saturn Data Management API.
+
+    This class overrides the create and update methods in order to ensure the correct class types are used,
+    instead of the generic ones.
+    """
+
+    endpoint_url = "/v3/assets"
+
+    def create(self, obj: AssetModel, **kwargs):
+        return super().create(obj, **kwargs)
+
+    def update(self, obj: AssetModel, **kwargs):
+        return super().update(obj, **kwargs)

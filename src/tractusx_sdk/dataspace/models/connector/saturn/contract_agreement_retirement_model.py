@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -20,6 +21,25 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from json import dumps as jdumps
+
+from ..base_contract_agreement_retirement_model import BaseContractAgreementRetirementModel
+
+
+class ContractAgreementRetirementModel(BaseContractAgreementRetirementModel):
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a saturn connector when using a contract agreement retirement model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "edc:agreementId": self.agreement_id,
+            "tx:reason": self.reason
+        }
+
+        return jdumps(data)

@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -20,6 +21,18 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from ..base_dma_controller import BaseDmaController
+from tractusx_sdk.dataspace.adapters.connector.saturn import DmaAdapter
+
+
+class DmaController(BaseDmaController):
+    """
+    Implementation of a base DmaController for the Connector saturn Data Management API.
+
+    This class overrides the adapter method of the parent's _Builder class in order
+    to ensure the correct Adapter class types are used, instead of the generic ones.
+    """
+
+    class _Builder(BaseDmaController._Builder):
+        def adapter(self, adapter: DmaAdapter):
+            return super().adapter(adapter)

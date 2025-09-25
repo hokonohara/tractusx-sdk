@@ -20,6 +20,30 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from json import dumps as jdumps
+from pydantic import Field
+
+from ..base_contract_definition_model import BaseContractDefinitionModel
+
+
+class ContractDefinitionModel(BaseContractDefinitionModel):
+    TYPE: str = Field(default="ContractDefinition", frozen=True)
+
+    def to_data(self):
+        """
+        Converts the model to a JSON representing the data that will
+        be sent to a jupiter connector when using a contract definition model.
+
+        :return: a JSON representation of the model
+        """
+
+        data = {
+            "@context": self.context,
+            "@type": self.TYPE,
+            "@id": self.oid,
+            "accessPolicyId": self.access_policy_id,
+            "contractPolicyId": self.contract_policy_id,
+            "assetsSelector": self.assets_selector
+        }
+
+        return jdumps(data)

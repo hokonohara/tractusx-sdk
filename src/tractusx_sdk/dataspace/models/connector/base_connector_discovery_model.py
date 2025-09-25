@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -20,6 +21,34 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-__version__ = '0.5.0'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
+from abc import ABC
+from typing import Optional, Union
+from pydantic import Field
+
+from ..model import BaseModel
+
+
+class BaseConnectorDiscoveryModel(BaseModel, ABC):
+    """
+    Base model class for representing a connector's discovery request.
+    """
+
+    bpnl: str
+    counter_party_address: str
+    context: Optional[Union[dict, list, str]] = Field(default={
+        "tx": "https://w3id.org/tractusx/v0.0.1/ns/",
+        "edc": "https://w3id.org/edc/v0.0.1/ns/"
+    })
+
+    class _Builder(BaseModel._Builder):
+        def context(self, context: dict):
+            self._data["context"] = context
+            return self
+
+        def bpnl(self, bpnl: str):
+            self._data["bpnl"] = bpnl
+            return self
+
+        def counter_party_address(self, counter_party_address: str):
+            self._data["counter_party_address"] = counter_party_address
+            return self
