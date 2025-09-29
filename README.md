@@ -1,3 +1,9 @@
+[![Contributors][contributors-shield]][contributors-url]
+[![Stargazers][stars-shield]][stars-url]
+[![Apache 2.0 License][license-shield]][license-url-code]
+[![CC-BY-4.0][license-shield-non-code]][license-url-non-code]
+[![Latest Release][release-shield]][release-url]
+
 # Tractus-X Software Development KIT
 
 Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
@@ -7,15 +13,13 @@ A modular facade with generic microservices that allows you to "provide" and "co
 It aims to provide a reference implementation for the various interactions between applications and services like the EDC, Digital Twin Registry and Submodel Service.
 Is the literal "tool box" you need to provide data and consume data, how you orchestrate it is then up to you and your use case.
 
-This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, providing a "smart REST API middleware" that will be maintained by the community.
+This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, that will be maintained by the community.
 
 No specific use case logic will be configured here, only the bare minimum for interacting in a Dataspace and developing your own applications with this stack, based on the KITs which adopt the core data exchange functionalities, in concrete the following ones:
 
 - [Connector KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Connector%20Kit/Adoption%20View/connector_kit_adoption_view)
 - [Digital Twin KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Digital%20Twin%20Kit/Adoption%20View%20Digital%20Twin%20Kit)
 - [Industry Core KIT](https://eclipse-tractusx.github.io/docs-kits/kits/Industry%20Core%20Kit/Business%20View%20Industry%20Core%20Kit)
-
-An example of SDK that is already used in Tractus-X is the [Portal Shared Components](https://github.com/eclipse-tractusx/portal-shared-components), however this SDK shall aim to be generic for every application.
 
 ## Installation
 
@@ -381,13 +385,13 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
 - You can create a frontend for your use case (with any technology) and build your own Backend Apis with this tool box.
 - Furthermore, you can use this in a Jupyter notebook for example, or create your personal scripts for using the Connector, DTR and Submodel Service.
 - It enables you to build your own use case logic over it, without needing to worry about versioning (Jupiter and Saturn supported).
-- Base yourself in the [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub) which provides you a "lighthouse" for using this SDK.
+- Base yourself in the [Industry Core Hub](https://github.com/eclipse-tractusx/tractusx-sdk) which provides you a "lighthouse" for using this SDK.
 
 ## Applications that use this SDK
 
-- [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub): Example on how to use the SDK to develop an application.
-  - [Backend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-backend): An example of how to use the SDK dataspace & industry libaries in your application.
-  - [Frontend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-frontend): An example of how to use the SDK API interfaces from each microservice.
+- [Industry Core Hub](https://github.com/eclipse-tractusx/tractusx-sdk): Example on how to use the SDK to develop an application.
+  - [Backend](https://github.com/eclipse-tractusx/tractusx-sdk/tree/main/ichub-backend): An example of how to use the SDK dataspace & industry libaries in your application.
+  - [Frontend](https://github.com/eclipse-tractusx/tractusx-sdk/tree/main/ichub-frontend): An example of how to use the SDK API interfaces from each microservice.
   - The use case add-ons from the IC-Hub will also use this!
 
 - [Tractus-X SDK Services](https://github.com/eclipse-tractusx/tractusx-sdk-services): Repository where the reusable APIs/Services for the SDK are available as microservices.
@@ -408,11 +412,11 @@ To ease the understanding what is the tool box (SDK) here is a resumed diagram:
 
 Here you will find a design decision which was taken at the beginning of the industry core hub development:
 
-[Industry Core Hub Decision Record 0002](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
+[Industry Core Hub Decision Record 0002](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/architecture/decision-records/0002-tractus-x-sdk.md)
 
 While developing the Industry Core Hub, in parallel we decided to create a SDK for Tractus-X.
 
-[Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md)
+[Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md)
 
 Having an individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want to easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
@@ -465,21 +469,21 @@ This SDK will be developed based and will follow the Dataspace & Industry Usage 
 - **Get onboarded**: [Getting started](https://eclipse-tractusx.github.io/docs/oss/getting-started/). Join the Eclipse Tractus-X open source community as a contributor!
 - Attend the [official community office hours](https://eclipse-tractusx.github.io/community/open-meetings/#Community%20Office%20Hour) and raise your issue!
 - Attend our [Industry Core Hub Weekly](https://eclipse-tractusx.github.io/community/open-meetings#[IC-Hub]%20Industry%20Core%20Hub%20Weekly)
-- Join our [Tractus-X SDK Matrix Chat](https://matrix.to/#/#tractusx-industry-core-hub:matrix.eclipse.org)
+- Join our [Tractus-X SDK Matrix Chat](https://matrix.to/#/#tractusx-tractusx-sdk:matrix.eclipse.org)
 
 ### Found a bug?
 
-👀 If you have identified a bug or want to fix an existing documentation, feel free to create a new issue at our project's corresponding [GitHub Issues page](https://github.com/eclipse-tractusx/industry-core-hub/issues/new/choose)
+👀 If you have identified a bug or want to fix an existing documentation, feel free to create a new issue at our project's corresponding [GitHub Issues page](https://github.com/eclipse-tractusx/tractusx-sdk/issues/new/choose)
 
- ⁉️ Before doing so, please consider searching for potentially suitable [existing issues](https://github.com/eclipse-tractusx/industry-core-hub/issues).
+ ⁉️ Before doing so, please consider searching for potentially suitable [existing issues](https://github.com/eclipse-tractusx/tractusx-sdk/issues).
 
 🙋 **Assign to yourself** - Show others that you are working on this issue by assigning it to yourself.
 <br> To do so, click the cog wheel next to the Assignees section just to the right of this issue.
 
 ### Discuss
 
-📣 If you want to share an idea to further enhance the project, please feel free to contribute to the [discussions](https://github.com/eclipse-tractusx/industry-core-hub/discussions),
-otherwise [create a new discussion](https://github.com/eclipse-tractusx/industry-core-hub/discussions/new/choose)
+📣 If you want to share an idea to further enhance the project, please feel free to contribute to the [discussions](https://github.com/eclipse-tractusx/tractusx-sdk/discussions),
+otherwise [create a new discussion](https://github.com/eclipse-tractusx/tractusx-sdk/discussions/new/choose)
 
 ## Reporting a Security Issue
 
@@ -492,3 +496,15 @@ Please follow the [Security Issue Reporting Guidelines](https://eclipse-tractusx
 ---
 
 Thank you for using Software Development KIT! If you have any questions or need further assistance, please feel free to reach out.
+
+[contributors-shield]: https://img.shields.io/github/contributors/eclipse-tractusx/tractusx-sdk.svg?style=for-the-badge
+[contributors-url]: https://github.com/eclipse-tractusx/tractusx-sdk/graphs/contributors
+[stars-shield]: https://img.shields.io/github/stars/eclipse-tractusx/tractusx-sdk.svg?style=for-the-badge
+[stars-url]: https://github.com/eclipse-tractusx/tractusx-sdk/stargazers
+[license-shield]: https://img.shields.io/github/license/eclipse-tractusx/tractusx-sdk.svg?style=for-the-badge
+[license-url-code]: https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/LICENSE
+[license-shield-non-code]: https://img.shields.io/badge/NON--CODE%20LICENSE-CC--BY--4.0-8A2BE2?style=for-the-badge
+[license-url-non-code]: https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/LICENSE_non-code
+[release-shield]: https://img.shields.io/github/v/release/eclipse-tractusx/tractusx-sdk.svg?style=for-the-badge
+
+[release-url]: https://github.com/eclipse-tractusx/tractusx-sdk/releases
