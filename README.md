@@ -4,7 +4,7 @@
 [![CC-BY-4.0][license-shield-non-code]][license-url-non-code]
 [![Latest Release][release-shield]][release-url]
 
-# Tractus-X Software Development KIT
+# Tractus-X Software Development KIT (SDK)
 
 Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
 
