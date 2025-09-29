@@ -60,16 +60,16 @@ class BaseConnectorConsumerService(BaseService):
         if self.verbose and self.logger is None:
             self.logger = logging.getLogger(__name__)
 
-        dma_adapter = AdapterFactory.get_dma_adapter(
+        self.dma_adapter = AdapterFactory.get_dma_adapter(
             dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
-        controllers = ControllerFactory.get_dma_controllers_for_version(
+        self.controllers = ControllerFactory.get_dma_controllers_for_version(
             dataspace_version=dataspace_version,
-            adapter=dma_adapter,
+            adapter=self.dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
                 ControllerType.EDR,
@@ -78,10 +78,10 @@ class BaseConnectorConsumerService(BaseService):
             ]
         )
 
-        self._catalog_controller = controllers.get(ControllerType.CATALOG)
-        self._edr_controller = controllers.get(ControllerType.EDR)
-        self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
-        self._transfer_process_controller = controllers.get(ControllerType.TRANSFER_PROCESS)
+        self._catalog_controller = self.controllers.get(ControllerType.CATALOG)
+        self._edr_controller = self.controllers.get(ControllerType.EDR)
+        self._contract_negotiation_controller = self.controllers.get(ControllerType.CONTRACT_NEGOTIATION)
+        self._transfer_process_controller = self.controllers.get(ControllerType.TRANSFER_PROCESS)
 
         self.connection_manager = connection_manager if connection_manager is not None else MemoryConnectionManager()
 

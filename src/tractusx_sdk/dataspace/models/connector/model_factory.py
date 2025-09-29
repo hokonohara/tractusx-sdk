@@ -41,6 +41,7 @@ class ModelType(Enum):
     POLICY = "Policy"
     QUERY_SPEC = "QuerySpec"
     TRANSFER_PROCESS = "TransferProcess"
+    CONNECTOR_DISCOVERY = "ConnectorDiscovery"
     # TODO: Add any other existing model types
 
 
@@ -153,6 +154,7 @@ class ModelFactory:
             additional_scopes: list = None,
             queryspec_model: BaseQuerySpecModel = None,
             queryspec: dict = None,
+            protocol: str = None,
             **kwargs
     ):
         """
@@ -176,7 +178,8 @@ class ModelFactory:
         # Add the required parameters
         builder.counter_party_address(counter_party_address)
         builder.counter_party_id(counter_party_id)
-
+        if protocol is not None:
+            builder.protocol(protocol)
         # Check for the optional parameters
         if context is not None:
             builder.context(context)
@@ -429,3 +432,38 @@ class ModelFactory:
         builder.data(kwargs)
         return builder.build()
 
+    @staticmethod
+    def get_connector_discovery_model(
+            dataspace_version: str,
+            bpnl: str,
+            counter_party_address: str,
+            context: dict | list | str = None,
+            **kwargs
+    ):
+        if(dataspace_version == "jupiter"):
+            raise NotImplementedError("Connector Discovery model is not available for Jupiter!")
+        
+        """
+        Create a ConnectorDiscovery model instance for a specific version.
+
+        :param dataspace_version: The version of the Dataspace (e.g., "saturn"), Jupiter not supported
+        :param counter_party_address: The address of the counterparty
+        :param bpnl: The BPNL to discover the connector
+        :param context: Optional context dictionary
+
+        :return: An instance of the TransferProcessModel subclass
+        """
+        builder = ModelFactory._get_model_builder(ModelType.CONNECTOR_DISCOVERY, dataspace_version)
+
+        # Add the required parameters
+        builder.counter_party_address(counter_party_address)
+        builder.bpnl(bpnl)
+
+        # Check for optional parameters
+
+        if context is not None:
+            builder.context(context)
+
+        # Include any additional parameters
+        builder.data(kwargs)
+        return builder.build()

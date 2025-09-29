@@ -28,11 +28,11 @@ from ..base_catalog_model import BaseCatalogModel
 
 class CatalogModel(BaseCatalogModel):
     TYPE: str = Field(default="CatalogRequest", frozen=True)
-    PROTOCOL: str = Field(default="dataspace-protocol-http:2025-1")
+    protocol: str = Field(default="dataspace-protocol-http:2025-1")
 
     def to_data(self):
         """
-        Converts the model to a JSON representing the data that will
+        Converts the model to a JSON representation of the data that will
         be sent to a jupiter connector when using a catalog model.
 
         :return: a JSON representation of the model
@@ -43,7 +43,7 @@ class CatalogModel(BaseCatalogModel):
             "@type": self.TYPE,
             "counterPartyAddress": self.counter_party_address,
             "counterPartyId": self.counter_party_id,
-            "protocol": self.PROTOCOL,
+            "protocol": self.protocol,
             "additionalScopes": self.additional_scopes,
             "querySpec": self.queryspec
         }

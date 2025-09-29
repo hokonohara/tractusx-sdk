@@ -28,7 +28,7 @@ from ..base_contract_negotiation_model import BaseContractNegotiationModel
 
 class ContractNegotiationModel(BaseContractNegotiationModel):
     TYPE: str = Field(default="ContractRequest", frozen=True)
-    PROTOCOL: str = Field(default="dataspace-protocol-http:2025-1")
+    protocol: str = Field(default="dataspace-protocol-http:2025-1")
     OFFER_TYPE: str = Field(default="odrl:Offer", frozen=True)
 
     def to_data(self):
@@ -43,7 +43,7 @@ class ContractNegotiationModel(BaseContractNegotiationModel):
             "@context": self.context,
             "@type": self.TYPE,
             "counterPartyAddress": self.counter_party_address,
-            "protocol": self.PROTOCOL,
+            "protocol": self.protocol,
             "policy": {
                 "@id": self.offer_id,
                 "@type": self.OFFER_TYPE,
