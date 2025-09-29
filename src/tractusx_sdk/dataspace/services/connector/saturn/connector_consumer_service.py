@@ -174,7 +174,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
             raise ValueError("Connector Service Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
-            dataspace_version=DataspaceVersionMapping(value=protocol),  # version is to be included in the BaseService class
+            dataspace_version=DataspaceVersionMapping.from_protocol(protocol).value,  # version is to be included in the BaseService class
             context=context,
             counter_party_address=counter_party_address,
             offer_id=offer_id,
@@ -404,7 +404,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
     def get_catalog_request(self, counter_party_id: str, counter_party_address: str, protocol: str = DSP_2025, context=DEFAULT_CONTEXT) -> CatalogModel:
         ## Here it will autoselect the dataspace version based on the protocol
         return ModelFactory.get_catalog_model(
-            dataspace_version=DataspaceVersionMapping(value=protocol),
+            dataspace_version=DataspaceVersionMapping.from_protocol(protocol).value,
             context=context,
             counter_party_id=counter_party_id,  ## bpn of the provider
             counter_party_address=counter_party_address,  ## dsp url from the provider,

@@ -28,8 +28,17 @@ from .base_policy_model import BasePolicyModel
 from .base_queryspec_model import BaseQuerySpecModel
 
 class DataspaceVersionMapping(Enum):
-    "dataspace-protocol-http" = "jupiter"
-    "dataspace-protocol-http:2025-1" = "saturn"
+    DATASPACE_PROTOCOL_HTTP = "jupiter"
+    DATASPACE_PROTOCOL_HTTP_2025_1 = "saturn"
+    
+    @classmethod
+    def from_protocol(cls, protocol: str):
+        """Get enum value by protocol string"""
+        mapping = {
+            "dataspace-protocol-http": cls.DATASPACE_PROTOCOL_HTTP,
+            "dataspace-protocol-http:2025-1": cls.DATASPACE_PROTOCOL_HTTP_2025_1,
+        }
+        return mapping.get(protocol, cls.DATASPACE_PROTOCOL_HTTP_2025_1)  # default to saturn
 
 class ModelType(Enum):
     """
