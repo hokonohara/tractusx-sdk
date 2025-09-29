@@ -1015,7 +1015,7 @@ class BaseConnectorConsumerService(BaseService):
                 verify=verify,
                 timeout=timeout,
                 allow_redirects=allow_redirects,
-                session=session,
+                session=session
             )
             
         ## Do get request to get a response!
@@ -1092,7 +1092,7 @@ class BaseConnectorConsumerService(BaseService):
                 verify=verify,
                 timeout=timeout,
                 allow_redirects=allow_redirects,
-                session=session,
+                session=session
             )
 
         return HttpTools.do_post(

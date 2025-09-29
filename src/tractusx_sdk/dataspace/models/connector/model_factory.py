@@ -27,6 +27,9 @@ from os import listdir, path
 from .base_policy_model import BasePolicyModel
 from .base_queryspec_model import BaseQuerySpecModel
 
+class DataspaceVersionMapping(Enum):
+    "dataspace-protocol-http" = "jupiter"
+    "dataspace-protocol-http:2025-1" = "saturn"
 
 class ModelType(Enum):
     """
@@ -250,6 +253,7 @@ class ModelFactory:
             offer_policy: dict = None,
             context: dict | list | str = None,
             callback_addresses: list = None,
+            protocol: str = None,
             **kwargs
     ):
         """
@@ -279,7 +283,9 @@ class ModelFactory:
         builder.offer_id(offer_id)
         builder.asset_id(asset_id)
         builder.provider_id(provider_id)
-
+        
+        if protocol is not None:
+            builder.protocol(protocol)
         # Check for the optional parameters
         if offer_policy_model is not None:
             builder.offer_policy_from_policy_model(offer_policy_model)
