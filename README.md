@@ -1,6 +1,3 @@
-> [!IMPORTANT]
-> This Software is still in development. Please consult our [Roadmap](#roadmap)
-
 # Tractus-X Software Development KIT
 
 Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
@@ -28,6 +25,15 @@ Install the package directly from PyPI:
 pip install tractusx-sdk
 ```
 
+## Usage
+
+You can find some examples [here](./examples/)
+
+> [!INFO]
+> We are working to make the SDK documentation more accessible and easy to adopt.
+> Our objective is to have an "Open Specification" at our github pages domain.
+> Support us by joining our [open meetings](https://eclipse-tractusx.github.io/community/open-meetings#Industry%20Core%20Hub%20&%20Tractus-X%20SDK%20Weekly) or contributing with documentation.
+
 ## Roadmap
 
 The development roadmap is the same as the industry core hub.
@@ -41,26 +47,36 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
                                                            Use Case (e.g. DPP) (Another usage for the SDK)
 ```
 
+> [!IMPORTANT]
+> Currently this SDK is not 100% compatible and tested against the `v0.11.x` connector. The issue is being worked here [tractusx-sdk#159](https://github.com/eclipse-tractusx/tractusx-sdk/issues/159)
+
 ## What can you do with this SDK?
 
-- You can create a frontend for your use case (with any technology) and consume the APIs.
-- Also, you can create a backend in python and import the libraries.
-- Furthermore, you can use this in a Jupyter notebook for example, or create your personal scripts for using the EDC, DTR and Submodel Service.
-- It enables you to build your own use case logic over it, without needing to worry about versioning.
+- You can create a frontend for your use case (with any technology) and build your own Backend Apis with this tool box.
+- Furthermore, you can use this in a Jupyter notebook for example, or create your personal scripts for using the Connector, DTR and Submodel Service.
+- It enables you to build your own use case logic over it, without needing to worry about versioning (Jupiter and Saturn supported).
 - Base yourself in the [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub) which provides you a "lighthouse" for using this SDK.
 
 ## Applications that use this SDK
 
-- [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub):
+- [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub): Example on how to use the SDK to develop an application.
   - [Backend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-backend): An example of how to use the SDK dataspace & industry libaries in your application.
   - [Frontend](https://github.com/eclipse-tractusx/industry-core-hub/tree/main/ichub-frontend): An example of how to use the SDK API interfaces from each microservice.
   - The use case add-ons from the IC-Hub will also use this!
 
-- [Tractus-X SDK Services](https://github.com/eclipse-tractusx/tractusx-sdk-services)
+- [Tractus-X SDK Services](https://github.com/eclipse-tractusx/tractusx-sdk-services): Repository where the reusable APIs/Services for the SDK are available as microservices.
   - [DT Pull Service](https://github.com/eclipse-tractusx/tractusx-sdk-services): Provides a service that pulls digital twins from data providers.
   - [Test Orchestrator](https://github.com/eclipse-tractusx/tractusx-sdk-services): Provides a test agent service that can check if the configuration of your data provision services is compliant with the standard schemas & syntaxis.
 
+- [Tractus-X AAS Suite](https://github.com/eclipse-tractusx/aas-suite): A integration project between the Tractus-X SDK (being used as client for the Connector) and the BaSyx Python SDK.
+
 - Open for more collaboration!
+
+## Module Logic Architecture
+
+To ease the understanding what is the tool box (SDK) here is a resumed diagram:
+
+![Logic Architecture](./docs/media/logic-resume.svg)
 
 ## Why was this Tractus-X SDK Created?
 
@@ -70,9 +86,9 @@ Here you will find a design decision which was taken at the beginning of the ind
 
 While developing the Industry Core Hub, in parallel we decided to create a SDK for Tractus-X.
 
-[Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md) 
+[Industry Core Hub Decision Record 0003 Create new Repository](https://github.com/eclipse-tractusx/industry-core-hub/blob/main/docs/architecture/decision-records/0003-tractus-x-sdk-individual-repository.md)
 
-Having a individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want to easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
+Having an individual SDK repository, we are creating a reusable and modular middleware/library for all use cases and applications that want to easily interact with the Tractus-X Datapaces Components required for data provision and data consumption:
 
 - [Tractus-X Eclipse Dataspace Connector (EDC)](https://github.com/eclipse-tractusx/tractusx-edc)
 - [Tractus-X Digital Twin Registry](https://github.com/eclipse-tractusx/sldt-digital-twin-registry)
@@ -93,13 +109,16 @@ Our aim is to automate the target releases and compatibility with this systems u
 
 ## High Level Architecture
 
-Providing two reusable libraries:
+Providing reusable modules:
 
 - [Dataspace Foundation Library](./src/tractusx_sdk/dataspace)
   - Enables your "bytes" data exchange using the EDC and the core services from Catena-X.
   - It provides tools for your exchange agnostic from your use case.
 - [Industry Foundation Library](./src/tractusx_sdk/industry)
   - Enables your data exchange using the dataspace foundation library but for the usage of Digital Twins in the Digital Twin Registry.
+
+- [Extensions](./src/tractusx_sdk/extensions)
+  - Allows you to extend the SDK tool box with your use case specifics and reusable components.
 
 ![Architecture](./docs/media/catena-x-speedway-sdk.svg)
 
