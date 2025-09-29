@@ -5,13 +5,21 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.5.0]
+
+### Added
+
+- feat: Adapt changes to 'saturn' release by @mgarciaLKS in https://github.com/eclipse-tractusx/tractusx-sdk/pull/146
+- feat: added new Saturn apis and 2025-01 dsp protocol specifications by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/158
+- feat: prepared final version of the ichub 0.5.0 and documentation by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/156
+
 ## [0.4.2]
 
 ### Fixed
 
--fix: update parameters for POST request in BaseConnectorConsumerService to include json and body options by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/149
--fix: refactor get_catalogs_by_dct_type and get_catalogs_with_filter to use filter_expression by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/148
--fix: change logger level from info to debug for transfer_id cache logging by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/151
+- fix: update parameters for POST request in BaseConnectorConsumerService to include json and body options by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/149
+- fix: refactor get_catalogs_by_dct_type and get_catalogs_with_filter to use filter_expression by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/148
+- fix: change logger level from info to debug for transfer_id cache logging by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/151
 
 ## [0.4.1]
 
