@@ -36,25 +36,31 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
     
     EDC_NAMESPACE= "https://w3id.org/edc/v0.0.1/ns/"
     DSP_2025="dataspace-protocol-http:2025-1"
-    DEFAULT_NEGOTIATION_CONTEXT:list=[{"https://w3id.org/tractusx/policy/v1.0.0","http://www.w3.org/ns/odrl.jsonld",{"@vocab": "https://w3id.org/edc/v0.0.1/ns/", "edc": "https://w3id.org/edc/v0.0.1/ns/"}}]
+    DEFAULT_NEGOTIATION_CONTEXT:list=["https://w3id.org/tractusx/policy/v1.0.0","http://www.w3.org/ns/odrl.jsonld",{"@vocab": EDC_NAMESPACE, "edc": EDC_NAMESPACE}]
     DEFAULT_CONTEXT:dict = {"edc": EDC_NAMESPACE,"odrl": "http://www.w3.org/ns/odrl/2/","dct": "https://purl.org/dc/terms/"}
     _connector_discovery_controller: BaseDmaController
     
-    def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None,
+    def __init__(self, base_url: str, dma_path: str, headers: dict = None,
                  connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
+        # Set attributes before accessing them
+        self.verbose = verbose
+        self.logger = logger
+        
+        
+        self.dataspace_version = "saturn"
         # Backwards compatibility: if verbose is True and no logger provided, use default logger
         if self.verbose and self.logger is None:
             self.logger = logging.getLogger(__name__)
 
         self.dma_adapter = AdapterFactory.get_dma_adapter(
-            dataspace_version=dataspace_version,
+            dataspace_version=self.dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
         self.controllers = ControllerFactory.get_dma_controllers_for_version(
-            dataspace_version=dataspace_version,
+            dataspace_version=self.dataspace_version,
             adapter=self.dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
@@ -66,7 +72,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
         )
         self._connector_discovery_controller = self.controllers.get(ControllerType.CONNECTOR_DISCOVERY)
         super().__init__(
-            dataspace_version=dataspace_version,
+            dataspace_version=self.dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers,
