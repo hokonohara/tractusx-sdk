@@ -28,7 +28,7 @@ from ..base_catalog_model import BaseCatalogModel
 
 class CatalogModel(BaseCatalogModel):
     TYPE: str = Field(default="CatalogRequest", frozen=True)
-    PROTOCOL: str = Field(default="dataspace-protocol-http")
+    protocol: str = Field(default="dataspace-protocol-http")
 
     def to_data(self):
         """
@@ -43,7 +43,7 @@ class CatalogModel(BaseCatalogModel):
             "@type": self.TYPE,
             "counterPartyAddress": self.counter_party_address,
             "counterPartyId": self.counter_party_id,
-            "protocol": self.PROTOCOL,
+            "protocol": self.protocol,
             "additionalScopes": self.additional_scopes,
             "querySpec": self.queryspec
         }

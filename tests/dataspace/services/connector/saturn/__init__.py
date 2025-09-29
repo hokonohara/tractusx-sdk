@@ -19,8 +19,3 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
-
-# tractusx_sdk Package-level variables
-__version__ = '0.5.0-rc2'
-__author__ = 'Eclipse Tractus-X Contributors'
-__license__ = "Apache License, Version 2.0"
