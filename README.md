@@ -33,7 +33,7 @@ pip install tractusx-sdk
 
 You can find some examples [here](./examples/)
 
-> [!INFO]
+> [!NOTE]
 > We are working to make the SDK documentation more accessible and easy to adopt.
 > Our objective is to have an "Open Specification" at our github pages domain.
 > Support us by joining our [open meetings](https://eclipse-tractusx.github.io/community/open-meetings#Industry%20Core%20Hub%20&%20Tractus-X%20SDK%20Weekly) or contributing with documentation.
