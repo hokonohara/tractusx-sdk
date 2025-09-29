@@ -587,7 +587,7 @@ class TestSaturnConnectorConsumerService(TestCase):
         """Test discover_connector_protocol when legacy protocol returns BPNL in counterPartyId."""
         bpnl = "BPNL000000000001"
         discovery_info = {
-            "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "http://provider.example.com",
+            "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "https://provider.example.com",
             "https://w3id.org/edc/v0.0.1/ns/counterPartyId": "BPNL000000000001",
             "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http"
         }
@@ -609,7 +609,7 @@ class TestSaturnConnectorConsumerService(TestCase):
         """Test discover_connector_protocol when DSP 2025-1 protocol always returns DID in counterPartyId."""
         bpnl = "BPNL000000000001"
         discovery_info = {
-            "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "http://provider.example.com",
+            "https://w3id.org/edc/v0.0.1/ns/counterPartyAddress": "https://provider.example.com",
             "https://w3id.org/edc/v0.0.1/ns/counterPartyId": "did:web:connector-provider.example.com",
             "https://w3id.org/edc/v0.0.1/ns/protocol": "dataspace-protocol-http:2025-1"
         }
@@ -1065,8 +1065,8 @@ class TestSaturnConnectorConsumerService(TestCase):
                 filter_expression=filter_expression,
                 policies=policies,
                 protocol="dataspace-protocol-http",
-                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'http://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
-                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'http://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
+                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'https://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
+                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'https://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
             )
     
     def test_do_dsp_with_bpnl_success_did_response(self):
@@ -1105,8 +1105,8 @@ class TestSaturnConnectorConsumerService(TestCase):
                 filter_expression=filter_expression,
                 policies=policies,
                 protocol="dataspace-protocol-https:2025-1",
-                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'http://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
-                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'http://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
+                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'https://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
+                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'https://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
             )
     
     def test_do_dsp_with_bpnl_legacy_protocol(self):
@@ -1145,8 +1145,8 @@ class TestSaturnConnectorConsumerService(TestCase):
                 filter_expression=filter_expression,
                 policies=policies,
                 protocol="dataspace-protocol-http",
-                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'http://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
-                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'http://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
+                catalog_context={'edc': 'https://w3id.org/edc/v0.0.1/ns/', 'odrl': 'https://www.w3.org/ns/odrl/2/', 'dct': 'https://purl.org/dc/terms/'},
+                negotiation_context=['https://w3id.org/tractusx/policy/v1.0.0', 'https://www.w3.org/ns/odrl.jsonld', {'@vocab': 'https://w3id.org/edc/v0.0.1/ns/', 'edc': 'https://w3id.org/edc/v0.0.1/ns/'}]
             )
 
 
