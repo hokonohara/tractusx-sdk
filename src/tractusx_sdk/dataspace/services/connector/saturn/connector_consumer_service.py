@@ -105,14 +105,21 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
                             params: dict = None, allow_redirects: bool = False, session=None) -> Response:
         """
         Internal helper to execute HTTP requests with common logic.
+        
+        Supports only GET, POST, and PUT methods with optional session support.
         """
+        # Validate that only allowed HTTP methods are used
+        allowed_methods = {'GET', 'POST', 'PUT'}
+        if method.upper() not in allowed_methods:
+            raise ValueError(f"HTTP method '{method}' is not supported. Only {', '.join(allowed_methods)} are allowed.")
+        
         if headers is None:
             headers = {}
         
         url = dataplane_url + path
         dataplane_headers = self.get_data_plane_headers(access_token=access_token, content_type=content_type if method == 'POST' else None)
         merged_headers = headers | dataplane_headers
-        
+
         if session:
             if method == 'GET':
                 return HttpTools.do_get_with_session(
@@ -124,18 +131,28 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
                     url=url, json=json, data=data, headers=merged_headers, verify=verify,
                     timeout=timeout, allow_redirects=allow_redirects, session=session
                 )
-        else:
-            if method == 'GET':
-                return HttpTools.do_get(
-                    url=url, headers=merged_headers, verify=verify, timeout=timeout,
-                    params=params, allow_redirects=allow_redirects
-                )
-            elif method == 'POST':
-                return HttpTools.do_post(
+            elif method == 'PUT':
+                return HttpTools.do_put_with_session(
                     url=url, json=json, data=data, headers=merged_headers, verify=verify,
-                    timeout=timeout, allow_redirects=allow_redirects
+                    timeout=timeout, allow_redirects=allow_redirects, session=session
                 )
-    
+
+        if method == 'GET':
+            return HttpTools.do_get(
+                url=url, headers=merged_headers, verify=verify, timeout=timeout,
+                params=params, allow_redirects=allow_redirects
+            )
+        elif method == 'POST':
+            return HttpTools.do_post(
+                url=url, json=json, data=data, headers=merged_headers, verify=verify,
+                timeout=timeout, allow_redirects=allow_redirects
+            )
+        elif method == 'PUT':
+            return HttpTools.do_put(
+                url=url, json=json, data=data, headers=merged_headers, verify=verify,
+                timeout=timeout, allow_redirects=allow_redirects
+            )
+
     def _get_catalog_internal(self, counter_party_id: str = None, counter_party_address: str = None,
                             bpnl: str = None, filter_expression: list[dict] = None, timeout: int = None,
                             protocol: str = DSP_2025, context: dict = DEFAULT_CONTEXT, 
@@ -849,6 +866,135 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
 
         return self._execute_http_request(
             method='POST', dataplane_url=dataplane_url, access_token=access_token, path=path,
+            content_type=content_type, json=json, data=data, verify=verify, headers=headers,
+            timeout=timeout, allow_redirects=allow_redirects, session=session
+        )
+    
+    def do_put_with_bpnl(
+        self,
+        bpnl: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        json=None,
+        data=None,
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        allow_redirects: bool = False,
+        session=None,
+        catalog_context: dict = DEFAULT_CONTEXT,
+        negotiation_context: dict = DEFAULT_NEGOTIATION_CONTEXT
+    ) -> Response:
+        """
+        Performs a HTTP PUT request to a specific asset behind an EDC.
+
+        This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
+        using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
+        using the negotiated EDR. Finally, it sends a PUT request to the dataplane URL with the provided data, headers, and content type.
+
+        Parameters:
+        bpnl (str): The Business Partner Number (BPN) of the counterparty.
+        counter_party_address (str): The URL of the EDC provider.
+        filter_expression (list[dict]): A list of filter conditions for the catalog request.
+        json (dict, optional): The JSON data to be sent in the PUT request.
+        data (dict, optional): The data to be sent in the PUT request.
+        path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
+        content_type (str, optional): The content type of the PUT request. Defaults to "application/json".
+        policies (list, optional): The policies to be used for the transfer. Defaults to None.
+        verify (bool, optional): Whether to verify SSL certificates. Defaults to False.
+        headers (dict, optional): Additional headers to include in the request. Defaults to None.
+        timeout (int, optional): Request timeout in seconds. Defaults to None.
+        allow_redirects (bool, optional): Whether to allow redirects. Defaults to False.
+        session (optional): Session object for connection pooling. Defaults to None.
+        catalog_context (dict, optional): Context for catalog requests. Defaults to DEFAULT_CONTEXT.
+        negotiation_context (dict, optional): Context for negotiation requests. Defaults to DEFAULT_NEGOTIATION_CONTEXT.
+
+        Returns:
+        Response: The HTTP response from the PUT request. If the request fails, an Exception is raised.
+        """
+        dataplane_url, access_token = self.do_dsp_with_bpnl(
+            bpnl=bpnl,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            catalog_context=catalog_context,
+            negotiation_context=negotiation_context
+        )
+
+        if dataplane_url is None or access_token is None:
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
+
+        return self._execute_http_request(
+            method='PUT', dataplane_url=dataplane_url, access_token=access_token, path=path,
+            content_type=content_type, json=json, data=data, verify=verify, headers=headers,
+            timeout=timeout, allow_redirects=allow_redirects, session=session
+        )
+        
+    def do_put(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        json=None,
+        data=None,
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        allow_redirects: bool = False,
+        session=None,
+        protocol: str = DSP_2025,
+        catalog_context: dict = DEFAULT_CONTEXT,
+        negotiation_context: dict = DEFAULT_NEGOTIATION_CONTEXT
+    ) -> Response:
+        """
+        Performs a HTTP PUT request to a specific asset behind an EDC.
+
+        This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
+        using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
+        using the negotiated EDR. Finally, it sends a PUT request to the dataplane URL with the provided data, headers, and content type.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider.
+        filter_expression (list[dict]): A list of filter conditions for the catalog request.
+        json (dict, optional): The JSON data to be sent in the PUT request.
+        data (dict, optional): The data to be sent in the PUT request.
+        path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
+        content_type (str, optional): The content type of the PUT request. Defaults to "application/json".
+        policies (list, optional): The policies to be used for the transfer. Defaults to None.
+        verify (bool, optional): Whether to verify SSL certificates. Defaults to False.
+        headers (dict, optional): Additional headers to include in the request. Defaults to None.
+        timeout (int, optional): Request timeout in seconds. Defaults to None.
+        allow_redirects (bool, optional): Whether to allow redirects. Defaults to False.
+        session (optional): Session object for connection pooling. Defaults to None.
+        protocol (str, optional): The DSP protocol version to use. Defaults to DSP_2025.
+        catalog_context (dict, optional): Context for catalog requests. Defaults to DEFAULT_CONTEXT.
+        negotiation_context (dict, optional): Context for negotiation requests. Defaults to DEFAULT_NEGOTIATION_CONTEXT.
+
+        Returns:
+        Response: The HTTP response from the PUT request. If the request fails, an Exception is raised.
+        """
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression,
+            protocol=protocol,
+            catalog_context=catalog_context,
+            negotiation_context=negotiation_context
+        )
+
+        if dataplane_url is None or access_token is None:
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
+
+        return self._execute_http_request(
+            method='PUT', dataplane_url=dataplane_url, access_token=access_token, path=path,
             content_type=content_type, json=json, data=data, verify=verify, headers=headers,
             timeout=timeout, allow_redirects=allow_redirects, session=session
         )

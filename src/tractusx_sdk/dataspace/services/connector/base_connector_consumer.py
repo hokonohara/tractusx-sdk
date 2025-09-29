@@ -1104,3 +1104,79 @@ class BaseConnectorConsumerService(BaseService):
             timeout=timeout,
             allow_redirects=allow_redirects
         )
+    def do_put(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        json=None,
+        data=None,
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
+        """
+        Performs a HTTP PUT request to a specific asset behind an EDC.
+
+        This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
+        using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
+        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided data, headers, and content type.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
+        path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
+        content_type (str, optional): The content type of the POST request. Defaults to "application/json".
+        policies (list, optional): The policies to be used for the transfer. Defaults to None.
+        dct_type (str, optional): The DCT type to be used for the transfer. Defaults to "IndustryFlagService".
+
+        Returns:
+        Response: The HTTP response from the POST request. If the request fails, an Exception is raised.
+        """
+        ## If policies are empty use default policies
+
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression
+        )
+
+        if dataplane_url is None or access_token is None:
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
+
+        ## Build edr transfer url
+        url: str = dataplane_url + path
+
+        dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
+        merged_headers: dict = (headers | dataplane_headers)
+        ## Do get request to get a response!
+        
+        if(session):
+            return HttpTools.do_put_with_session(
+                url=url,
+                json=json,
+                data=data,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session
+            )
+
+        return HttpTools.do_put(
+            url=url,
+            json=json,
+            data=data,
+            headers=merged_headers,
+            verify=verify,
+            timeout=timeout,
+            allow_redirects=allow_redirects
+        )

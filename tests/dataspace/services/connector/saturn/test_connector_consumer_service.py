@@ -20,17 +20,15 @@
 # SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-import unittest
-from unittest import mock
+from unittest import mock, TestCase, main
 import logging
-import hashlib
 from requests import Response
 
 from tractusx_sdk.dataspace.services.connector.saturn.connector_consumer_service import ConnectorConsumerService
 from tractusx_sdk.dataspace.managers.connection.base_connection_manager import BaseConnectionManager
 
 
-class TestSaturnConnectorConsumerService(unittest.TestCase):
+class TestSaturnConnectorConsumerService(TestCase):
     
     def setUp(self):
         self.dataspace_version = "saturn"
@@ -201,6 +199,75 @@ class TestSaturnConnectorConsumerService(unittest.TestCase):
             
             self.assertEqual(result, mock_response)
             mock_http_tools.do_get_with_session.assert_called_once()
+    
+    def test_execute_http_request_put(self):
+        """Test _execute_http_request with PUT method."""
+        dataplane_url = "https://dataplane.example.com"
+        access_token = "test-token"
+        path = "/update"
+        json_data = {"key": "value"}
+        
+        with mock.patch('tractusx_sdk.dataspace.services.connector.saturn.connector_consumer_service.HttpTools') as mock_http_tools, \
+             mock.patch.object(self.service, 'get_data_plane_headers') as mock_headers:
+            
+            mock_headers.return_value = {"Authorization": f"Bearer {access_token}"}
+            mock_response = mock.Mock(spec=Response)
+            mock_http_tools.do_put.return_value = mock_response
+            
+            result = self.service._execute_http_request(
+                method='PUT',
+                dataplane_url=dataplane_url,
+                access_token=access_token,
+                path=path,
+                json=json_data
+            )
+            
+            self.assertEqual(result, mock_response)
+            mock_http_tools.do_put.assert_called_once_with(
+                url=dataplane_url + path,
+                json=json_data,
+                data=None,
+                headers={"Authorization": f"Bearer {access_token}"},
+                verify=False,
+                timeout=None,
+                allow_redirects=False
+            )
+    
+    def test_execute_http_request_put_with_session(self):
+        """Test _execute_http_request with PUT method and session."""
+        dataplane_url = "https://dataplane.example.com"
+        access_token = "test-token"
+        path = "/update"
+        data = "raw data"
+        session = mock.Mock()
+        
+        with mock.patch('tractusx_sdk.dataspace.services.connector.saturn.connector_consumer_service.HttpTools') as mock_http_tools, \
+             mock.patch.object(self.service, 'get_data_plane_headers') as mock_headers:
+            
+            mock_headers.return_value = {"Authorization": f"Bearer {access_token}"}
+            mock_response = mock.Mock(spec=Response)
+            mock_http_tools.do_put_with_session.return_value = mock_response
+            
+            result = self.service._execute_http_request(
+                method='PUT',
+                dataplane_url=dataplane_url,
+                access_token=access_token,
+                path=path,
+                data=data,
+                session=session
+            )
+            
+            self.assertEqual(result, mock_response)
+            mock_http_tools.do_put_with_session.assert_called_once_with(
+                url=dataplane_url + path,
+                json=None,
+                data=data,
+                headers={"Authorization": f"Bearer {access_token}"},
+                verify=False,
+                timeout=None,
+                allow_redirects=False,
+                session=session
+            )
     
     def test_get_catalog_internal_with_filter_bpnl(self):
         """Test _get_catalog_internal with filter expression and BPNL."""
@@ -879,6 +946,62 @@ class TestSaturnConnectorConsumerService(unittest.TestCase):
             mock_dsp.assert_called_once()
             mock_execute.assert_called_once()
     
+    def test_do_put_success(self):
+        """Test do_put method with successful DSP exchange."""
+        counter_party_id = "BPNL000000000001"
+        counter_party_address = "https://provider.example.com"
+        filter_expression = [{"key": "test"}]
+        json_data = {"test": "data"}
+        dataplane_url = "https://dataplane.example.com"
+        access_token = "test-token"
+        
+        mock_response = mock.Mock(spec=Response)
+        
+        with mock.patch.object(self.service, 'do_dsp') as mock_dsp, \
+             mock.patch.object(self.service, '_execute_http_request') as mock_execute:
+            
+            mock_dsp.return_value = (dataplane_url, access_token)
+            mock_execute.return_value = mock_response
+            
+            result = self.service.do_put(
+                counter_party_id=counter_party_id,
+                counter_party_address=counter_party_address,
+                filter_expression=filter_expression,
+                json=json_data
+            )
+            
+            self.assertEqual(result, mock_response)
+            mock_dsp.assert_called_once()
+            mock_execute.assert_called_once()
+    
+    def test_do_put_with_bpnl_success(self):
+        """Test do_put_with_bpnl method with successful DSP exchange."""
+        bpnl = "BPNL000000000001"
+        counter_party_address = "https://provider.example.com"
+        filter_expression = [{"key": "test"}]
+        json_data = {"test": "data"}
+        dataplane_url = "https://dataplane.example.com"
+        access_token = "test-token"
+        
+        mock_response = mock.Mock(spec=Response)
+        
+        with mock.patch.object(self.service, 'do_dsp_with_bpnl') as mock_dsp, \
+             mock.patch.object(self.service, '_execute_http_request') as mock_execute:
+            
+            mock_dsp.return_value = (dataplane_url, access_token)
+            mock_execute.return_value = mock_response
+            
+            result = self.service.do_put_with_bpnl(
+                bpnl=bpnl,
+                counter_party_address=counter_party_address,
+                filter_expression=filter_expression,
+                json=json_data
+            )
+            
+            self.assertEqual(result, mock_response)
+            mock_dsp.assert_called_once()
+            mock_execute.assert_called_once()
+    
     def test_do_dsp_success(self):
         """Test do_dsp method returns dataplane URL and access token."""
         counter_party_id = "BPNL000000000001"
@@ -1162,4 +1285,4 @@ class TestSaturnConnectorConsumerService(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()
+    main()
