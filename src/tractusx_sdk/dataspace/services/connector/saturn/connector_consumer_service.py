@@ -39,7 +39,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
     DEFAULT_NEGOTIATION_CONTEXT:list=["https://w3id.org/tractusx/policy/v1.0.0","http://www.w3.org/ns/odrl.jsonld",{"@vocab": EDC_NAMESPACE, "edc": EDC_NAMESPACE}]
     DEFAULT_CONTEXT:dict = {"edc": EDC_NAMESPACE,"odrl": "http://www.w3.org/ns/odrl/2/","dct": "https://purl.org/dc/terms/"}
     _connector_discovery_controller: BaseDmaController
-    
+    DEFAULT_DCT_TYPE_KEY: str = "'http://purl.org/dc/terms/type'.'@id'"
     def __init__(self, base_url: str, dma_path: str, headers: dict = None,
                  connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
         # Set attributes before accessing them
@@ -472,13 +472,13 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
     
 
     def get_catalogs_by_dct_type(self, counter_party_id: str, edcs: list, dct_type: str,
-                                 dct_type_key: str = "'http://purl.org/dc/terms/type'.'@id'", timeout: int = None,
+                                 dct_type_key: str = DEFAULT_DCT_TYPE_KEY, timeout: int = None,
                                  protocol: str = DSP_2025, context=DEFAULT_CONTEXT):
         filter_expr = [self.get_filter_expression(key=dct_type_key, value=dct_type, operator="=")]
         return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, filter_expression=filter_expr, timeout=timeout, protocol=protocol, context=context)
 
     def get_catalogs_by_dct_type_with_bpnl(self, bpnl: str, edcs: list, dct_type: str,
-                                           dct_type_key: str = "'http://purl.org/dc/terms/type'.'@id'", timeout: int = None,
+                                           dct_type_key: str = DEFAULT_DCT_TYPE_KEY, timeout: int = None,
                                            namespace: str = EDC_NAMESPACE, context=DEFAULT_CONTEXT):
         filter_expr = [self.get_filter_expression(key=dct_type_key, value=dct_type, operator="=")]
         return self.get_catalogs_with_filter_with_bpnl(bpnl=bpnl, edcs=edcs, filter_expression=filter_expr, 
@@ -528,7 +528,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
         return catalogs
 
     def get_catalog_by_dct_type(self, counter_party_id: str, counter_party_address: str, dct_type: str,
-                                dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=", timeout=None,
+                                dct_type_key=DEFAULT_DCT_TYPE_KEY, operator="=", timeout=None,
                                 protocol: str = DSP_2025, context=DEFAULT_CONTEXT):
         filter_expr = [self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)]
         catalog_request = self.get_catalog_request_with_filter(
@@ -541,7 +541,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
         return self.get_catalog(request=catalog_request, timeout=timeout)
 
     def get_catalog_by_dct_type_with_bpnl(self, bpnl: str, counter_party_address: str, dct_type: str,
-                                          dct_type_key="'http://purl.org/dc/terms/type'.'@id'", operator="=", timeout=None,
+                                          dct_type_key=DEFAULT_DCT_TYPE_KEY, operator="=", timeout=None,
                                           namespace: str = EDC_NAMESPACE, context=DEFAULT_CONTEXT):
         filter_expr = [self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)]
         return self._get_catalog_internal(bpnl=bpnl, counter_party_address=counter_party_address,
@@ -570,7 +570,7 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
                                                                    context=context, namespace=namespace)
     
     def get_catalogs_by_dct_type_with_bpnl_parallel(self, bpnl: str, edcs: list, dct_type: str,
-                                                    dct_type_key: str = "'http://purl.org/dc/terms/type'.'@id'", timeout: int = None,
+                                                    dct_type_key: str = DEFAULT_DCT_TYPE_KEY, timeout: int = None,
                                                     namespace: str = EDC_NAMESPACE, context=DEFAULT_CONTEXT):
         filter_expr = [self.get_filter_expression(key=dct_type_key, value=dct_type, operator="=")]
         return self.get_catalogs_with_filter_with_bpnl_parallel(bpnl=bpnl, edcs=edcs, filter_expression=filter_expr,
