@@ -11,6 +11,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 - feat: Adapt changes to 'saturn' release by @mgarciaLKS in https://github.com/eclipse-tractusx/tractusx-sdk/pull/146
 - feat: added new Saturn apis and 2025-01 dsp protocol specifications by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/158
+-
 
 ## [0.4.2]
 

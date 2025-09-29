@@ -34,6 +34,332 @@ You can find some examples [here](./examples/)
 > Our objective is to have an "Open Specification" at our github pages domain.
 > Support us by joining our [open meetings](https://eclipse-tractusx.github.io/community/open-meetings#Industry%20Core%20Hub%20&%20Tractus-X%20SDK%20Weekly) or contributing with documentation.
 
+We have an usage guide in [docs/user](https://github.com/eclipse-tractusx/tractusx-sdk/tree/docs/sdk-usage/docs/user)
+
+### Provision
+
+```py
+from tractusx_sdk.dataspace.services.connector import ServiceFactory, BaseConnectorService
+
+provider_connector_headers:dict = {
+    "X-Api-Key": "my-api-key",
+    "Content-Type": "application/json"
+}
+
+    # Create the connector provider service
+provider_connector_service:BaseConnectorService = ServiceFactory.get_connector_provider_service(
+        dataspace_version="jupiter", ## "saturn" is also available
+        base_url="https://my-connector-controlplane.url",
+        dma_path="/management",
+        headers=provider_connector_headers,
+        logger=logger, ## You can remove this to keep logs disabled
+        verbose=True ## You can remove this to keep logs disabled
+    )
+provider_connector_service.create_asset(
+    asset_id="my-asset-id",
+    base_url="https://submodel-service.url/",
+    dct_type="cx-taxo:SubmodelBundle",
+    version="3.0",
+    semantic_id="urn:samm:io.catenax.part_type_information:1.0.0#PartTypeInformation",
+    headers={
+      "X-Api-Key": "my-secret-to-the-submodel-service"
+    }
+)
+provider_connector_service.create_asset(
+  asset_id="digital-twin-registry",
+  base_url="https://digital-twin-registry.tractusx.io/api/v3",
+  dct_type="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry",
+  version="3.0",
+  proxy_params={ 
+      "proxyQueryParams": "true",
+      "proxyPath": "true",
+      "proxyMethod": "true",
+      "proxyBody": "true"
+  }
+)
+
+### And you can do much more! Create Policies, Contracts, etc
+```
+
+#### Digital Twin Registry
+
+```py
+from tractusx_sdk.industry.models.aas.v3 import (
+    ShellDescriptor, MultiLanguage, SpecificAssetId, AssetKind, ReferenceTypes, Reference, ReferenceKey, ReferenceKeyTypes
+)
+from tractusx_sdk.industry.services import AasService
+aas_service = AasService(
+        base_url="https://digital-twin-registry.tractusx.io",
+        base_lookup_url="https://aas-discovery.tractusx.io", ## Here you can add another one if you want.
+        api_path="/api/v3",
+    )
+
+## Get shells or one shell
+existing_shell:ShellDescriptor = aas_service.get_asset_administration_shell_descriptor_by_id(
+            aas_identifier="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6"
+        )
+
+########
+## Create Shells
+
+# Create display name with multiple languages
+display_name_en = MultiLanguage(language="en", text="Vehicle Battery Shell")
+display_name_de = MultiLanguage(language="de", text="Fahrzeugbatterie Shell")
+display_names = [display_name_en, display_name_de]
+
+# Create description with multiple languages  
+description_en = MultiLanguage(language="en", text="Digital twin shell for electric vehicle battery component")
+description_de = MultiLanguage(language="de", text="Digitaler Zwilling für Elektrofahrzeug-Batteriekomponente")
+descriptions = [description_en, description_de]
+
+bpns_list=["BPNL00000003AYRE", "BPNL000000000TEA4"]
+manufacturer_id="BPNL000000032ASTT"
+# Create specific asset identifiers to allow shell descriptors to be seen.
+manufacturer_part_id = SpecificAssetId(
+             name="manufacturerPartId",
+            value="BAT-12345-ABC",
+            externalSubjectId=Reference(
+                type=ReferenceTypes.EXTERNAL_REFERENCE,
+                keys=[ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=bpn) for bpn in bpn_keys] or
+                    [ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=manufacturer_id)]
+            ),
+            supplementalSemanticIds=supplemental_semantic_ids
+        )(
+    name="manufacturerPartId",
+    value="BAT-12345-ABC",
+    external_subject_id={"type": "GlobalReference", "keys": ["BPNL00000003AYRE"]}
+)
+
+vehicle_identification_number = SpecificAssetId(
+    name="van", 
+    value="WVWZZZ1JZ3W386752"
+)
+
+specific_asset_ids = [manufacturer_part_id, vehicle_identification_number]
+
+# Create the shell descriptor
+shell = ShellDescriptor(
+        id="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6",
+        idShort="VehicleBatteryShell001",
+        displayName=display_names,
+        description=descriptions,
+        assetType="Battery",
+        assetKind=AssetKind.INSTANCE,
+        globalAssetId="urn:uuid:550e8400-e29b-41d4-a716-446655440000",
+        specificAssetIds=specific_asset_ids,
+    )
+res = aas_service.create_asset_administration_shell_descriptor(shell_descriptor=shell)
+
+## Congrats! You created a shell according to the AAS 3.0 standards!
+
+```
+
+### Consumption
+
+```py
+
+from tractusx_sdk.dataspace.managers.connection import PostgresMemoryRefreshConnectionManager
+from tractusx_sdk.dataspace.services.discovery import ConnectorDiscoveryService, DiscoveryFinderService
+
+#####################################################
+
+## Select a connection manager
+
+## Postgres Synced Option with Memory
+from sqlmodel import create_engine
+engine = create_engine(str("postgresql://user:password@localhost:5432/db"))
+connection_manager = PostgresMemoryRefreshConnectionManager(engine=engine, logger=logger, verbose=True)
+
+### Another Postgres-Only option is available but is not recommended
+
+## FileSystem
+connection_manager = FileSystemConnectionManager(path="./data/my-connections.json", logger=logger, verbose=True)
+
+## Memory Only
+connection_manager = MemoryConnectionManager(logger=logger, verbose=True)
+
+#####################################################
+
+consumer_connector_service:dict = {
+    "X-Api-Key": "my-api-key",
+    "Content-Type": "application/json"
+}
+
+consumer_connector_service:BaseConnectorService = ServiceFactory.get_connector_consumer_service(
+      dataspace_version="jupiter", ## "saturn" is also 
+      base_url="https://my-connector-controlplane.url",
+      dma_path="/management",
+      headers=consumer_connector_headers,
+      connection_manager=connection_manager, ## Select one from above
+      logger=logger,## You can remove this to keep logs disabled
+      verbose=True## You can remove this to keep logs disabled
+  )
+```
+
+#### Call endpoints with one click
+
+```py
+
+policies_to_accept:list = [{"odrl:permission": {"odrl:action": {"@id": "odrl:use"}, "odrl:constraint": {"odrl:and": [{"odrl:leftOperand": {"@id": "cx-policy:FrameworkAgreement"}, "odrl:operator": {"@id": "odrl:eq"}, "odrl:rightOperand": "DataExchangeGovernance:1.0"}, {"odrl:leftOperand": {"@id": "cx-policy:Membership"}, "odrl:operator": {"@id": "odrl:eq"}, "odrl:rightOperand": "active"}, {"odrl:leftOperand": {"@id": "cx-policy:UsagePurpose"}, "odrl:operator": {"@id": "odrl:eq"}, "odrl:rightOperand": "cx.core.digitalTwinRegistry:1"}]}}, "odrl:prohibition": [], "odrl:obligation": []}]
+    
+digital_twins = consumer_connector_service.do_get(
+  counter_party_id="BPNL00000003AYRE",
+  counter_party_address="https://connector-edc-controlplane.tractusx.io/api/v1/dsp",
+  filter_expression=consumer_connector_service.get_filter_expression(
+      key="'http://purl.org/dc/terms/type'.'@id'",
+      operator="=",
+      value="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry"
+  ),
+  path="/shell-descriptors",
+  params={"limit": 5},
+  policies=policies_to_accept
+)
+
+## Here are the digital twins
+print(digital-twins.json())
+
+```
+
+#### Get access to the endpoints behind the connector & reuse connections
+
+You can do more! Explore other methods from the service.
+
+```py
+
+
+########
+## Don't want to make the one click approach? Feel free to implement your own logic
+
+dataplane_url, access_token = consumer_connector_service.do_dsp(
+  counter_party_id="BPNL00000003AYRE",
+  counter_party_address="https://connector-edc-controlplane.tractusx.io/api/v1/dsp",
+  filter_expression=consumer_connector_service.get_filter_expression(
+      key="'http://purl.org/dc/terms/type'.'@id'",
+      operator="=",
+      value="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry"
+  ),
+  policies=policies_to_accept
+)
+
+### Using the dataplane proxy and the access token, you can call how much times you like different APIs behind the proxy, reusing the open connection!
+
+```
+
+#### Want more?
+
+```py
+
+### Get Catalog by yourself
+
+catalog = consumer_connector_service.get_catalog_by_dct_type(
+    dct_type="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry"
+    counter_party_id="BPNL00000003AYRE",
+    counter_party_address="https://edc1-controlplane/api/v1/dsp",
+    timeout=15
+)
+
+### One is not enough? Call in parallel!
+catalogs = consumer_connector_service.get_catalogs_by_dct_type(
+    dct_type="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry",
+    counter_party_id="BPNL00000003AYRE",
+    edcs=[
+        "https://edc1-controlplane/api/v1/dsp",
+        "https://edc2-controlplane/api/v1/dsp",
+        "https://edc3-controlplane/api/v1/dsp"
+    ],
+    timeout=15
+)
+
+```
+
+#### Advanced Usage
+
+```py
+
+### You can even implement it in the granularity you want!
+from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
+
+request: BaseContractNegotiationModel = ModelFactory. get_contract_negotiation_model(
+            dataspace_version="jupiter", 
+            context=[
+                "https://w3id.org/tractusx/policy/v1.0.0",
+                "http://www.w3.org/ns/odrl.jsonld",
+                {
+                    "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
+                }
+            ],
+            counter_party_address="https://edc1-controlplane/api/v1/dsp",
+            offer_id="offer-id",
+            asset_id="asset-id",
+            provider_id="BPNL00000003AYRE",
+            offer_policy=policies_to_accept[0] ## Add here the policy you want to accept
+        )
+
+## Build catalog api url
+response: Response = self.edrs.create(request)
+## In case the response code is not successfull or the response is null
+if (response is None or response.status_code != 200):
+    return None
+
+negotiation_id = response.json().get("@id", None)
+
+response: Response = self.edrs.get_data_address(oid=negotiation_id, params={"auto_refresh": True})
+
+```
+
+
+### Discovery
+
+```py
+from tractusx_sdk.dataspace.managers import OAuth2Manager
+from tractusx_sdk.dataspace.services.discovery import ConnectorDiscoveryService, DiscoveryFinderService
+
+discovery_oauth = OAuth2Manager(
+            auth_url="https://central-idp/auth/",
+            realm="CX-Central",
+            clientid="456as2id",
+            clientsecret="asbadjsk2as4sad574s",
+        )
+
+discovery_finder_service = DiscoveryFinderService(
+    url="https://discovery-finder.url/api/v1.0/administration/connectors/discovery/search"
+    oauth=discovery_oauth
+)
+
+# Create the connector discovery service for the consumer
+connector_discovery_service = ConnectorDiscoveryService(
+    oauth=discovery_oauth,
+    discovery_finder_service=discovery_finder_service
+)
+
+connector_discovery_service.find_connector_by_bpn("BPNL00000000TS1D")
+```
+
+### All in one
+
+Combine provider and consumer in one module to take the best from your connector!
+
+```py
+
+connector_service:dict = {
+    "X-Api-Key": "my-api-key",
+    "Content-Type": "application/json"
+}
+connector_service = ServiceFactory.get_connector_service(
+      dataspace_version="jupiter", ## "saturn" is also available
+      base_url="https://my-connector-controlplane.url",
+      dma_path="/management",
+      headers=connector_connector_headers,
+      connection_manager=connection_manager
+      logger=logger, ## You can remove this to keep logs disabled
+      verbose=True ## You can remove this to keep logs disabled
+)
+
+connector_service.consumer.get_catalog(...)
+connector_service.provider.assets.create(...)
+
+```
+
 ## Roadmap
 
 The development roadmap is the same as the industry core hub.
@@ -76,7 +402,7 @@ Kickoff              MVP                Stable          NEXT            2026 -> 
 
 To ease the understanding what is the tool box (SDK) here is a resumed diagram:
 
-![Logic Architecture](./docs/media/logic-resume.svg)
+![Logic Architecture](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/media/logic-resume.svg)
 
 ## Why was this Tractus-X SDK Created?
 
@@ -120,15 +446,15 @@ Providing reusable modules:
 - [Extensions](./src/tractusx_sdk/extensions)
   - Allows you to extend the SDK tool box with your use case specifics and reusable components.
 
-![Architecture](./docs/media/catena-x-speedway-sdk.svg)
+![Architecture](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/media/catena-x-speedway-sdk.svg)
 
 ## Industry Core Hub Example
 
-![context sdk](docs/media/sdk-context.png)
+![context sdk](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/media/sdk-context.png)
 
 You can use it to build you use case application how you want, based on the industry core foundation or not:
 
-![modular sdk](docs/media/modular-microservices-architecture.svg)
+![modular sdk](https://github.com/eclipse-tractusx/tractusx-sdk/blob/main/docs/media/modular-microservices-architecture.svg)
 
 ## Dataspace Architecture Patterns
 
