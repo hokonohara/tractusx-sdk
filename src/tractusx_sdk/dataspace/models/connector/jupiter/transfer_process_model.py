@@ -28,7 +28,7 @@ from ..base_transfer_process_model import BaseTransferProcessModel
 
 class TransferProcessModel(BaseTransferProcessModel):
     TYPE: str = Field(default="TransferRequest", frozen=True)
-    PROTOCOL: str = Field(default="dataspace-protocol-http")
+    protocol: str = Field(default="dataspace-protocol-http")
 
     def to_data(self):
         """
@@ -42,7 +42,7 @@ class TransferProcessModel(BaseTransferProcessModel):
             "@context": self.context,
             "@type": self.TYPE,
             "counterPartyAddress": self.counter_party_address,
-            "protocol": self.PROTOCOL,
+            "protocol": self.protocol,
             "contractId": self.contract_id,
             "transferType": self.transfer_type,
             "dataDestination": self.data_destination,

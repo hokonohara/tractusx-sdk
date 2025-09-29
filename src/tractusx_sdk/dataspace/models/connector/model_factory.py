@@ -169,6 +169,7 @@ class ModelFactory:
             It takes precedence over queryspec
         :param queryspec: Optional queryspec, in dict format.
             Ignored if queryspec_model is provided
+        :param protocol: Optional protocol string, e.g., "dataspace-protocol-http"
         :param kwargs: Any additional parameters, other than the base catalog model parameters
 
         :return: An instance of the CatalogModel subclass
@@ -178,6 +179,7 @@ class ModelFactory:
         # Add the required parameters
         builder.counter_party_address(counter_party_address)
         builder.counter_party_id(counter_party_id)
+        
         if protocol is not None:
             builder.protocol(protocol)
         # Check for the optional parameters

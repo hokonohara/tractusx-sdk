@@ -142,7 +142,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.get_data_address(oid=transfer_id, params={"auto_refresh": True})
         if (response is None or response.status_code != 200):
             raise ConnectionError(
-                "[EDC Service] It was not possible to get the edr because the EDC response was not successful!")
+                "Connector Service It was not possible to get the edr because the EDC response was not successful!")
         return response.json()
 
     def get_endpoint_with_token(self, transfer_id: str) -> tuple[str, str]:
@@ -152,7 +152,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get authorization key from the edr
         edr: dict = self.get_edr(transfer_id=transfer_id)
         if (edr is None):
-            raise RuntimeError("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
+            raise RuntimeError("Connector Service It was not possible to retrieve the edr token and the dataplane endpoint!")
 
         return edr["endpoint"], edr["authorization"]
 
@@ -172,7 +172,7 @@ class BaseConnectorConsumerService(BaseService):
         if request is None:
             if counter_party_id is None or counter_party_address is None:
                 raise ValueError(
-                    "[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
+                    "Connector Service Either request or counter_party_id and counter_party_address are required to build a catalog request")
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
         ## Get catalog with configurable timeout
@@ -180,7 +180,7 @@ class BaseConnectorConsumerService(BaseService):
         ## In case the response code is not successfull or the response is null
         if response is None or response.status_code != 200:
             raise ConnectionError(
-                f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
+                f"Connector Service It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
         return response.json()
 
     ## Simple catalog request with filter
@@ -250,7 +250,7 @@ class BaseConnectorConsumerService(BaseService):
         """
         offer_id = policy.get("@id", None)
         if (offer_id is None):
-            raise ValueError("[EDC Service] Policy offer id is not available!")
+            raise ValueError("Connector Service Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
             dataspace_version=self.dataspace_version,  # version is to be included in the BaseService class  
@@ -426,7 +426,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.query(request)
         ## In case the response code is not successfull or the response is null
         if (response is None or response.status_code != 200):
-            raise ConnectionError(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
+            raise ConnectionError(f"Connector Service EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
 
         ## The response is a list
         data = response.json()
@@ -454,7 +454,7 @@ class BaseConnectorConsumerService(BaseService):
                                                         filter_expression=filter_expression)
         if (catalog_response is None):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
 
         ## Select Policy and Assetid
         try:
@@ -462,11 +462,11 @@ class BaseConnectorConsumerService(BaseService):
                                                                         allowed_policies=policies)
         except Exception as e:
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
+                f"Connector Service [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
 
         if (len(valid_assets_policies) == 0):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
 
         negotiation_id: str | None = None
 
@@ -485,7 +485,7 @@ class BaseConnectorConsumerService(BaseService):
 
         if (negotiation_id is None):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
 
         ##### 3. Get EDC Entry (details)
 
@@ -498,13 +498,13 @@ class BaseConnectorConsumerService(BaseService):
             ## Wait until the timeout has reached to retry again
             if self.logger:
                 self.logger.info(
-                    f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
+                    f"Connector Service Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
             op.wait(seconds=timeout)
             retries += 1
 
         if edr_entry is None:
             raise TimeoutError(
-                f"[EDC Service] [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
+                f"Connector Service [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
 
         return edr_entry
 
@@ -539,13 +539,13 @@ class BaseConnectorConsumerService(BaseService):
         if (transfer_process_id is not None):
             if self.logger:
                 self.logger.debug(
-                    "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
+                    "Connector Service [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
                     counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
 
         if self.logger:
             self.logger.info(
-                "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
+                "Connector Service The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
                 counter_party_address, counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
@@ -555,10 +555,10 @@ class BaseConnectorConsumerService(BaseService):
 
         ## Check if the edr entry is not none
         if (edr_entry is None):
-            raise RuntimeError("[EDC Service] Failed to get edr entry! Response was none!")
+            raise RuntimeError("Connector Service Failed to get edr entry! Response was none!")
 
         if self.logger:
-            self.logger.info(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
+            self.logger.info(f"Connector Service The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
 
         ## Check if the transfer id is available and return the transfer process id
         return self.connection_manager.add_connection(counter_party_id=counter_party_id,
@@ -955,7 +955,7 @@ class BaseConnectorConsumerService(BaseService):
                                                    filter_expression=filter_expression, timeout=timeout)
         except Exception as e:
             raise ConnectionError(
-                f"[EDC Service] Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
+                f"Connector Service Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
 
         if catalog is None:
             return False
@@ -1000,7 +1000,7 @@ class BaseConnectorConsumerService(BaseService):
         )
 
         if dataplane_url is None or access_token is None:
-            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -1074,7 +1074,7 @@ class BaseConnectorConsumerService(BaseService):
         )
 
         if dataplane_url is None or access_token is None:
-            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path

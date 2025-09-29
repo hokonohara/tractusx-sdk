@@ -21,17 +21,18 @@
 #################################################################################
 
 from ..base_connector_consumer import BaseConnectorConsumerService
-from ....models.connector.base_catalog_model import BaseCatalogModel
 from ....managers.connection.base_connection_manager import BaseConnectionManager
 import logging
 from ....models.connector.model_factory import ModelFactory
 from ....adapters.connector.adapter_factory import AdapterFactory
 from ....controllers.connector.base_dma_controller import BaseDmaController
 from ....controllers.connector.controller_factory import ControllerType, ControllerFactory
+from ....models.connector.saturn.catalog_model import CatalogModel
 
 from requests import Response
 class ConnectorConsumerService(BaseConnectorConsumerService):
     
+    DEFAULT_CONTEXT:dict = {"edc": "https://w3id.org/edc/v0.0.1/ns/","odrl": "http://www.w3.org/ns/odrl/2/","dct": "https://purl.org/dc/terms/"}
     _connector_discovery_controller: BaseDmaController
     
     def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None,
@@ -82,10 +83,10 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
         )
         if response is None or response.status_code != 200:
             raise ConnectionError(
-                f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
+                f"Connector Service It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
         return response.json()
 
-    def get_catalog_with_bpnl(self, bpnl: str, counter_party_address: str = None, namespace: str = "https://w3id.org/edc/v0.0.1/ns/") -> dict | None:
+    def get_catalog_with_bpnl(self, bpnl: str, counter_party_address: str = None, namespace: str = "https://w3id.org/edc/v0.0.1/ns/", context=DEFAULT_CONTEXT) -> dict | None:
         """
         Retrieves the EDC DCAT catalog using the BPNL to discover the connector protocol and address.
 
@@ -101,54 +102,18 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
         protocol = discovery_info[f"{namespace}protocol"]
         counter_party_id = discovery_info[f"{namespace}counterPartyId"]
 
-        if protocol != "dataspace-protocol-http:2025-1":
-            raise ValueError(f"[EDC Service] Unsupported protocol: {protocol}")
-
+        if self.verbose and self.logger is None:
+            self.logger.debug(f"[Connector Service] Executing catalog request to {counter_party_address} with {counter_party_id} using protocol {protocol}.")
         request = self.get_catalog_request(counter_party_id=counter_party_id,
-                                    counter_party_address=counter_party_address)
+                                    counter_party_address=counter_party_address, protocol=protocol, context=context)
         # Assuming counter_party_id can be derived from BPNL or is not strictly required
-        return self.get_catalog(counter_party_id=counter_party_id, counter_party_address=counter_party_address)
+        return self.get_catalog(request=request)
 
-    def get_catalog_request(self, counter_party_id: str, counter_party_address: str, protocol: str) -> BaseCatalogModel:
+    def get_catalog_request(self, counter_party_id: str, counter_party_address: str, protocol: str = "dataspace-protocol-http:2025-1", context=DEFAULT_CONTEXT) -> CatalogModel:
         return ModelFactory.get_catalog_model(
             dataspace_version=self.dataspace_version,
-            context={
-                "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                "odrl": "http://www.w3.org/ns/odrl/2/",
-                "dct": "https://purl.org/dc/terms/"
-            },
+            context=context,
             counter_party_id=counter_party_id,  ## bpn of the provider
             counter_party_address=counter_party_address,  ## dsp url from the provider,
             protocol=protocol
         )
-        
-    def get_catalog(self, counter_party_id: str = None, counter_party_address: str = None,
-                    request: BaseCatalogModel = None, timeout=60) -> dict | None:
-        """
-        Retrieves the EDC DCAT catalog. Allows to get the catalog without specifying the request, which can be overridden
-        
-        Parameters:
-        counter_party_address (str): The URL of the EDC provider.
-        request (BaseCatalogModel, optional): The request payload for the catalog API. If not provided, a default request will be used.
-
-        Returns:
-        dict | None: The EDC catalog as a dictionary, or None if the request fails.
-        """
-                
-        ## Get EDC DCAT catalog
-        if request is None:
-            if counter_party_id is None or counter_party_address is None:
-                raise ValueError(
-                    "[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
-            request = self.get_catalog_request(counter_party_id=counter_party_id,
-                                               counter_party_address=counter_party_address)
-        ## Get catalog with configurable timeout
-        response: Response = self.catalogs.get_catalog(obj=request, timeout=timeout)
-        ## In case the response code is not successfull or the response is null
-        if response is None or response.status_code != 200:
-            raise ConnectionError(
-                f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
-        return response.json()
-    
-    
-
