@@ -30,7 +30,7 @@ SPDX-License-Identifier: CC-BY-4.0
     - [QuerySpec Model](#queryspec-model)
     - [Transfer Process Model](#transfer-process-model)
 - [Services](#services)
-    - [EDC Service](#edc-service)
+    - Connector Service(#connector-service)
 - [Adapters](#adapters)
     - [DMA Adapter](#dma-adapter)
 - [Controllers](#controllers)
