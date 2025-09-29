@@ -37,6 +37,15 @@ class ConnectorConsumerService(BaseConnectorConsumerService):
 
     def __init__(self, dataspace_version: str, base_url: str, dma_path: str, headers: dict = None,
                  connection_manager: BaseConnectionManager = None, verbose: bool = True, logger: logging.Logger = None):
+        super().__init__(
+            dataspace_version=dataspace_version,
+            base_url=base_url,
+            dma_path=dma_path,
+            headers=headers,
+            connection_manager=connection_manager,
+            verbose=verbose,
+            logger=logger
+        )
         self.dataspace_version = dataspace_version
         self.verbose = verbose
         self.logger = logger
