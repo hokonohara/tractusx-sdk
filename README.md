@@ -38,125 +38,21 @@ You can find some examples [here](./examples/)
 > Our objective is to have an "Open Specification" at our github pages domain.
 > Support us by joining our [open meetings](https://eclipse-tractusx.github.io/community/open-meetings#Industry%20Core%20Hub%20&%20Tractus-X%20SDK%20Weekly) or contributing with documentation.
 
-We have an usage guide in [docs/user](https://github.com/eclipse-tractusx/tractusx-sdk/tree/docs/sdk-usage/docs/user)
+We have an advanced usage guide in [docs/user](https://github.com/eclipse-tractusx/tractusx-sdk/tree/docs/sdk-usage/docs/user)
 
-### Provision
+Here we also have a quick guide
 
-```py
-from tractusx_sdk.dataspace.services.connector import ServiceFactory, BaseConnectorService
+**📖 Quick Guide:**
 
-provider_connector_headers:dict = {
-    "X-Api-Key": "my-api-key",
-    "Content-Type": "application/json"
-}
-
-    # Create the connector provider service
-provider_connector_service:BaseConnectorService = ServiceFactory.get_connector_provider_service(
-        dataspace_version="jupiter", ## "saturn" is also available
-        base_url="https://my-connector-controlplane.url",
-        dma_path="/management",
-        headers=provider_connector_headers,
-        logger=logger, ## You can remove this to keep logs disabled
-        verbose=True ## You can remove this to keep logs disabled
-    )
-provider_connector_service.create_asset(
-    asset_id="my-asset-id",
-    base_url="https://submodel-service.url/",
-    dct_type="cx-taxo:SubmodelBundle",
-    version="3.0",
-    semantic_id="urn:samm:io.catenax.part_type_information:1.0.0#PartTypeInformation",
-    headers={
-      "X-Api-Key": "my-secret-to-the-submodel-service"
-    }
-)
-provider_connector_service.create_asset(
-  asset_id="digital-twin-registry",
-  base_url="https://digital-twin-registry.tractusx.io/api/v3",
-  dct_type="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry",
-  version="3.0",
-  proxy_params={ 
-      "proxyQueryParams": "true",
-      "proxyPath": "true",
-      "proxyMethod": "true",
-      "proxyBody": "true"
-  }
-)
-
-### And you can do much more! Create Policies, Contracts, etc
-```
-
-#### Digital Twin Registry
-
-```py
-from tractusx_sdk.industry.models.aas.v3 import (
-    ShellDescriptor, MultiLanguage, SpecificAssetId, AssetKind, ReferenceTypes, Reference, ReferenceKey, ReferenceKeyTypes
-)
-from tractusx_sdk.industry.services import AasService
-aas_service = AasService(
-        base_url="https://digital-twin-registry.tractusx.io",
-        base_lookup_url="https://aas-discovery.tractusx.io", ## Here you can add another one if you want.
-        api_path="/api/v3",
-    )
-
-## Get shells or one shell
-existing_shell:ShellDescriptor = aas_service.get_asset_administration_shell_descriptor_by_id(
-            aas_identifier="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6"
-        )
-
-########
-## Create Shells
-
-# Create display name with multiple languages
-display_name_en = MultiLanguage(language="en", text="Vehicle Battery Shell")
-display_name_de = MultiLanguage(language="de", text="Fahrzeugbatterie Shell")
-display_names = [display_name_en, display_name_de]
-
-# Create description with multiple languages  
-description_en = MultiLanguage(language="en", text="Digital twin shell for electric vehicle battery component")
-description_de = MultiLanguage(language="de", text="Digitaler Zwilling für Elektrofahrzeug-Batteriekomponente")
-descriptions = [description_en, description_de]
-
-bpns_list=["BPNL00000003AYRE", "BPNL000000000TEA4"]
-manufacturer_id="BPNL000000032ASTT"
-# Create specific asset identifiers to allow shell descriptors to be seen.
-manufacturer_part_id = SpecificAssetId(
-             name="manufacturerPartId",
-            value="BAT-12345-ABC",
-            externalSubjectId=Reference(
-                type=ReferenceTypes.EXTERNAL_REFERENCE,
-                keys=[ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=bpn) for bpn in bpn_keys] or
-                    [ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=manufacturer_id)]
-            ),
-            supplementalSemanticIds=supplemental_semantic_ids
-        )(
-    name="manufacturerPartId",
-    value="BAT-12345-ABC",
-    external_subject_id={"type": "GlobalReference", "keys": ["BPNL00000003AYRE"]}
-)
-
-vehicle_identification_number = SpecificAssetId(
-    name="van", 
-    value="WVWZZZ1JZ3W386752"
-)
-
-specific_asset_ids = [manufacturer_part_id, vehicle_identification_number]
-
-# Create the shell descriptor
-shell = ShellDescriptor(
-        id="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6",
-        idShort="VehicleBatteryShell001",
-        displayName=display_names,
-        description=descriptions,
-        assetType="Battery",
-        assetKind=AssetKind.INSTANCE,
-        globalAssetId="urn:uuid:550e8400-e29b-41d4-a716-446655440000",
-        specificAssetIds=specific_asset_ids,
-    )
-res = aas_service.create_asset_administration_shell_descriptor(shell_descriptor=shell)
-
-## Congrats! You created a shell according to the AAS 3.0 standards!
-
-```
+- [**Consumption**](#consumption) - Consuming data from the dataspace  
+  - [Call endpoints with one click](#call-endpoints-with-one-click) - Quick data access
+  - [Get access to endpoints behind connectors & reuse connections](#get-access-to-the-endpoints-behind-the-connector--reuse-connections) - Easy connection management
+  - [Want more?](#want-more) - Advanced catalog operations
+  - [Advanced Usage](#advanced-usage) - Low-level contract negotiations
+  - [**Discovery**](#discovery) - Finding connectors and services
+- [**Provision**](#provision) - Setting up data provision and asset creation
+  - [Digital Twin Registry](#digital-twin-registry) - Working with AAS shell descriptors
+- [**All in one**](#all-in-one) - Combined provider and consumer usage
 
 ### Consumption
 
@@ -337,6 +233,124 @@ connector_discovery_service = ConnectorDiscoveryService(
 )
 
 connector_discovery_service.find_connector_by_bpn("BPNL00000000TS1D")
+```
+
+### Provision
+
+```py
+from tractusx_sdk.dataspace.services.connector import ServiceFactory, BaseConnectorService
+
+provider_connector_headers:dict = {
+    "X-Api-Key": "my-api-key",
+    "Content-Type": "application/json"
+}
+
+    # Create the connector provider service
+provider_connector_service:BaseConnectorService = ServiceFactory.get_connector_provider_service(
+        dataspace_version="jupiter", ## "saturn" is also available
+        base_url="https://my-connector-controlplane.url",
+        dma_path="/management",
+        headers=provider_connector_headers,
+        logger=logger, ## You can remove this to keep logs disabled
+        verbose=True ## You can remove this to keep logs disabled
+    )
+provider_connector_service.create_asset(
+    asset_id="my-asset-id",
+    base_url="https://submodel-service.url/",
+    dct_type="cx-taxo:SubmodelBundle",
+    version="3.0",
+    semantic_id="urn:samm:io.catenax.part_type_information:1.0.0#PartTypeInformation",
+    headers={
+      "X-Api-Key": "my-secret-to-the-submodel-service"
+    }
+)
+provider_connector_service.create_asset(
+  asset_id="digital-twin-registry",
+  base_url="https://digital-twin-registry.tractusx.io/api/v3",
+  dct_type="https://w3id.org/catenax/taxonomy#DigitalTwinRegistry",
+  version="3.0",
+  proxy_params={ 
+      "proxyQueryParams": "true",
+      "proxyPath": "true",
+      "proxyMethod": "true",
+      "proxyBody": "true"
+  }
+)
+
+### And you can do much more! Create Policies, Contracts, etc
+```
+
+#### Digital Twin Registry
+
+```py
+from tractusx_sdk.industry.models.aas.v3 import (
+    ShellDescriptor, MultiLanguage, SpecificAssetId, AssetKind, ReferenceTypes, Reference, ReferenceKey, ReferenceKeyTypes
+)
+from tractusx_sdk.industry.services import AasService
+aas_service = AasService(
+        base_url="https://digital-twin-registry.tractusx.io",
+        base_lookup_url="https://aas-discovery.tractusx.io", ## Here you can add another one if you want.
+        api_path="/api/v3",
+    )
+
+## Get shells or one shell
+existing_shell:ShellDescriptor = aas_service.get_asset_administration_shell_descriptor_by_id(
+            aas_identifier="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6"
+        )
+
+########
+## Create Shells
+
+# Create display name with multiple languages
+display_name_en = MultiLanguage(language="en", text="Vehicle Battery Shell")
+display_name_de = MultiLanguage(language="de", text="Fahrzeugbatterie Shell")
+display_names = [display_name_en, display_name_de]
+
+# Create description with multiple languages  
+description_en = MultiLanguage(language="en", text="Digital twin shell for electric vehicle battery component")
+description_de = MultiLanguage(language="de", text="Digitaler Zwilling für Elektrofahrzeug-Batteriekomponente")
+descriptions = [description_en, description_de]
+
+bpns_list=["BPNL00000003AYRE", "BPNL000000000TEA4"]
+manufacturer_id="BPNL000000032ASTT"
+# Create specific asset identifiers to allow shell descriptors to be seen.
+manufacturer_part_id = SpecificAssetId(
+             name="manufacturerPartId",
+            value="BAT-12345-ABC",
+            externalSubjectId=Reference(
+                type=ReferenceTypes.EXTERNAL_REFERENCE,
+                keys=[ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=bpn) for bpn in bpn_keys] or
+                    [ReferenceKey(type=ReferenceKeyTypes.GLOBAL_REFERENCE, value=manufacturer_id)]
+            ),
+            supplementalSemanticIds=supplemental_semantic_ids
+        )(
+    name="manufacturerPartId",
+    value="BAT-12345-ABC",
+    external_subject_id={"type": "GlobalReference", "keys": ["BPNL00000003AYRE"]}
+)
+
+vehicle_identification_number = SpecificAssetId(
+    name="van", 
+    value="WVWZZZ1JZ3W386752"
+)
+
+specific_asset_ids = [manufacturer_part_id, vehicle_identification_number]
+
+# Create the shell descriptor
+shell = ShellDescriptor(
+        id="urn:uuid:ad7bc88c-fa31-40d8-8f17-2ceaf1295ff6",
+        idShort="VehicleBatteryShell001",
+        displayName=display_names,
+        description=descriptions,
+        assetType="Battery",
+        assetKind=AssetKind.INSTANCE,
+        globalAssetId="urn:uuid:550e8400-e29b-41d4-a716-446655440000",
+        specificAssetIds=specific_asset_ids,
+    )
+res = aas_service.create_asset_administration_shell_descriptor(shell_descriptor=shell)
+
+## Congrats! You created a shell according to the AAS 3.0 standards!
+
 ```
 
 ### All in one
