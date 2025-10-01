@@ -22,18 +22,20 @@
 ********************************************************************************/
 
 :root {
-  /* Custom Orange-Black Color Scheme */
-  --md-primary-fg-color: #FF8C00;        /* Warm golden orange */
-  --md-primary-fg-color--light: #FFB366; /* Lighter orange */
-  --md-primary-fg-color--dark: #CC7000;  /* Darker orange */
-  --md-accent-fg-color: #FF8C00;         /* Orange accent */
-  --md-accent-fg-color--transparent: rgba(255, 140, 0, 0.1);
+  /* Custom Gold-Black Color Scheme */
+  --md-primary-fg-color: #FFD700;        /* Pure gold */
+  --md-primary-fg-color--light: #FFEB3B; /* Lighter gold */
+  --md-primary-fg-color--dark: #B8860B;  /* Dark goldenrod */
+  --md-accent-fg-color: #FFD700;         /* Gold accent */
+  --md-accent-fg-color--transparent: rgba(255, 215, 0, 0.1);
 }
 
 /* Header with black background and orange accents */
 .md-header {
   background: linear-gradient(135deg, #000000 0%, #1a1a1a 100%) !important;
   color: white;
+  display: flex !important;
+  align-items: center !important;
   min-height: 80px !important;
   padding: 16px 0 !important;
 }
@@ -46,7 +48,10 @@
 .md-header__title {
   color: #ffffff !important;
   font-weight: 700;
-  font-size: 1.8rem !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  font-size: 1.0rem !important;
   line-height: 1.2 !important;
 }
 
@@ -60,18 +65,18 @@
 }
 
 .md-logo img {
-  height: 48px !important;
+  height: 30px !important;
   width: auto !important;
-  max-height: 48px !important;
+  max-height: 30px !important;
 }
 
 .md-header__button.md-logo {
   margin: 4px 8px !important;
 }
 
-/* Navigation tabs - Orange background */
+/* Navigation tabs - Gold background */
 .md-tabs {
-  background: linear-gradient(135deg, #FF8C00 0%, #CC7000 100%) !important;
+  background: linear-gradient(135deg, #FFD700 0%, #B8860B 100%) !important;
   min-height: 40px !important;
 }
 
@@ -99,43 +104,45 @@
   font-weight: 800 !important;
 }
 
-/* Sidebar with dark theme and orange accents */
+/* Sidebar with dark theme and gold accents */
 .md-nav--primary .md-nav__title {
   background-color: #1a1a1a !important;
-  color: #FF8C00 !important;
+  color: #FFD700 !important;
 }
 
 .md-nav__link--active {
-  color: #FF8C00 !important;
+  color: #FFD700 !important;
 }
 
 .md-nav__link:hover {
-  color: #FF8C00 !important;
+  color: #FFD700 !important;
 }
 
 /* Search bar styling */
 .md-search__input {
   background-color: rgba(0, 0, 0, 0.1);
-  border: 1px solid #FF8C00;
+  border: 1px solid #FFD700;
 }
 
 .md-search__input:focus {
-  border-color: #FFB366;
+  border-color: #FFEB3B;
 }
 
 /* Button styling */
 .md-button {
-  background-color: #FF8C00 !important;
-  color: white !important;
+  background-color: #ad9300 !important;
+  color: black !important;
   border: none;
 }
 
 .md-button:hover {
-  background-color: #CC7000 !important;
+  background-color: #B8860B !important;
+  color: white !important;
 }
 
 .md-button--primary {
-  background-color: #FF8C00 !important;
+  background-color: #ad9300 !important;
+  color: black !important;
 }
 
 /* Footer with black background */
@@ -145,26 +152,36 @@
 }
 
 .md-footer__link {
-  color: #FF8C00 !important;
+  color: #FFD700 !important;
 }
 
 .md-footer__link:hover {
-  color: #FFB366 !important;
+  color: #FFEB3B !important;
 }
 
-/* Code blocks with dark theme */
+/* Code blocks with dark theme
 .md-typeset .codehilite,
 .md-typeset .highlight {
   background-color: #1a1a1a;
   border: 1px solid #333;
-}
+} */
 
-/* Admonitions with orange accents */
+
+
+/* Inline code styling
+.md-typeset code {
+  background-color: #2d2d30;
+  color: #f8f8f2;
+  padding: 2px 6px;
+  border-radius: 4px;
+} */
+
+/* Admonitions with gold accents */
 .md-typeset .admonition {
-  border-left: 4px solid #FF8C00;
+  border-left: 4px solid #FFD700;
 }
 
 .md-typeset .admonition > .admonition-title {
-  background-color: rgba(255, 140, 0, 0.1);
-  border-bottom: 1px solid #FF8C00;
+  background-color: rgba(255, 215, 0, 0.1);
+  border-bottom: 1px solid #FFD700;
 }

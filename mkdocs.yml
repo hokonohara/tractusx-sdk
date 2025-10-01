@@ -74,6 +74,11 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.highlight:  # Syntax highlighting for code blocks
       anchor_linenums: true  # Makes line numbers clickable links
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+      pygments_style: monokai  # VS Code-like dark theme
+      auto_title: true  # Automatically adds language title to code blocks
   - pymdownx.inlinehilite  # Syntax highlighting for inline code
   - pymdownx.snippets  # Includes external code files in documentation
   - attr_list  # Adds CSS classes and attributes to Markdown elements
