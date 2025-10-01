@@ -31,17 +31,17 @@ theme:
   favicon: assets/images/logo_tractus-x-min.ico
   logo: assets/images/logo_tractus-x.svg
   palette:
-    # Palette toggle for light mode
+    # Orange and Black custom theme
     - scheme: default
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: orange
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
-    # Palette toggle for dark mode
+    # Dark mode with orange accents
     - scheme: slate
-      primary: blue
-      accent: blue
+      primary: custom
+      accent: orange
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -62,6 +62,9 @@ plugins:
 extra:
   version:
     provider: mike
+
+extra_css:
+  - assets/stylesheets/orange-black-theme.css
 
 markdown_extensions:
   - admonition  # Creates callout boxes (notes, warnings, tips, etc.)
