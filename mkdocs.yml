@@ -21,9 +21,70 @@
 ###############################################################
 
 site_name: Tractus-X SDK Documentation
+site_description: A comprehensive SDK for Eclipse Tractus-X components
 repo_url: https://github.com/eclipse-tractusx/tractusx-sdk
+repo_name: eclipse-tractusx/tractusx-sdk
+edit_uri: edit/main/docs/
+
 theme:
   name: material
+  palette:
+    # Palette toggle for light mode
+    - scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs  # Renders top-level navigation as tabs
+    - navigation.sections  # Groups navigation items into sections
+    - navigation.expand  # Automatically expands navigation sections
+    - navigation.top  # Adds back-to-top button for easy page navigation
+    - search.highlight  # Highlights search terms in results
+    - search.share  # Adds share button to search results
+    - content.code.copy  # Adds copy button to code blocks
+    - content.action.edit  # Adds edit button to pages (links to repository)
+
+plugins:
+  - search  # Enables site-wide search functionality
+  - mkdocstrings  # Automatically generates API documentation from Python docstrings
+
+markdown_extensions:
+  - admonition  # Creates callout boxes (notes, warnings, tips, etc.)
+  - pymdownx.details  # Adds collapsible content sections
+  - pymdownx.superfences  # Enhanced code blocks with nesting support
+  - pymdownx.tabbed:  # Creates tabbed content blocks
+      alternate_style: true
+  - pymdownx.highlight:  # Syntax highlighting for code blocks
+      anchor_linenums: true  # Makes line numbers clickable links
+  - pymdownx.inlinehilite  # Syntax highlighting for inline code
+  - pymdownx.snippets  # Includes external code files in documentation
+  - attr_list  # Adds CSS classes and attributes to Markdown elements
+  - md_in_html  # Allows Markdown syntax inside HTML blocks
+
 nav:
   - Home: index.md
   - Getting Started: generate-doc/getting-started.md
+  - User Guide:
+    - Overview: user/README.md
+    - Usage Examples:
+      - Dataspace SDK:
+        - EDC Usage: user/usage/dataspace/edc-sdk-usage.md
+      - Industry SDK:
+        - DTR Usage: user/usage/industry/dtr-sdk-usage.md
+        - Submodel Service Usage: user/usage/industry/submodel-service-sdk-usage.md
+  - Examples: examples/README.md
+  - Architecture:
+    - Decision Records:
+      - Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
+      - Data Storage Architecture: architecture/decision-records/0002-data-storage-architecture.md
+      - SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
+      - Tractus-X SDK Services: architecture/decision-records/0004-tractusx-sdk-services.md
