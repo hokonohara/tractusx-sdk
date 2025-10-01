@@ -57,6 +57,10 @@ plugins:
   - search  # Enables site-wide search functionality
   - mkdocstrings  # Automatically generates API documentation from Python docstrings
 
+extra:
+  version:
+    provider: mike
+
 markdown_extensions:
   - admonition  # Creates callout boxes (notes, warnings, tips, etc.)
   - pymdownx.details  # Adds collapsible content sections
@@ -81,10 +85,10 @@ nav:
       - Industry SDK:
         - DTR Usage: user/usage/industry/dtr-sdk-usage.md
         - Submodel Service Usage: user/usage/industry/submodel-service-sdk-usage.md
-  - Examples: examples/README.md
   - Architecture:
     - Decision Records:
       - Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
       - Data Storage Architecture: architecture/decision-records/0002-data-storage-architecture.md
       - SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
       - Tractus-X SDK Services: architecture/decision-records/0004-tractusx-sdk-services.md
+  - Versioning: VERSIONING.md
