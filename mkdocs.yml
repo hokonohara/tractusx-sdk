@@ -28,6 +28,8 @@ edit_uri: edit/main/docs/
 
 theme:
   name: material
+  favicon: assets/images/logo_tractus-x-min.ico
+  logo: assets/images/logo_tractus-x.svg
   palette:
     # Palette toggle for light mode
     - scheme: default
