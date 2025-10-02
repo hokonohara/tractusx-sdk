@@ -26,4 +26,114 @@
 {% block styles %}
   {{ super() }}
   <link rel="stylesheet" href="{{ 'assets/stylesheets/orange-black-theme.css' | url }}">
+  <style>
+    /* Fix version number display and header spacing */
+    .md-header__inner {
+      display: flex !important;
+      align-items: center !important;
+      justify-content: space-between !important;
+      flex-wrap: nowrap !important;
+    }
+    
+    .md-header__title {
+      flex: 1 !important;
+      min-width: 0 !important;
+      margin-right: 16px !important;
+    }
+    
+
+    
+    .md-header__button {
+      margin-left: 4px !important;
+    }
+    
+    /* Move version selector next to GitHub repository info */
+    .md-version {
+      position: absolute !important;
+      right: -750px !important;
+      z-index: 1001 !important;
+    }
+    
+    /* Keep search in center position */
+    .md-search {
+      margin-right: auto !important;
+      margin-left: auto !important;
+    }
+    
+    /* GitHub repo info on the far right */
+    .md-header__source {
+      margin-left: auto !important;
+      margin-right: 60px !important;
+    }
+    
+    /* Theme selector stays on far right */
+    .md-header__button.md-icon {
+      margin-left: auto !important;
+      margin-right: 8px !important;
+    }
+    
+    .md-version__current {
+      background-color: rgba(0, 0, 0, 0.3) !important;
+      border: 2px solid #FFD700 !important;
+      color: #FFD700 !important;
+      font-weight: 600 !important;
+      padding: 6px 16px !important;
+      border-radius: 6px !important;
+      min-width: 140px !important;
+      max-width: 200px !important;
+      text-align: center !important;
+      white-space: nowrap !important;
+      overflow: visible !important;
+      display: block !important;
+      line-height: 1.2 !important;
+    }
+    
+
+    
+    /* Responsive adjustments for better visibility */
+    @media screen and (max-width: 1220px) {
+      .md-header__title {
+        font-size: 1.5rem !important;
+      }
+      
+      .md-version__current {
+        min-width: 120px !important;
+        font-size: 0.9rem !important;
+        padding: 4px 12px !important;
+      }
+      
+      .md-header__option {
+        margin-right: 16px !important;
+      }
+    }
+    
+    @media screen and (max-width: 1024px) {
+      .md-header__title {
+        font-size: 1.3rem !important;
+      }
+      
+      .md-version__current {
+        min-width: 100px !important;
+        font-size: 0.85rem !important;
+        padding: 4px 10px !important;
+      }
+    }
+    
+    @media screen and (max-width: 768px) {
+      .md-header__title {
+        font-size: 1.1rem !important;
+      }
+      
+      .md-version__current {
+        min-width: 90px !important;
+        font-size: 0.8rem !important;
+        padding: 3px 8px !important;
+      }
+      
+      .md-header__option {
+        margin-right: 8px !important;
+        margin-left: 8px !important;
+      }
+    }
+  </style>
 {% endblock %}
