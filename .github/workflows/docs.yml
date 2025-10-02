@@ -71,8 +71,8 @@ jobs:
             poetry run mike deploy --push --update-aliases $VERSION latest
             poetry run mike set-default --push latest
           elif [[ "$GITHUB_REF" == "refs/heads/main" ]]; then
-            # Deploy development version
-            poetry run mike deploy --push main
+            # Deploy development version from main branch
+            poetry run mike deploy --push --title "Development" main
           fi
 
   build:

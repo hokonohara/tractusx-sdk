@@ -30,6 +30,7 @@ theme:
   name: material
   favicon: assets/images/logo_tractus-x-min.ico
   logo: assets/images/logo_tractus-x.svg
+  custom_dir: docs/overrides
   palette:
     # Orange and Black custom theme
     - scheme: default
