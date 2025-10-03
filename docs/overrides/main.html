@@ -161,5 +161,27 @@
     .md-tabs__item {
       height: 100% !important;
     }
+    
+    /* Make content links darker in light mode for better visibility */
+    [data-md-color-scheme="default"] .md-content a {
+      color: #ce970c !important; 
+    }
+    
+    [data-md-color-scheme="default"] .md-content a:hover {
+      color: #8B6914 !important;
+    }
+    
+    [data-md-color-scheme="default"] .md-nav__link:hover {
+      color: #8B6914 !important;
+    }
+    
+    [data-md-color-scheme="default"] .md-nav__link--active {
+      color: #654321 !important;
+      font-weight: 600 !important;
+    }
+    
+    [data-md-color-scheme="default"] .md-nav--secondary .md-nav__link:hover {
+      color: #8B6914 !important;
+    }
   </style>
 {% endblock %}
