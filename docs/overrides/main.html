@@ -135,5 +135,31 @@
         margin-left: 8px !important;
       }
     }
+    
+    /* Fix navigation tabs hover coverage */
+    .md-tabs__link {
+      padding: 16px 16px !important;
+      height: auto !important;
+      min-height: 48px !important;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      line-height: 1.2 !important;
+      position: relative !important;
+    }
+    
+    .md-tabs__link:hover {
+      background-color: rgba(0, 0, 0, 0.2) !important;
+      border-radius: 0 !important;
+    }
+    
+    .md-tabs__link--active {
+      background-color: rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* Ensure full height coverage for tab text */
+    .md-tabs__item {
+      height: 100% !important;
+    }
   </style>
 {% endblock %}
