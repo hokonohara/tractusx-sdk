@@ -16,21 +16,7 @@ https://creativecommons.org/licenses/by/4.0/legalcode.
 SPDX-License-Identifier: CC-BY-4.0
 
 -->
-# Tractus-SDK Documentation
-
-## Prerequisites
-
-TBD
-
-## Installation Guide
-
-TBD
-
-## First Step: Creation of an asset
-
-TBD
-
-## Verifyng the setup
+# Industry Library
 
 TBD
 

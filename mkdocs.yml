@@ -116,6 +116,7 @@ nav:
   - User Guide:
     - SDK Structure and Components: user-guide/sdk-structure-and-components.md
     - Dataspace Library:
+      - Overview: user-guide/dataspace-library/index.md
       - Connector:
         - Services: user-guide/dataspace-library/connector/services.md
         - Models: user-guide/dataspace-library/connector/models.md
@@ -129,6 +130,7 @@ nav:
       - Legacy:
         - Connector: user-guide/dataspace-library/legacy/edc-sdk-usage.md
     - Industry Library:
+      - Overview: user-guide/industry-library/index.md
       - DTR: 
         - Services: user-guide/industry-library/dtr/services.md
         - Models: user-guide/industry-library/dtr/models.md
@@ -141,6 +143,9 @@ nav:
       - Legacy:
         - Submodel Server: user-guide/industry-library/legacy/submodel-server-sdk-usage.md
         - DTR: user-guide/industry-library/legacy/dtr-sdk-usage.md
+    - Extension Library:
+      - Overview: user-guide/extension-library/index.md
+      - Semantics: user-guide/extension-library/semantics/semantics.md
   - Decisions Records:
     - Architecture:
       - 1.- Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
