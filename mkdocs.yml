@@ -51,14 +51,25 @@ theme:
     - navigation.sections  # Groups navigation items into sections
     - navigation.expand  # Automatically expands navigation sections
     - navigation.top  # Adds back-to-top button for easy page navigation
+    - navigation.instant  # Instant navigation for faster page loads
+    - navigation.tracking  # Anchor tracking for better UX
     - search.highlight  # Highlights search terms in results
     - search.share  # Adds share button to search results
+    - search.suggest  # Search suggestions
     - content.code.copy  # Adds copy button to code blocks
+    - content.code.annotate  # Allows annotations in code blocks
     - content.action.edit  # Adds edit button to pages (links to repository)
+    - content.tabs.link  # Links content tabs across pages
+    - toc.follow  # Sidebar automatically scrolls to active section
 
 plugins:
   - search  # Enables site-wide search functionality
-  - mkdocstrings  # Automatically generates API documentation from Python docstrings
+  - mkdocstrings:  # Automatically generates API documentation from Python docstrings
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
 
 extra:
   version:
@@ -70,7 +81,11 @@ extra_css:
 markdown_extensions:
   - admonition  # Creates callout boxes (notes, warnings, tips, etc.)
   - pymdownx.details  # Adds collapsible content sections
-  - pymdownx.superfences  # Enhanced code blocks with nesting support
+  - pymdownx.superfences:  # Enhanced code blocks with nesting support
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:  # Creates tabbed content blocks
       alternate_style: true
   - pymdownx.highlight:  # Syntax highlighting for code blocks
@@ -82,24 +97,54 @@ markdown_extensions:
       auto_title: true  # Automatically adds language title to code blocks
   - pymdownx.inlinehilite  # Syntax highlighting for inline code
   - pymdownx.snippets  # Includes external code files in documentation
+  - pymdownx.emoji:  # Emoji support
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - attr_list  # Adds CSS classes and attributes to Markdown elements
   - md_in_html  # Allows Markdown syntax inside HTML blocks
+  - def_list  # Definition lists
+  - pymdownx.tasklist:  # Task lists
+      custom_checkbox: true
+  - pymdownx.keys  # Keyboard keys
+  - pymdownx.mark  # Text highlighting
+  - pymdownx.tilde  # Strikethrough
+  - pymdownx.caret  # Superscript
 
 nav:
   - Home: index.md
-  - Getting Started: generate-doc/getting-started.md
+  - Getting Started: getting-started/getting-started.md
   - User Guide:
-    - Overview: user/README.md
-    - Usage Examples:
-      - Dataspace SDK:
-        - EDC Usage: user/usage/dataspace/edc-sdk-usage.md
-      - Industry SDK:
-        - DTR Usage: user/usage/industry/dtr-sdk-usage.md
-        - Submodel Service Usage: user/usage/industry/submodel-service-sdk-usage.md
-  - Architecture:
-    - Decision Records:
-      - Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
-      - Data Storage Architecture: architecture/decision-records/0002-data-storage-architecture.md
-      - SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
-      - Tractus-X SDK Services: architecture/decision-records/0004-tractusx-sdk-services.md
+    - SDK Structure and Components: user-guide/sdk-structure-and-components.md
+    - Dataspace Library:
+      - Connector:
+        - Services: user-guide/dataspace-library/connector/services.md
+        - Models: user-guide/dataspace-library/connector/models.md
+        - Managers: user-guide/dataspace-library/connector/managers.md
+        - Controllers: user-guide/dataspace-library/connector/controllers.md
+      - Discovery Services:
+        - Connector Discovery Service: user-guide/dataspace-library/discovery-services/connector-discovery-service.md
+        - Discovery Finder Service: user-guide/dataspace-library/discovery-services/discovery-finder-service.md
+      - Connections: user-guide/dataspace-library/connections/connections.md
+      - Tools: user-guide/dataspace-library/tools/tools.md
+      - Legacy:
+        - Connector: user-guide/dataspace-library/legacy/edc-sdk-usage.md
+    - Industry Library:
+      - DTR: 
+        - Services: user-guide/industry-library/dtr/services.md
+        - Models: user-guide/industry-library/dtr/models.md
+      - Submodel Server:
+        - Adapters:
+          - Base Adapter: user-guide/industry-library/submodel-server/adapters/base-adapter.md
+          - File System Adapter: user-guide/industry-library/submodel-server/adapters/file-system-adapter.md
+      - Discovery Services:
+        - BPN Discovery: user-guide/industry-library/discovery-services/bpn-discovery.md
+      - Legacy:
+        - Submodel Server: user-guide/industry-library/legacy/submodel-server-sdk-usage.md
+        - DTR: user-guide/industry-library/legacy/dtr-sdk-usage.md
+  - Decisions Records:
+    - Architecture:
+      - 1.- Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
+      - 2.- Data Storage Architecture: architecture/decision-records/0002-data-storage-architecture.md
+      - 3.- SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
+      - 4.- Tractus-X SDK Service: architecture/decision-records/0004-tractusx-sdk-services.md
   - Versioning: VERSIONING.md

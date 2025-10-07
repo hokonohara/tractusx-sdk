@@ -16,21 +16,7 @@ https://creativecommons.org/licenses/by/4.0/legalcode.
 SPDX-License-Identifier: CC-BY-4.0
 
 -->
-# Tractus-SDK Documentation
-
-## Overview of the SDK
-
-TBD
-
-## Purpose and goals
-
-TBD
-
-## Target audience
-
-TBD
-
-## Quick links and resources
+# Connections
 
 TBD
 

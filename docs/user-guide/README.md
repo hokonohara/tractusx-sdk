@@ -31,9 +31,7 @@ We encourage users to explore and adapt the SDK to their specific needs!
 
 # Usage tutorials
 
-- [Dataspace Connector](usage/dataspace/edc-sdk-usage.md)
-- [Industry DTR](usage/industry/dtr-sdk-usage.md)
-- [Industry Submodel Service](usage/industry/submodel-service-sdk-usage.md)
+TBD
 
 # Implementation Examples
 

@@ -18,19 +18,19 @@ SPDX-License-Identifier: CC-BY-4.0
 -->
 # Tractus-SDK Documentation
 
-## Overview of the SDK
+## Prerequisites
 
 TBD
 
-## Purpose and goals
+## Installation Guide
 
 TBD
 
-## Target audience
+## First Steps: Creantion of an asset
 
 TBD
 
-## Quick links and resources
+## Verifyng the setup
 
 TBD
 
