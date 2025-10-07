@@ -30,6 +30,7 @@ pypi/pypi/-/fastapi/0.115.12, MIT, approved, #19828
 pypi/pypi/-/filelock/3.18.0, Unlicense, approved, clearlydefined
 pypi/pypi/-/ghp-import/2.1.0, Apache-2.0, approved, clearlydefined
 pypi/pypi/-/greenlet/3.1.1, MIT AND PSF-2.0, approved, #19389
+pypi/pypi/-/griffe/1.14.0, ISC, approved, #23972
 pypi/pypi/-/h11/0.16.0, MIT AND BSD-3-Clause, approved, #20895
 pypi/pypi/-/httpcore/1.0.9, BSD-3-Clause, approved, #20894
 pypi/pypi/-/httptools/0.6.4, MIT, approved, #14635
@@ -49,8 +50,9 @@ pypi/pypi/-/mike/2.1.3, BSD-2-Clause AND BSD-3-Clause, approved, clearlydefined
 pypi/pypi/-/mkdocs-autorefs/1.4.3, ISC, approved, #23871
 pypi/pypi/-/mkdocs-get-deps/0.2.0, MIT, approved, clearlydefined
 pypi/pypi/-/mkdocs-material-extensions/1.3.1, MIT, approved, clearlydefined
-pypi/pypi/-/mkdocs-material/9.6.21, , approved, #23864
+pypi/pypi/-/mkdocs-material/9.6.21, MIT AND CC-BY-4.0 AND MIT AND OFL-1.1 AND Apache-2.0 AND CC0-1.0 AND 0BSD AND BSD-3-Clause, approved, #23864
 pypi/pypi/-/mkdocs/1.6.1, BSD-3-Clause AND BSD-2-Clause AND MIT AND CC-BY-4.0 AND CC0-1.0 AND MIT AND OFL-1.1 AND (GPL-2.0-only OR MIT), approved, #23868
+pypi/pypi/-/mkdocstrings-python/1.18.2, ISC, approved, #23971
 pypi/pypi/-/mkdocstrings/0.30.1, ISC, approved, #23870
 pypi/pypi/-/packaging/24.2, (Apache-2.0 OR BSD-2-Clause) AND MIT, approved, #19866
 pypi/pypi/-/paginate/0.5.7, MIT, approved, #13071
