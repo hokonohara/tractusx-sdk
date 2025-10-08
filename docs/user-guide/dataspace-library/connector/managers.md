@@ -77,12 +77,12 @@ pg_connection_manager = PostgresConnectionManager(engine=my_engine, table_name="
 
 ## Method Reference
 
-| Method                        | Signature                                                                 | Manager(s)                    | Description                                                                                  |
+| Method                        | Required Attributes                                                                 | Manager(s)                    | Description                                                                                  |
 |-------------------------------|--------------------------------------------------------------------------|-------------------------------|----------------------------------------------------------------------------------------------|
-| `add_connection()`            | `(counter_party_id, counter_party_address, query_checksum, policy_checksum, connection_entry)` | All                            | Adds a new EDR connection                                                                   |
-| `get_connection()`            | `(counter_party_id, counter_party_address, query_checksum, policy_checksum)`                  | All                            | Retrieves an EDR connection                                                                 |
-| `get_connection_transfer_id()`| `(counter_party_id, counter_party_address, query_checksum, policy_checksum)`                  | All                            | Gets the transfer process ID for a connection                                               |
-| `delete_connection()`         | `(counter_party_id, counter_party_address, query_checksum, policy_checksum)`                  | All                            | Deletes an EDR connection     |
+| `add_connection`            | `counter_party_id, counter_party_address, query_checksum, policy_checksum, connection_entry` | All                            | Adds a new EDR connection                                                                   |
+| `get_connection`            | `counter_party_id, counter_party_address, query_checksum, policy_checksum`                  | All                            | Retrieves an EDR connection                                                                 |
+| `get_connection_transfer_id`| `counter_party_id, counter_party_address, query_checksum, policy_checksum`                  | All                            | Gets the transfer process ID for a connection                                               |
+| `delete_connection`         | `counter_party_id, counter_party_address, query_checksum, policy_checksum`                  | All                            | Deletes an EDR connection     |
 
 ## Attribute Reference
 
@@ -121,6 +121,8 @@ pg_connection_manager = PostgresConnectionManager(engine=my_engine, table_name="
 - [Connector Models](models.md)
 - [SDK Structure and Components](../../sdk-structure-and-components.md)
 - [API Reference](https://eclipse-tractusx.github.io/api-hub/)
+
+---
 
 ## NOTICE
 

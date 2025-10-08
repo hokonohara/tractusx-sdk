@@ -153,6 +153,24 @@ Provider:
 Combined:
 `ServiceFactory.get_connector_service(dataspace_version, base_url, dma_path, headers, connection_manager, verbose, logger)`
 
+## Connector Service Methods Reference
+
+| Method Name                | Required Attributes                | Description                                      |
+|----------------------------|------------------------------------------------|--------------------------------------------------|
+| `get_catalog`              | `counter_party_id`                             | Discover available catalogs from a counterparty  |
+| `get_edr`                  | `transfer_process_id`                          | Retrieve endpoint data reference                 |
+| `get_endpoint_with_token`  | `asset_id`, `contract_id`                      | Get endpoint with authentication token           |
+| `get_filter_expression`    | `filter_params`                                | Build filter expression for catalog queries      |
+| `contract_negotiations`    | `counter_party_id`, `asset_id`, `policies`     | List or manage contract negotiations             |
+| `transfer_processes`       | `contract_id`, `asset_id`                      | List or manage data transfer processes           |
+| `create_asset`             | `asset_id`, `base_url`, `dct_type`, `version`, `semantic_id` | Create and publish an asset                      |
+| `create_contract`          | `contract_params`                              | Create a contract definition                     |
+| `create_policy`            | `policy_params`                                | Create a policy for data sharing                 |
+| `assets`                   | `asset_id`, `asset_data`                       | Manage assets (CRUD operations)                  |
+| `contract_definitions`     | `contract_id`, `contract_data`                 | Manage contract definitions                      |
+| `policies`                 | `policy_id`, `policy_data`                     | Manage policies                                  |
+| `transfer`                 | `contract_id`, `asset_id`                      | Initiate data transfer                           |
+
 ## Connector Service Instantiation Attribute Reference
 
 | Attribute           | Type                | Description                                                                                  |
