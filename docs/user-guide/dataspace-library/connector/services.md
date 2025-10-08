@@ -167,10 +167,10 @@ Combined:
 
 ## Further Reading
 
-- [Dataspace Library Overview](index.md)
-- [SDK Structure and Components](../sdk-structure-and-components.md)
-- [Connector Discovery Example](../../../../examples/dataspace/services/discovery/connector_discovery_example.py)
-- [API Reference](../../user/usage/dataspace/edc-sdk-usage.md)
+- [Dataspace Library Overview](../index.md)
+- [SDK Structure and Components](../../sdk-structure-and-components.md)
+- [Connector Discovery Example](../discovery-services/connector-discovery-service.md)
+- [API Reference](https://eclipse-tractusx.github.io/api-hub/)
 
 ---
 
