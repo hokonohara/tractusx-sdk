@@ -125,7 +125,6 @@ nav:
       - Discovery Services:
         - Connector Discovery Service: user-guide/dataspace-library/discovery-services/connector-discovery-service.md
         - Discovery Finder Service: user-guide/dataspace-library/discovery-services/discovery-finder-service.md
-      - Connections: user-guide/dataspace-library/connections/connections.md
       - Tools: user-guide/dataspace-library/tools/tools.md
       - Legacy:
         - Connector: user-guide/dataspace-library/legacy/edc-sdk-usage.md
