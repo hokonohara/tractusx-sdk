@@ -33,8 +33,8 @@ They are designed to work with multiple dataspace versions (e.g., "jupiter", "sa
 
 ## Key Components
 
-- **Service Factory**: Dynamically creates connector service instances for supported dataspace versions. See [`service_factory.py`](../../../../src/tractusx_sdk/dataspace/services/connector/service_factory.py).
-- **BaseConnectorService**: Core abstraction for connector interactions, exposing contract, consumer, and provider interfaces. See [`base_connector_service.py`](../../../../src/tractusx_sdk/dataspace/services/connector/base_connector_service.py).
+- **Service Factory**: Dynamically creates connector service instances for supported dataspace versions.
+- **BaseConnectorService**: Core abstraction for connector interactions, exposing contract, consumer, and provider interfaces.
 - **Consumer/Provider Services**: Specialized classes for consuming and providing data, tailored to dataspace version and role.
 - **Controllers & Adapters**: Manage API requests and low-level HTTP communication with EDC connectors.
 
@@ -63,7 +63,7 @@ provider_connector_service.create_asset(
 )
 ```
 
-For dedicated consumer and combined usage patterns, see the examples below. For even more advanced scenarios, refer to the [SDK Structure and Components](../sdk-structure-and-components.md) and [Dataspace Connector Usage](../../user/usage/dataspace/edc-sdk-usage.md).
+For dedicated consumer and combined usage patterns, see the examples below. For even more advanced scenarios, refer to the [SDK Structure and Components](../../sdk-structure-and-components.md) and [Dataspace Connector Usage](../legacy/edc-sdk-usage.md).
 
 ## Consumer Connector Example
 
