@@ -2,6 +2,7 @@
 
 Eclipse Tractus-X - Software Development KIT
 
+Copyright (c) 2025 LKS Next
 Copyright (c) 2025 Contributors to the Eclipse Foundation
 
 See the NOTICE file(s) distributed with this work for additional
@@ -34,7 +35,7 @@ SPDX-License-Identifier: CC-BY-4.0
     - [ReferenceKeyTypes](#referencekeytypes)
     - [Result](#result)
 - [Services](#services)
-    - [AasService](#aasservice)
+    - [AasService](#aas-service-methods)
         - [get_all_asset_administration_shell_descriptors](#get_all_asset_administration_shell_descriptors)
         - [get_asset_administration_shell_descriptor_by_id](#get_asset_administration_shell_descriptor_by_id)
         - [update_asset_administration_shell_descriptor](#update_asset_administration_shell_descriptor)

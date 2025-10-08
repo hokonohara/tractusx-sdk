@@ -1,0 +1,154 @@
+###############################################################
+# Eclipse Tractus-X - Tractus-X SDK
+#
+# Copyright (c) 2025 LKS Next
+# Copyright (c) 2025 Contributors to the Eclipse Foundation
+#
+# See the NOTICE file(s) distributed with this work for additional
+# information regarding copyright ownership.
+#
+# This program and the accompanying materials are made available under the
+# terms of the Apache License, Version 2.0 which is available at
+# https://www.apache.org/licenses/LICENSE-2.0.
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+#
+# SPDX-License-Identifier: Apache-2.0
+###############################################################
+
+site_name: Tractus-X SDK Documentation
+site_description: A comprehensive SDK for Eclipse Tractus-X components
+repo_url: https://github.com/eclipse-tractusx/tractusx-sdk
+repo_name: eclipse-tractusx/tractusx-sdk
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  favicon: assets/images/logo_tractus-x-min.ico
+  logo: assets/images/logo_tractus-x.svg
+  custom_dir: docs/overrides
+  palette:
+    # Orange and Black custom theme
+    - scheme: default
+      primary: custom
+      accent: orange
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    # Dark mode with orange accents
+    - scheme: slate
+      primary: custom
+      accent: orange
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs  # Renders top-level navigation as tabs
+    - navigation.sections  # Groups navigation items into sections
+    - navigation.expand  # Automatically expands navigation sections
+    - navigation.top  # Adds back-to-top button for easy page navigation
+    - navigation.instant  # Instant navigation for faster page loads
+    - navigation.tracking  # Anchor tracking for better UX
+    - search.highlight  # Highlights search terms in results
+    - search.share  # Adds share button to search results
+    - search.suggest  # Search suggestions
+    - content.code.copy  # Adds copy button to code blocks
+    - content.code.annotate  # Allows annotations in code blocks
+    - content.action.edit  # Adds edit button to pages (links to repository)
+    - content.tabs.link  # Links content tabs across pages
+    - toc.follow  # Sidebar automatically scrolls to active section
+
+plugins:
+  - search  # Enables site-wide search functionality
+  - mkdocstrings:  # Automatically generates API documentation from Python docstrings
+      default_handler: python
+      handlers:
+        python:
+          options:
+            docstring_style: google
+
+extra:
+  version:
+    provider: mike
+
+extra_css:
+  - assets/stylesheets/orange-black-theme.css
+
+markdown_extensions:
+  - admonition  # Creates callout boxes (notes, warnings, tips, etc.)
+  - pymdownx.details  # Adds collapsible content sections
+  - pymdownx.superfences:  # Enhanced code blocks with nesting support
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:  # Creates tabbed content blocks
+      alternate_style: true
+  - pymdownx.highlight:  # Syntax highlighting for code blocks
+      anchor_linenums: true  # Makes line numbers clickable links
+      line_spans: __span
+      pygments_lang_class: true
+      use_pygments: true
+      pygments_style: monokai  # VS Code-like dark theme
+      auto_title: true  # Automatically adds language title to code blocks
+  - pymdownx.inlinehilite  # Syntax highlighting for inline code
+  - pymdownx.snippets  # Includes external code files in documentation
+  - pymdownx.emoji:  # Emoji support
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - attr_list  # Adds CSS classes and attributes to Markdown elements
+  - md_in_html  # Allows Markdown syntax inside HTML blocks
+  - def_list  # Definition lists
+  - pymdownx.tasklist:  # Task lists
+      custom_checkbox: true
+  - pymdownx.keys  # Keyboard keys
+  - pymdownx.mark  # Text highlighting
+  - pymdownx.tilde  # Strikethrough
+  - pymdownx.caret  # Superscript
+
+nav:
+  - Home: index.md
+  - Getting Started: getting-started/getting-started.md
+  - User Guide:
+    - SDK Structure and Components: user-guide/sdk-structure-and-components.md
+    - Dataspace Library:
+      - Overview: user-guide/dataspace-library/index.md
+      - Connector:
+        - Services: user-guide/dataspace-library/connector/services.md
+        - Models: user-guide/dataspace-library/connector/models.md
+        - Managers: user-guide/dataspace-library/connector/managers.md
+        - Controllers: user-guide/dataspace-library/connector/controllers.md
+      - Discovery Services:
+        - Connector Discovery Service: user-guide/dataspace-library/discovery-services/connector-discovery-service.md
+        - Discovery Finder Service: user-guide/dataspace-library/discovery-services/discovery-finder-service.md
+      - Tools: user-guide/dataspace-library/tools/tools.md
+      - Legacy:
+        - Connector: user-guide/dataspace-library/legacy/edc-sdk-usage.md
+    - Industry Library:
+      - Overview: user-guide/industry-library/index.md
+      - DTR: 
+        - Services: user-guide/industry-library/dtr/services.md
+        - Models: user-guide/industry-library/dtr/models.md
+      - Submodel Server:
+        - Adapters:
+          - Base Adapter: user-guide/industry-library/submodel-server/adapters/base-adapter.md
+          - File System Adapter: user-guide/industry-library/submodel-server/adapters/file-system-adapter.md
+      - Discovery Services:
+        - BPN Discovery: user-guide/industry-library/discovery-services/bpn-discovery.md
+      - Legacy:
+        - Submodel Server: user-guide/industry-library/legacy/submodel-server-sdk-usage.md
+        - DTR: user-guide/industry-library/legacy/dtr-sdk-usage.md
+    - Extension Library:
+      - Overview: user-guide/extension-library/index.md
+      - Semantics: user-guide/extension-library/semantics/semantics.md
+  - Decisions Records:
+    - Architecture:
+      - 1.- Record Architecture Decisions: architecture/decision-records/0001-record-architecture-decisions.md
+      - 2.- Data Storage Architecture: architecture/decision-records/0002-data-storage-architecture.md
+      - 3.- SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
+      - 4.- Tractus-X SDK Service: architecture/decision-records/0004-tractusx-sdk-services.md
+  - Versioning: VERSIONING.md

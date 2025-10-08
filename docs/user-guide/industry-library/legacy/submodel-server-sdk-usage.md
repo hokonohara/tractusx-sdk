@@ -2,6 +2,7 @@
 
 Eclipse Tractus-X - Software Development KIT
 
+Copyright (c) 2025 LKS Next
 Copyright (c) 2025 Contributors to the Eclipse Foundation
 
 See the NOTICE file(s) distributed with this work for additional
