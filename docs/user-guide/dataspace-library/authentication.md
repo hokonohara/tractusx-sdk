@@ -351,24 +351,6 @@ def safe_api_call(oauth_manager, api_function):
 - Check you're using the right header name
 - Verify the key is actually being sent in requests
 
-### Debugging
-
-Turn on debug logging to see what's happening:
-
-```python
-import logging
-
-# See all the details
-logging.basicConfig(level=logging.DEBUG)
-
-oauth_manager = OAuth2Manager(...)
-try:
-    token = oauth_manager.get_token()
-    print(f"Got token: {token[:20]}...")
-except Exception as e:
-    print(f"Auth failed: {e}")
-```
-
 ## Further Reading
 
 - [Discovery Services](./discovery-services/discovery-finder-service.md) - Learn how to use authentication with discovery services
