@@ -124,14 +124,6 @@ endpoints = connector_discovery.find_connector_by_bpn("BPNL000000000001")
 print(endpoints)
 ```
 
-## Tips
-
-- **Cache the results** - Discovery URLs don't change often, so you can cache them
-- **Batch requests** - Ask for multiple discovery types at once instead of separate calls  
-- **Reuse instances** - Create one Discovery Finder and use it throughout your app
-- **Use environment variables** - Store OAuth2 credentials securely
-- **Check authentication** - Make sure OAuth2 is connected before making requests
-
 ## Common problems
 
 ### Authentication not connected
@@ -153,6 +145,13 @@ oauth_manager.connect()  # Do this before using discovery_finder
 - Double-check the discovery type names (e.g., "bpn", not "BPN")
 - The discovery services might not be registered yet
 - Try a different discovery type to test
+
+!!! tip
+    - **Cache the results** - Discovery URLs don't change often, so you can cache them
+    - **Batch requests** - Ask for multiple discovery types at once instead of separate calls  
+    - **Reuse instances** - Create one Discovery Finder and use it throughout your app
+    - **Use environment variables** - Store OAuth2 credentials securely
+    - **Check authentication** - Make sure OAuth2 is connected before making requests
 
 ## Further Reading
 
