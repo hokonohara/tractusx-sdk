@@ -21,7 +21,7 @@ name: "Trivy"
 
 on:
   push:
-    branches: ["main"]
+    branches: ["main","feat/*"]
   schedule:
     - cron: "0 0 * * 0"
   workflow_dispatch:
