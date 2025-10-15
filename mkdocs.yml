@@ -123,8 +123,9 @@ nav:
         - Managers: user-guide/dataspace-library/connector/managers.md
         - Controllers: user-guide/dataspace-library/connector/controllers.md
       - Discovery Services:
-        - Connector Discovery Service: user-guide/dataspace-library/discovery-services/connector-discovery-service.md
         - Discovery Finder Service: user-guide/dataspace-library/discovery-services/discovery-finder-service.md
+        - Connector Discovery Service: user-guide/dataspace-library/discovery-services/connector-discovery-service.md
+      - Authentication: user-guide/dataspace-library/authentication.md
       - Tools: user-guide/dataspace-library/tools/tools.md
       - Legacy:
         - Connector: user-guide/dataspace-library/legacy/edc-sdk-usage.md
@@ -152,3 +153,6 @@ nav:
       - 3.- SDK Module Architecture: architecture/decision-records/0003-sdk-module-architecture.md
       - 4.- Tractus-X SDK Service: architecture/decision-records/0004-tractusx-sdk-services.md
   - Versioning: VERSIONING.md
+
+copyright: >
+  Copyright &copy; 2025 Eclipse Tractus-X
