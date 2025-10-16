@@ -40,6 +40,7 @@ class BaseCatalogModel(BaseModel, ABC):
     })
     additional_scopes: Optional[list[str]] = Field(default_factory=list)
     queryspec: Optional[dict] = Field(default_factory=dict)
+    protocol: Optional[str] = Field(default="dataspace-protocol-http")
 
     class _Builder(BaseModel._Builder):
         def context(self, context: dict):
@@ -64,4 +65,8 @@ class BaseCatalogModel(BaseModel, ABC):
 
         def queryspec(self, queryspec: dict):
             self._data["queryspec"] = queryspec
+            return self
+
+        def protocol(self, protocol: str):
+            self._data["protocol"] = protocol
             return self
