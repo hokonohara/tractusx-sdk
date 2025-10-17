@@ -8,10 +8,12 @@
 
 Eclipse Tractus-X Software Development KIT - The Dataspace &amp; Industry Foundation Libraries
 
-A modular facade with generic microservices that allows you to "provide" and "consume" data from Catena-X with simplified APIs and methods.
+A modular library/toolbox/framework, that helps you to build applications/scripts/microservices which can use the Connector, DTR, Discovery Services for providing and consuming data (any data). 
 
 It aims to provide a reference implementation for the various interactions between applications and services like the EDC, Digital Twin Registry and Submodel Service.
-Is the literal "tool box" you need to provide data and consume data, how you orchestrate it is then up to you and your use case.
+This "tool box" helps you to provide data and consume data on a Dataspace Context, how you orchestrate it is then up to you and your use case.
+
+Additionally to this various microservices are provided at the [eclipse-tractusx/tractusx-sdk-services](https://github.com/eclipse-tractusx/tractusx-sdk-services) repository, giving an lighthouse implementation on how to use the SDK for various purposes. Other examples of solutions which are built with this SDK is the [Industry Core Hub](https://github.com/eclipse-tractusx/industry-core-hub).
 
 This SDK will manage automatically the version updates from the EDC and the Digital Twin Registry, that will be maintained by the community.
 
@@ -28,6 +30,12 @@ Install the package directly from PyPI:
 ```bash
 pip install tractusx-sdk
 ```
+
+## Documentation
+
+Our latest documentation can be found here:
+
+[https://eclipse-tractusx.github.io/tractusx-sdk/main/](https://eclipse-tractusx.github.io/tractusx-sdk/main/)
 
 ## Usage
 
