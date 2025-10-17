@@ -134,7 +134,7 @@ class BaseConnectorProviderService(BaseService):
             properties["aas-semantics:semanticId"] = {"@id": semantic_id}
 
         asset = ModelFactory.get_asset_model(
-            connector_version=self.dataspace_version,
+            dataspace_version=self.dataspace_version,
             context=context,
             oid=asset_id,
             properties=properties,
@@ -177,7 +177,7 @@ class BaseConnectorProviderService(BaseService):
 
         contract = ModelFactory.get_contract_definition_model(
             context=context,
-            connector_version=self.dataspace_version,
+            dataspace_version=self.dataspace_version,
             oid=contract_id,
             assets_selector=asset_selector,
             contract_policy_id=usage_policy_id,
@@ -206,7 +206,7 @@ class BaseConnectorProviderService(BaseService):
             self.logger.info(f"Creating new policy with ID {policy_id}.")
 
         policy = ModelFactory.get_policy_model(
-            connector_version=self.dataspace_version,
+            dataspace_version=self.dataspace_version,
             oid=policy_id,
             context=context,
             permissions=permissions,

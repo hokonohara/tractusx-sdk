@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 CGI Deutschland B.V. & Co. KG
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -59,16 +60,16 @@ class BaseConnectorConsumerService(BaseService):
         if self.verbose and self.logger is None:
             self.logger = logging.getLogger(__name__)
 
-        dma_adapter = AdapterFactory.get_dma_adapter(
+        self.dma_adapter = AdapterFactory.get_dma_adapter(
             dataspace_version=dataspace_version,
             base_url=base_url,
             dma_path=dma_path,
             headers=headers
         )
 
-        controllers = ControllerFactory.get_dma_controllers_for_version(
+        self.controllers = ControllerFactory.get_dma_controllers_for_version(
             dataspace_version=dataspace_version,
-            adapter=dma_adapter,
+            adapter=self.dma_adapter,
             controller_types=[
                 ControllerType.CATALOG,
                 ControllerType.EDR,
@@ -77,10 +78,10 @@ class BaseConnectorConsumerService(BaseService):
             ]
         )
 
-        self._catalog_controller = controllers.get(ControllerType.CATALOG)
-        self._edr_controller = controllers.get(ControllerType.EDR)
-        self._contract_negotiation_controller = controllers.get(ControllerType.CONTRACT_NEGOTIATION)
-        self._transfer_process_controller = controllers.get(ControllerType.TRANSFER_PROCESS)
+        self._catalog_controller = self.controllers.get(ControllerType.CATALOG)
+        self._edr_controller = self.controllers.get(ControllerType.EDR)
+        self._contract_negotiation_controller = self.controllers.get(ControllerType.CONTRACT_NEGOTIATION)
+        self._transfer_process_controller = self.controllers.get(ControllerType.TRANSFER_PROCESS)
 
         self.connection_manager = connection_manager if connection_manager is not None else MemoryConnectionManager()
 
@@ -141,7 +142,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.get_data_address(oid=transfer_id, params={"auto_refresh": True})
         if (response is None or response.status_code != 200):
             raise ConnectionError(
-                "[EDC Service] It was not possible to get the edr because the EDC response was not successful!")
+                "Connector Service It was not possible to get the edr because the EDC response was not successful!")
         return response.json()
 
     def get_endpoint_with_token(self, transfer_id: str) -> tuple[str, str]:
@@ -151,7 +152,7 @@ class BaseConnectorConsumerService(BaseService):
         ## Get authorization key from the edr
         edr: dict = self.get_edr(transfer_id=transfer_id)
         if (edr is None):
-            raise RuntimeError("[EDC Service] It was not possible to retrieve the edr token and the dataplane endpoint!")
+            raise RuntimeError("Connector Service It was not possible to retrieve the edr token and the dataplane endpoint!")
 
         return edr["endpoint"], edr["authorization"]
 
@@ -171,7 +172,7 @@ class BaseConnectorConsumerService(BaseService):
         if request is None:
             if counter_party_id is None or counter_party_address is None:
                 raise ValueError(
-                    "[EDC Service] Either request or counter_party_id and counter_party_address are required to build a catalog request")
+                    "Connector Service Either request or counter_party_id and counter_party_address are required to build a catalog request")
             request = self.get_catalog_request(counter_party_id=counter_party_id,
                                                counter_party_address=counter_party_address)
         ## Get catalog with configurable timeout
@@ -179,7 +180,7 @@ class BaseConnectorConsumerService(BaseService):
         ## In case the response code is not successfull or the response is null
         if response is None or response.status_code != 200:
             raise ConnectionError(
-                f"[EDC Service] It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
+                f"Connector Service It was not possible to get the catalog from the EDC provider! Response code: [{response.status_code}]")
         return response.json()
 
     ## Simple catalog request with filter
@@ -249,7 +250,7 @@ class BaseConnectorConsumerService(BaseService):
         """
         offer_id = policy.get("@id", None)
         if (offer_id is None):
-            raise ValueError("[EDC Service] Policy offer id is not available!")
+            raise ValueError("Connector Service Policy offer id is not available!")
 
         return ModelFactory.get_contract_negotiation_model(
             dataspace_version=self.dataspace_version,  # version is to be included in the BaseService class  
@@ -322,10 +323,11 @@ class BaseConnectorConsumerService(BaseService):
 
     def get_catalogs_by_dct_type(self, counter_party_id: str, edcs: list, dct_type: str,
                                  dct_type_key: str = "'http://purl.org/dc/terms/type'.'@id'", timeout: int = None):
-        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, key=dct_type_key,
-                                             value=dct_type, operator="=", timeout=timeout)
+        return self.get_catalogs_with_filter(counter_party_id=counter_party_id, edcs=edcs, 
+                                             filter_expression=[self.get_filter_expression(key=dct_type_key, value=dct_type, operator="=")],
+                                             timeout=timeout)
 
-    def get_catalogs_with_filter(self, counter_party_id: str, edcs: list, key: str, value: str, operator: str = "=",
+    def get_catalogs_with_filter(self, counter_party_id: str, edcs: list, filter_expression: list[dict],
                                  timeout: int = None):
 
         ## Where the catalogs get stored
@@ -337,9 +339,7 @@ class BaseConnectorConsumerService(BaseService):
             {
                 'counter_party_id': counter_party_id,
                 'counter_party_address': edc_url,
-                'key': key,
-                'operator': operator,
-                'value': value,
+                'filter_expression': filter_expression,
                 'timeout': timeout,
                 'catalogs': catalogs
             }
@@ -426,7 +426,7 @@ class BaseConnectorConsumerService(BaseService):
         response: Response = self.edrs.query(request)
         ## In case the response code is not successfull or the response is null
         if (response is None or response.status_code != 200):
-            raise ConnectionError(f"[EDC Service] EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
+            raise ConnectionError(f"Connector Service EDR Entry not found for the negotiation_id=[{negotiation_id}]!")
 
         ## The response is a list
         data = response.json()
@@ -454,7 +454,7 @@ class BaseConnectorConsumerService(BaseService):
                                                         filter_expression=filter_expression)
         if (catalog_response is None):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to retrieve the catalog from the edc provider! Catalog response is empty!")
 
         ## Select Policy and Assetid
         try:
@@ -462,11 +462,11 @@ class BaseConnectorConsumerService(BaseService):
                                                                         allowed_policies=policies)
         except Exception as e:
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
+                f"Connector Service [{counter_party_address}] It was not possible to find a valid policy in the catalog! Reason: [{str(e)}]")
 
         if (len(valid_assets_policies) == 0):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to find a valid policy in the catalog! Asset ID and the Policy are empty!")
 
         negotiation_id: str | None = None
 
@@ -485,7 +485,7 @@ class BaseConnectorConsumerService(BaseService):
 
         if (negotiation_id is None):
             raise RuntimeError(
-                f"[EDC Service] [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
+                f"Connector Service [{counter_party_address}] It was not possible to start the EDR Negotiation! The negotiation id is empty!")
 
         ##### 3. Get EDC Entry (details)
 
@@ -498,13 +498,13 @@ class BaseConnectorConsumerService(BaseService):
             ## Wait until the timeout has reached to retry again
             if self.logger:
                 self.logger.info(
-                    f"[EDC Service] Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
+                    f"Connector Service Attempt [{retries + 1}]/[{max_retries}]: [{counter_party_address}] The EDR Negotiation [{negotiation_id}] entry was not found! Waiting {timeout} seconds and retrying...")
             op.wait(seconds=timeout)
             retries += 1
 
         if edr_entry is None:
             raise TimeoutError(
-                f"[EDC Service] [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
+                f"Connector Service [{counter_party_address}] The EDR Negotiation [{negotiation_id}] has failed! The EDR entry was not found!")
 
         return edr_entry
 
@@ -538,14 +538,14 @@ class BaseConnectorConsumerService(BaseService):
         ## If is there return the cached one, if the selection is the same the transfer id can be reused!
         if (transfer_process_id is not None):
             if self.logger:
-                self.logger.info(
-                    "[EDC Service] [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
+                self.logger.debug(
+                    "Connector Service [%s]: EDR transfer_id=[%s] found in the cache for counter_party_id=[%s], filter=[%s] and selected policies",
                     counter_party_address, transfer_process_id, counter_party_id, filter_expression)
             return transfer_process_id
 
         if self.logger:
             self.logger.info(
-                "[EDC Service] The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
+                "Connector Service The EDR was not found in the cache for counter_party_address=[%s], counter_party_id=[%s], filter=[%s] and selected policies, starting new contract negotiation!",
                 counter_party_address, counter_party_id, filter_expression)
 
         ## If not the contract negotiation MUST be done!
@@ -555,10 +555,10 @@ class BaseConnectorConsumerService(BaseService):
 
         ## Check if the edr entry is not none
         if (edr_entry is None):
-            raise RuntimeError("[EDC Service] Failed to get edr entry! Response was none!")
+            raise RuntimeError("Connector Service Failed to get edr entry! Response was none!")
 
         if self.logger:
-            self.logger.info(f"[EDC Service] The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
+            self.logger.info(f"Connector Service The EDR Entry was found! Transfer Process ID: [{transfer_process_id}]")
 
         ## Check if the transfer id is available and return the transfer process id
         return self.connection_manager.add_connection(counter_party_id=counter_party_id,
@@ -576,6 +576,37 @@ class BaseConnectorConsumerService(BaseService):
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
         operator="="
     ) -> tuple[str, str]:
+        """
+        Performs DSP (Dataspace Protocol) exchange filtered by DCT (Dublin Core Terms) type from the DCMI Metadata Terms.
+        
+        This method establishes an EDC connection by filtering the catalog based on a specific DCT type,
+        negotiates the contract, and returns the dataplane endpoint and access token for data access.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for data access.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval fails.
+        
+        Example:
+        ```python
+        endpoint, token = connector.do_dsp_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            dct_type="IndustryFlagService"
+        )
+        ```
+        """
         return self.do_dsp(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -594,6 +625,37 @@ class BaseConnectorConsumerService(BaseService):
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="="
     ) -> tuple[str, str]:
+        """
+        Performs DSP (Dataspace Protocol) exchange filtered by specific asset ID.
+        
+        This method establishes an EDC connection by filtering the catalog for a specific asset,
+        negotiates the contract, and returns the dataplane endpoint and access token for data access.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for data access.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval fails.
+        
+        Example:
+        ```python
+        endpoint, token = connector.do_dsp_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc"
+        )
+        ```
+        """
         return self.do_dsp(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -614,6 +676,43 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs,
     ):
+        """
+        Executes an HTTP GET request to an asset behind an EDC, filtered by DCT type.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) and then executes a GET request to the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_get method 
+            (e.g., path, headers, timeout, verify, params, allow_redirects).
+
+        Returns:
+        requests.Response: The HTTP response from the GET request to the dataplane.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        response = connector.do_get_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            dct_type="IndustryFlagService",
+            path="/data/latest",
+            timeout=30
+        )
+        data = response.json()
+        ```
+        """
         return self.do_get(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -636,6 +735,44 @@ class BaseConnectorConsumerService(BaseService):
         session=None,
         **kwargs,
     ):
+        """
+        Executes an HTTP GET request to a specific asset behind an EDC.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) for a specific asset and then executes a GET request to the 
+        resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_get method 
+            (e.g., path, headers, timeout, verify, params, allow_redirects).
+
+        Returns:
+        requests.Response: The HTTP response from the GET request to the dataplane.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        response = connector.do_get_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
+            path="/data/latest",
+            headers={"Accept": "application/json"}
+        )
+        data = response.json()
+        ```
+        """
         return self.do_get(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
@@ -651,18 +788,61 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         dct_type: str,
+        json=None,
+        data=None,
         policies: list = None,
         dct_type_key="'http://purl.org/dc/terms/type'.'@id'",
         operator="=",
         session=None,
         **kwargs,
     ) -> tuple[str, str]:
+        """
+        Executes an HTTP POST request to an asset behind an EDC, filtered by DCT type.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) and then executes a POST request with the provided data to 
+        the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
+        dct_type (str): The DCT type to filter assets by (e.g., "IndustryFlagService").
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        dct_type_key (str, optional): The JSON path key for DCT type filtering. 
+            Defaults to "'http://purl.org/dc/terms/type'.'@id'".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_post method 
+            (e.g., path, content_type, headers, timeout, verify, allow_redirects).
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for the completed request.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        request_data = {"query": "SELECT * FROM data", "limit": 100}
+        endpoint, token = connector.do_post_by_dct_type(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            json=request_data,
+            dct_type="QueryService",
+            path="/query",
+            content_type="application/json"
+        )
+        ```
+        """
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
-            body=body,
+            json=json,
+            data=data,
             filter_expression=[
                 self.get_filter_expression(key=dct_type_key, value=dct_type, operator=operator)
             ],
@@ -675,18 +855,61 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         asset_id: str,
+        json=None,
+        data=None,
         policies: list = None,
         asset_id_key="https://w3id.org/edc/v0.0.1/ns/id",
         operator="=",
         session=None,
         **kwargs
     ) -> tuple[str, str]:
+        """
+        Executes an HTTP POST request to a specific asset behind an EDC.
+        
+        This method performs the complete DSP exchange (catalog retrieval, contract negotiation,
+        and EDR token acquisition) for a specific asset and then executes a POST request with 
+        the provided data to the resulting dataplane endpoint.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider's DSP endpoint.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
+        asset_id (str): The unique identifier of the asset to access.
+        policies (list, optional): List of allowed policies for contract negotiation. Defaults to None.
+        asset_id_key (str, optional): The JSON path key for asset ID filtering. 
+            Defaults to "https://w3id.org/edc/v0.0.1/ns/id".
+        operator (str, optional): The comparison operator for filtering. Defaults to "=".
+        session (requests.Session, optional): HTTP session for connection reuse. Defaults to None.
+        **kwargs: Additional keyword arguments passed to the underlying do_post method 
+            (e.g., path, content_type, headers, timeout, verify, allow_redirects).
+
+        Returns:
+        tuple[str, str]: A tuple containing (dataplane_endpoint, access_token) for the completed request.
+
+        Raises:
+        RuntimeError: If EDR negotiation fails or dataplane details cannot be retrieved.
+        ConnectionError: If catalog retrieval or HTTP request fails.
+        
+        Example:
+        ```python
+        update_data = {"status": "processed", "timestamp": "2025-08-07T10:30:00Z"}
+        endpoint, token = connector.do_post_by_asset_id(
+            counter_party_id="BPNL000000000001",
+            counter_party_address="https://provider-edc.example.com/api/v1/dsp",
+            json=update_data,
+            asset_id="urn:uuid:12345678-1234-1234-1234-123456789abc",
+            path="/update",
+            content_type="application/json"
+        )
+        ```
+        """
         return self.do_post(
             counter_party_id=counter_party_id,
             counter_party_address=counter_party_address,
-            body=body,
+            json=json,
+            data=data,
             filter_expression=[
                 self.get_filter_expression(key=asset_id_key, value=asset_id, operator=operator)
             ],
@@ -732,7 +955,7 @@ class BaseConnectorConsumerService(BaseService):
                                                    filter_expression=filter_expression, timeout=timeout)
         except Exception as e:
             raise ConnectionError(
-                f"[EDC Service] Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
+                f"Connector Service Failed to get catalog for counter_party_id=[{counter_party_id}], counter_party_address=[{counter_party_address}], filter_expression=[{filter_expression}]")
 
         if catalog is None:
             return False
@@ -777,7 +1000,7 @@ class BaseConnectorConsumerService(BaseService):
         )
 
         if dataplane_url is None or access_token is None:
-            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -792,7 +1015,7 @@ class BaseConnectorConsumerService(BaseService):
                 verify=verify,
                 timeout=timeout,
                 allow_redirects=allow_redirects,
-                session=session,
+                session=session
             )
             
         ## Do get request to get a response!
@@ -809,10 +1032,11 @@ class BaseConnectorConsumerService(BaseService):
         self,
         counter_party_id: str,
         counter_party_address: str,
-        body,
         filter_expression: list[dict],
         path: str = "/",
         content_type: str = "application/json",
+        json=None,
+        data=None,
         policies: list = None,
         verify: bool = False,
         headers: dict = None,
@@ -825,12 +1049,13 @@ class BaseConnectorConsumerService(BaseService):
 
         This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
         using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
-        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided body, headers, and content type.
+        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided data, headers, and content type.
 
         Parameters:
         counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
         counter_party_address (str): The URL of the EDC provider.
-        body (dict): The data to be sent in the POST request.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
         path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
         content_type (str, optional): The content type of the POST request. Defaults to "application/json".
         policies (list, optional): The policies to be used for the transfer. Defaults to None.
@@ -849,7 +1074,7 @@ class BaseConnectorConsumerService(BaseService):
         )
 
         if dataplane_url is None or access_token is None:
-            raise RuntimeError("[EDC Service] No dataplane URL or access_token was able to be retrieved!")
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
 
         ## Build edr transfer url
         url: str = dataplane_url + path
@@ -861,17 +1086,95 @@ class BaseConnectorConsumerService(BaseService):
         if(session):
             return HttpTools.do_post_with_session(
                 url=url,
-                json=body,
+                json=json,
+                data=data,
                 headers=merged_headers,
                 verify=verify,
                 timeout=timeout,
                 allow_redirects=allow_redirects,
-                session=session,
+                session=session
             )
 
         return HttpTools.do_post(
             url=url,
-            json=body,
+            json=json,
+            data=data,
+            headers=merged_headers,
+            verify=verify,
+            timeout=timeout,
+            allow_redirects=allow_redirects
+        )
+    def do_put(
+        self,
+        counter_party_id: str,
+        counter_party_address: str,
+        filter_expression: list[dict],
+        path: str = "/",
+        content_type: str = "application/json",
+        json=None,
+        data=None,
+        policies: list = None,
+        verify: bool = False,
+        headers: dict = None,
+        timeout: int = None,
+        allow_redirects: bool = False,
+        session=None,
+    ) -> Response:
+        """
+        Performs a HTTP PUT request to a specific asset behind an EDC.
+
+        This function abstracts the entire process of exchanging data with the EDC. It first negotiates the EDR (Endpoint Data Reference)
+        using the provided counterparty ID, EDC provider URL, policies, and DCT type. Then, it constructs the dataplane URL and access token
+        using the negotiated EDR. Finally, it sends a POST request to the dataplane URL with the provided data, headers, and content type.
+
+        Parameters:
+        counter_party_id (str): The identifier of the counterparty (Business Partner Number [BPN]).
+        counter_party_address (str): The URL of the EDC provider.
+        json (dict, optional): The JSON data to be sent in the POST request.
+        data (dict, optional): The data to be sent in the POST request.
+        path (str, optional): The path to be appended to the dataplane URL. Defaults to "/".
+        content_type (str, optional): The content type of the POST request. Defaults to "application/json".
+        policies (list, optional): The policies to be used for the transfer. Defaults to None.
+        dct_type (str, optional): The DCT type to be used for the transfer. Defaults to "IndustryFlagService".
+
+        Returns:
+        Response: The HTTP response from the POST request. If the request fails, an Exception is raised.
+        """
+        ## If policies are empty use default policies
+
+        dataplane_url, access_token = self.do_dsp(
+            counter_party_id=counter_party_id,
+            counter_party_address=counter_party_address,
+            policies=policies,
+            filter_expression=filter_expression
+        )
+
+        if dataplane_url is None or access_token is None:
+            raise RuntimeError("Connector Service No dataplane URL or access_token was able to be retrieved!")
+
+        ## Build edr transfer url
+        url: str = dataplane_url + path
+
+        dataplane_headers: dict = self.get_data_plane_headers(access_token=access_token, content_type=content_type)
+        merged_headers: dict = (headers | dataplane_headers)
+        ## Do get request to get a response!
+        
+        if(session):
+            return HttpTools.do_put_with_session(
+                url=url,
+                json=json,
+                data=data,
+                headers=merged_headers,
+                verify=verify,
+                timeout=timeout,
+                allow_redirects=allow_redirects,
+                session=session
+            )
+
+        return HttpTools.do_put(
+            url=url,
+            json=json,
+            data=data,
             headers=merged_headers,
             verify=verify,
             timeout=timeout,

@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -22,6 +23,9 @@
 
 DSP_DATASET_KEY:str="dcat:dataset"
 DSP_POLICY_KEY:str="odrl:hasPolicy"
+
+V3:str="/v3"
+V4_ALPHA:str="/v4alpha"
 
 class JSONLDKeys:
     AT_ID = "@id"
