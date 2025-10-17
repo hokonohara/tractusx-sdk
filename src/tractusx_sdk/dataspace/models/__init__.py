@@ -22,4 +22,3 @@
 
 ## Where the models are stored
 
-from .example import ParentExample, ChildExample

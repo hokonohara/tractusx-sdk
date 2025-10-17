@@ -28,15 +28,17 @@ class BaseService(ABC):
     Base service class
     """
 
+    dataspace_version: str
+
     @abstractmethod
-    def __init__(self, version: str, base_url: str, headers: dict = None):
+    def __init__(self, dataspace_version: str, base_url: str, headers: dict = None):
         """
         A base init method for services inheriting this class.
 
         Each service should implement its own init method, with at least the version and base_url parameters,
         both of which are needed to instantiate the controllers and services corresponding with that service's version.
 
-        :param version: The version of the service
+        :param dataspace_version: The version of the service
         :param base_url: The base URL of the service
         :param headers: The headers to be used for requests to the service
         """
@@ -62,8 +64,8 @@ class BaseService(ABC):
             self.cls = cls
             self._data = {}
 
-        def version(self, version: str):
-            self._data["version"] = version
+        def dataspace_version(self, dataspace_version: str):
+            self._data["dataspace_version"] = dataspace_version
             return self
 
         def base_url(self, base_url: dict):

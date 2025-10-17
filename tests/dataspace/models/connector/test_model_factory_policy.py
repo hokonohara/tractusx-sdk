@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryPolicy(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "v0_9_0"
+        self.dataspace_version = "jupiter"
         self.oid = "test-oid"
         self.context = {"key": "value"}
         self.permissions = [{"action": "permission"}]
@@ -37,7 +37,7 @@ class TestModelFactoryPolicy(unittest.TestCase):
 
     def test_get_policy_model_with_defaults(self):
         model = ModelFactory.get_policy_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid
         )
 
@@ -52,7 +52,7 @@ class TestModelFactoryPolicy(unittest.TestCase):
 
     def test_get_policy_model_without_defaults(self):
         model = ModelFactory.get_policy_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid,
             context=self.context,
             permissions=self.permissions,

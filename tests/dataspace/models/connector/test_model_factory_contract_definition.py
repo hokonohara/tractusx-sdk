@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory
 
 class TestModelFactoryContractDefinition(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "v0_9_0"
+        self.dataspace_version = "jupiter"
         self.oid = "test-oid"
         self.access_policy_id = "test-access-policy-id"
         self.contract_policy_id = "test-contract-policy-id"
@@ -37,7 +37,7 @@ class TestModelFactoryContractDefinition(unittest.TestCase):
 
     def test_get_contract_definition_model_with_defaults(self):
         model = ModelFactory.get_contract_definition_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid,
             access_policy_id=self.access_policy_id,
             contract_policy_id=self.contract_policy_id
@@ -54,7 +54,7 @@ class TestModelFactoryContractDefinition(unittest.TestCase):
 
     def test_get_contract_definition_model_without_defaults(self):
         model = ModelFactory.get_contract_definition_model(
-            connector_version=self.connector_version,
+            dataspace_version=self.dataspace_version,
             oid=self.oid,
             access_policy_id=self.access_policy_id,
             contract_policy_id=self.contract_policy_id,

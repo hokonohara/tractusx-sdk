@@ -1,6 +1,7 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -60,6 +61,37 @@ class TestAuthManager(unittest.TestCase):
         mock_request.headers = Headers({"X-Api-Key": "test_key"})
         self.assertTrue(self.auth_manager.is_authenticated(mock_request))
 
+    def test_add_auth_header_success(self):
+        """Test add_auth_header adds the correct header when auth is enabled."""
+        headers = {"Existing-Header": "value"}
+        result = self.auth_manager.add_auth_header(headers)
+        expected = {
+            "Existing-Header": "value",
+            "X-Api-Key": "test_key"
+        }
+        self.assertEqual(result, expected)
+
+    def test_add_auth_header_overwrites_existing_api_key(self):
+        """Test add_auth_header overwrites existing API key header."""
+        headers = {"X-Api-Key": "old_value", "Other": "val"}
+        result = self.auth_manager.add_auth_header(headers)
+        expected = {
+            "X-Api-Key": "test_key",
+            "Other": "val"
+        }
+        self.assertEqual(result, expected)
+
+    def test_add_auth_header_with_no_headers(self):
+        """Test add_auth_header with no initial headers."""
+        result = self.auth_manager.add_auth_header()
+        expected = {"X-Api-Key": "test_key"}
+        self.assertEqual(result, expected)
+
+    def test_add_auth_header_raises_when_auth_disabled(self):
+        """Test add_auth_header raises RuntimeError when auth is disabled."""
+        self.auth_manager.auth_enabled = False
+        with self.assertRaises(RuntimeError):
+            self.auth_manager.add_auth_header()
 
 if __name__ == "__main__":
     unittest.main()

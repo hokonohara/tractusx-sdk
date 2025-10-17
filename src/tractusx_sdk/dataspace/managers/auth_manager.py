@@ -1,6 +1,8 @@
 #################################################################################
 # Eclipse Tractus-X - Software Development KIT
 #
+# Copyright (c) 2025 LKS NEXT
+# Copyright (c) 2025 CGI Deutschland B.V. & Co. KG
 # Copyright (c) 2025 Contributors to the Eclipse Foundation
 #
 # See the NOTICE file(s) distributed with this work for additional
@@ -28,8 +30,9 @@
 ## Abstracted from the static method is_authorized
 
 from fastapi import Request
+from .auth_manager_interface import AuthManagerInterface
 
-class AuthManager:
+class AuthManager(AuthManagerInterface):
     configured_api_key: str
     api_key_header: str
     auth_enabled: bool
@@ -53,3 +56,9 @@ class AuthManager:
             return True
         
         return False
+    
+    def add_auth_header(self, headers: dict={}) -> dict:
+        if not self.auth_enabled:
+            raise RuntimeError("Authentication is not enabled. Cannot get auth headers.")
+        auth_header = {self.api_key_header: self.configured_api_key}
+        return {**headers, **auth_header}
