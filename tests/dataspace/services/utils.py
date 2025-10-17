@@ -24,7 +24,7 @@ from tractusx_sdk.dataspace.services.service import BaseService
 
 
 class TestService(BaseService):
-    def __init__(self, version: str, base_url: str, headers: dict = None):
-        self.version = version
+    def __init__(self, dataspace_version: str, base_url: str, headers: dict = None):
+        self.dataspace_version = dataspace_version
         self.base_url = base_url
         self.headers = headers

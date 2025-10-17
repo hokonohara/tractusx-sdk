@@ -42,6 +42,7 @@ class BaseContractNegotiationModel(BaseModel, ABC):
         "@vocab": "https://w3id.org/edc/v0.0.1/ns/"
     })
     callback_addresses: Optional[list[dict]] = Field(default_factory=list)
+    protocol: Optional[str] = Field(default="dataspace-protocol-http")
 
     class _Builder(BaseModel._Builder):
         def context(self, context: dict):
@@ -78,4 +79,8 @@ class BaseContractNegotiationModel(BaseModel, ABC):
 
         def callback_addresses(self, callback_addresses: list[dict]):
             self._data["callback_addresses"] = callback_addresses
+            return self
+
+        def protocol(self, protocol: str):
+            self._data["protocol"] = protocol
             return self

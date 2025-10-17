@@ -22,7 +22,7 @@
 
 from unittest import TestCase
 
-from tractusx_sdk.dataspace.controllers.connector.decorators import controller_method
+from tractusx_sdk.dataspace.controllers.connector.utils.decorators import controller_method
 from tractusx_sdk.dataspace.controllers.controller import Controller
 from tests.dataspace.controllers.connector.utils import (
     generic_controller_setup,
@@ -46,9 +46,8 @@ class TestControllerMethodDecorator(TestCase, ControllerPropertiesMixin):
                 return "Hello world!"
 
         empty_class = EmptyClass()
-
-        ret_val = empty_class.func()
-        self.assertEqual(None, ret_val)
+        with self.assertRaises(ValueError):
+            empty_class.func()
 
     def test_decorator_no_endpoint(self):
         # Instantiate a template-like class inheriting Controller
@@ -58,9 +57,8 @@ class TestControllerMethodDecorator(TestCase, ControllerPropertiesMixin):
                 return "Hello world!"
 
         empty_class = EmptyClass(self.adapter)
-
-        ret_val = empty_class.func()
-        self.assertEqual(None, ret_val)
+        with self.assertRaises(ValueError):
+            empty_class.func()
 
     def test_decorator(self):
         sample_controller = SampleController(self.adapter)

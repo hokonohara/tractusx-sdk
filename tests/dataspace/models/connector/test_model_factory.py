@@ -28,7 +28,7 @@ from tractusx_sdk.dataspace.models.connector.model_factory import ModelFactory, 
 
 class TestModelFactory(unittest.TestCase):
     def setUp(self):
-        self.connector_version = "v0_9_0"
+        self.dataspace_version = "jupiter"
         self.oid = "test-oid"
         self.data_address = {"type": "test_type", "value": "test_value"}
 
@@ -36,7 +36,7 @@ class TestModelFactory(unittest.TestCase):
         with self.assertRaises(ValueError):
             ModelFactory._get_model_builder(
                 model_type=ModelType.ASSET,
-                connector_version="NonExistentVersion"
+                dataspace_version="NonExistentVersion"
             )
 
     def test_get_model_unsupported_type(self):
@@ -44,7 +44,7 @@ class TestModelFactory(unittest.TestCase):
             model_type = Enum('ModelType', { 'foo': 'bar' })
             ModelFactory._get_model_builder(
                 model_type=model_type.foo,
-                connector_version="v0_9_0"
+                dataspace_version="jupiter"
             )
 
     def test_get_model_import_error(self):
@@ -52,5 +52,5 @@ class TestModelFactory(unittest.TestCase):
             with self.assertRaises(ImportError):
                 ModelFactory._get_model_builder(
                     model_type=ModelType.ASSET,
-                    connector_version="v0_0_0"
+                    dataspace_version="v0_0_0"
                 )
