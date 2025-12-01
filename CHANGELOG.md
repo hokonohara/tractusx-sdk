@@ -5,6 +5,23 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.6.0]
+
+### Added
+
+- docs: Introduce MkDocs for structured documentation by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/160
+- docs: Fill the missing documentation by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/161
+- chore(deps-dev): bump setuptools from 75.9.1 to 78.1.1 by @dependabot[bot] in https://github.com/eclipse-tractusx/tractusx-sdk/pull/104
+- feat: Trivy filesystem scan workflow by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/163
+- chore(deps): bump requests from 2.32.3 to 2.32.4 by @dependabot[bot] in https://github.com/eclipse-tractusx/tractusx-sdk/pull/116
+- chore(deps): bump urllib3 from 2.3.0 to 2.5.0 by @dependabot[bot] in https://github.com/eclipse-tractusx/tractusx-sdk/pull/118
+- chore(deps): bump fastapi from 0.115.0 to 0.117 and starlette from 0.46.1 to 0.48.0 by @dependabot[bot] in https://github.com/eclipse-tractusx/tractusx-sdk/pull/130
+- Changes in the documentation files. Imply a new structure for the doc… by @flarrinaga in https://github.com/eclipse-tractusx/tractusx-sdk/pull/164
+- build(deps): bump starlette from 0.48.0 to 0.49.1 by @dependabot[bot] in https://github.com/eclipse-tractusx/tractusx-sdk/pull/166
+- feat: add GitHub Actions workflow for unit testing and coverage reporting by @CDiezRodriguez in https://github.com/eclipse-tractusx/tractusx-sdk/pull/168
+- fix: amend README by @yuri1969 in https://github.com/eclipse-tractusx/tractusx-sdk/pull/165
+
+
 ## [0.5.0]
 
 ### Added
