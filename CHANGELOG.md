@@ -5,6 +5,12 @@ Further information can be found on the [README.md](README.md) file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [0.6.1] - R25.12
+
+### Fixed
+
+- feat: bumped version and prepared dependencies for eclipse tractus-x R25.12 release
+
 ## [0.6.0]
 
 ### Added
@@ -22,7 +28,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - fix: amend README by @yuri1969 in https://github.com/eclipse-tractusx/tractusx-sdk/pull/165
 
 
-## [0.5.0]
+## [0.5.0] - 25.09
 
 ### Added
 
@@ -30,7 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - feat: added new Saturn apis and 2025-01 dsp protocol specifications by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/158
 - feat: prepared final version of the ichub 0.5.0 and documentation by @matbmoser in https://github.com/eclipse-tractusx/tractusx-sdk/pull/156
 
-## [0.4.2]
+## [0.4.2] - 25.06
 
 ### Fixed
 
